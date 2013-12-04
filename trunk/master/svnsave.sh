@@ -53,7 +53,7 @@ function f_execute_deleteunknown() {
 			# check unknown directory
 			F_STATUS=`grep ":$F_NAME/" $P_LISTING_FILE | head -1`
 			if [ "$F_STATUS" = "" ]; then
-				if [ -d "$F_NAME\.svn" ]; then
+				if [ -d "$F_NAME/.svn" ]; then
 					svn delete $F_NAME
 				else
 					rm -rf $F_NAME
@@ -64,7 +64,7 @@ function f_execute_deleteunknown() {
 			F_STATUS=`grep ":$F_NAME$" $P_LISTING_FILE | head -1`
 
 			if [ "$F_STATUS" = "" ]; then
-				if [ -d "$F_DIR\.svn" ]; then
+				if [ -d "$F_DIR/.svn" ]; then
 					F_STATUS=`svn status $F_NAME`
 					if [[ "$F_STATUS" =~ ^? ]]; then
 						rm -rf $F_NAME
