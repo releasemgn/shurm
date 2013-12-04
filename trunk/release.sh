@@ -33,7 +33,7 @@ function f_prepare_master() {
 
 function f_execute_all() {
 	local F_SAVEDIR=`pwd`
-	local F_MASTER_REPOSITORY=`svn info . | grep URL | sed "s/URL:[ ]//;s/\/common$//"`
+	local F_MASTER_REPOSITORY=`svn info . | grep URL | sed "s/URL:[ ]//;s/\/trunk$//"`
 
 	# check need to create tag
 	local F_TAG
@@ -64,7 +64,7 @@ function f_execute_all() {
 		fi
 
 		echo create tag $F_TAG ...
-		local F_MASTER_PATH=$F_MASTER_REPOSITORY/common/master
+		local F_MASTER_PATH=$F_MASTER_REPOSITORY/trunk/master
 		svn copy $P_MASTERAUTH $F_MASTER_PATH $F_TAGPATH -m "release $P_RELEASE" > /dev/null
 		F_CHECK=$?
 		if [ "$F_CHECK" != "0" ]; then
@@ -92,7 +92,7 @@ function f_execute_all() {
 	fi
 
 	# release files
-	svn export $P_MASTERAUTH $F_MASTER_REPOSITORY/common/upgrade.sh $F_TMPDIRNAME/upgrade.sh > /dev/null
+	svn export $P_MASTERAUTH $F_MASTER_REPOSITORY/trunk/upgrade.sh $F_TMPDIRNAME/upgrade.sh > /dev/null
 	cat $F_TMPDIRNAME/upgrade.sh | sed 's/\r//g' > fntmp
         mv fntmp $F_TMPDIRNAME/upgrade.sh
 	chmod 744 $F_TMPDIRNAME/upgrade.sh
