@@ -256,7 +256,7 @@ function f_local_execute_all() {
 	fi
 
 	# create run dirs
-	local F_RUNDIR=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/database/patches.log/$RELEASEDIR-$C_ENV_ID-$DC-$OUTDIR_POSTFIX
+	local F_RUNDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/$RELEASEDIR-$C_ENV_ID-$DC-$OUTDIR_POSTFIX
 
 	# execute
 	echo sqlapply.sh: execute scripts dblist=$F_DBLIST, alignedlist=$F_ALIGNEDDIRLIST ...

@@ -83,7 +83,7 @@ function f_local_execute_tns_print() {
 		for script in $C_ADMINDB_SQLRES; do
 
 			LOGS=""
-			for logdir in $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/database/patches.log/$RELEASE-$C_ENV_ID-$DC-*; do
+			for logdir in $C_CONFIG_SOURCE_SQL_LOGDIR/$RELEASE-$C_ENV_ID-$DC-*; do
 				LOGS="$LOGS `find $logdir -name $script-*.sql.spool`"
 			done
 
