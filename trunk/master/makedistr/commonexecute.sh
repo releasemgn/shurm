@@ -329,7 +329,7 @@ function f_execute_custom() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
 
-	if [ ! -f "custom/$C_CUSTOM_SCRIPT" ]; then
+	if [ ! -f "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/custom/$C_CUSTOM_SCRIPT" ]; then
 		echo unknown custom script: $C_CUSTOM_SCRIPT. Exiting
 		exit 1
 	fi
@@ -340,8 +340,10 @@ function f_execute_custom() {
 		echo "(showonly) $C_CUSTOM_SCRIPT $P_EXECUTE_SET $P_PROJECT"
 	else
 		echo "(execute) $C_CUSTOM_SCRIPT $P_EXECUTE_SET $P_PROJECT"
-		source custom/$C_CUSTOM_SCRIPT
-		f_custom_execute $P_EXECUTE_SET $P_PROJECT
+		(
+			source $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/custom/$C_CUSTOM_SCRIPT
+			f_custom_execute $P_EXECUTE_SET $P_PROJECT
+		)
 	fi
 
 	cd $F_CUSTOMEXECUTE_SAVEDIR
