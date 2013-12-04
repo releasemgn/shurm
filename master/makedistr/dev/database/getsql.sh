@@ -7,7 +7,7 @@ cd ..
 
 export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
-cd ../../database/patches
+cd ../../../database
 . ./getopts.sh
 . ./common.sh
 

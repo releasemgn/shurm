@@ -6,7 +6,7 @@ RUNPATH=`pwd`
 # set env/dc context
 . ../_context.sh
 
-cd ../../../../database/patches
+cd ../../../../database
 . ./getopts.sh
 . ./setenv.sh $C_CONTEXT_ENV
 

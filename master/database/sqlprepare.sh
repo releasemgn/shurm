@@ -1,7 +1,7 @@
 #!/bin/bash 
 # Copyright 2011-2013 vsavchik@gmail.com
 
-# Usage example: cd database/patches; ./sqlprepare.sh prod-patch-2.1.3.1 prod-patch-2.1.3.1.run
+# Usage example: ./sqlprepare.sh prod-patch-2.1.3.1 prod-patch-2.1.3.1.run
 
 SCRIPTDIR=`dirname $0`
 cd $SCRIPTDIR
