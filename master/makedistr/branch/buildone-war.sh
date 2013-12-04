@@ -3,8 +3,6 @@
 cd `dirname $0`
 RUNDIR=`pwd`
 
-export LAST_PROD_TAG=`cat last-prod-tag.txt`
-
 cd ..
 . ./getopts.sh
 

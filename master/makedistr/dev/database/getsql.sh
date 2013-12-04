@@ -1,7 +1,5 @@
 #!/bin/bash 
 
-export LAST_PROD_TAG=`cat ../last-prod-tag.txt`
-
 cd ..
 . ./_context.sh
 

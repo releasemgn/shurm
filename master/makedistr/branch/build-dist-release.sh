@@ -3,7 +3,6 @@
 # Usage example: ./build-dist-release.sh war pgu-reg107
 
 export VERSION_MODE=branch
-export LAST_PROD_TAG=`cat last-prod-tag.txt`
 
 cd ..
 . ./getopts.sh

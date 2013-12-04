@@ -8,8 +8,6 @@
 # Copy *-prod tags for all projects from previous release (last-prod-tag minus 1)
 # Rename *-prod-candidate tags to *-prod for projects in release.xml (last-prod-tag)
 
-export LAST_PROD_TAG=`cat last-prod-tag.txt`
-
 export VERSION_MODE=branch
 cd ..
 . ./getopts.sh
@@ -77,8 +75,8 @@ function f_local_ren_tag_all_release() {
 
 }
 
-PROD_VERSION=$C_CONFIG_VERSIONBRANCH.$LAST_PROD_TAG
-PREV_VERSION=$C_CONFIG_VERSIONBRANCH.`expr $LAST_PROD_TAG - 1`
+PROD_VERSION=$C_CONFIG_VERSIONBRANCH.$C_CONFIG_LAST_VERSION_BUILD
+PREV_VERSION=$C_CONFIG_VERSIONBRANCH.`expr $C_CONFIG_LAST_VERSION_BUILD - 1`
 
 echo -n "Copying prod-$PROD_VERSION tags for all projects from previous release (prod-$PREV_VERSION)... "; sleep 3; echo "started..."
 

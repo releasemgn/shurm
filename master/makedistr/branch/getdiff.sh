@@ -3,7 +3,6 @@
 MODULE=$1
 
 export VERSION_MODE=branch
-export LAST_PROD_TAG=`cat last-prod-tag.txt`
 
 cd ..
 . ./common.sh
