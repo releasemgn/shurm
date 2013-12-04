@@ -13,7 +13,7 @@ C_CONFIG_COMMIT_TRACKERLIST			set of tracker projects associated with product ("
 C_CONFIG_DISTR_PATH				local path to store releases (e.g. "~/distr/myproject")
 C_CONFIG_GITMIRRORPATH				local git repository location (e.g. "~/build/git")
 C_CONFIG_JAVA_VERSION				use java version (e.g. "jdk1.6.0_29")
-C_CONFIG_LAST_VERSION_BUILD			last minor tag (e.g. "$LAST_PROD_TAG")
+C_CONFIG_LAST_VERSION_BUILD			last minor tag (e.g. "~/myproduct/etc/last-prod-tag.txt")
 C_CONFIG_MAVEN_ADDITIONAL_OPTIONS		additional maven build options (e.g. "-Dfile.encoding=UTF-8")
 C_CONFIG_MAVEN_CFGFILE				maven configuration file (e.g. "~/.m2/settings.branch.xml")
 C_CONFIG_MAVEN_PROFILES				maven -P profiles parameter (e.g. "all-components,all-modules")
