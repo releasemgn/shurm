@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+	<property name="id" value="prod"/>
+	<property name="distr-use-local" value="false"/>
+	<property name="distr-remotehost" value="release-mgn@release_host"/>
+	<property name="distr-path" value="/distr/myp"/>
+	<property name="obsolete" value="no"/>
+	<property name="execute" value="no"/>
+	<property name="backup" value="yes"/>
+	<property name="configuration-deploy" value="no"/>
+	<property name="configuration-keepalive" value="no"/>
+	<property name="prod" value="yes"/>
+	<property name="db-auth" value="yes"/>
+	<property name="db-authfile" value="/home/release-sql/release_sql/etc/dbpass.txt"/>
+
+	<datacenter name="dc.fed">
+
+... (like uat.xml but using prod hosts and paths)
+
+	</datacenter>
+
+</module>
