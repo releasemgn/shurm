@@ -12,7 +12,7 @@ function f_execute_all() {
 	local F_ACTIVE=`set | grep "^C_CONFIG_" | cut -d "=" -f1 | tr "\n" " "`
 
 	# get required set
-	local F_REQUIRED=`cat ~/common/codebase/config.txt | grep "^C_CONFIG_" | tr "\t" ":" | cut -d ":" -f1 | tr "\n" " "`
+	local F_REQUIRED=`cat $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/config.txt | grep "^C_CONFIG_" | tr "\t" ":" | cut -d ":" -f1 | tr "\n" " "`
 
 	# get unknown variables
 	F_STATUS=OK
