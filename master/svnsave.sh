@@ -66,7 +66,7 @@ function f_execute_deleteunknown() {
 			if [ "$F_STATUS" = "" ]; then
 				if [ -d "$F_DIR/.svn" ]; then
 					F_STATUS=`svn status $F_NAME`
-					if [[ "$F_STATUS" =~ ^? ]]; then
+					if [[ "$F_STATUS" =~ "^\?" ]]; then
 						rm -rf $F_NAME
 					else
 						svn delete $F_NAME
