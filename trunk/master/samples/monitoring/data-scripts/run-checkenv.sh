@@ -35,7 +35,7 @@ function f_execute_all() {
 	local F_DATAFILE=$F_DATAFILE_FINAL.running
 
 	# run ./checkenv.sh and extract results to a log file
-	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/deployment/$P_ENVNAME/$P_DC
+	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$P_ENVNAME/$P_DC
 
 	date > $F_DATAFILE
 	./checkenv.sh >> $F_DATAFILE 2>&1
