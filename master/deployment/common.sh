@@ -147,7 +147,7 @@ function f_upload_remotefile() {
 		fi
 	else
 		scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
-		scp -q -B -p tmp-scpfile $P_DST_HOSTLOGIN:$P_DSTFILE
+		scp -q -B -p $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
 		rm -rf $F_LOCALNAME
 		if [ $? -ne 0 ]; then
 			return 1
