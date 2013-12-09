@@ -137,17 +137,18 @@ function f_upload_remotefile() {
 	local P_SRCFILE=$3
 	local P_DSTFILE=$4
 
+	local F_LOCALNAME=$HOSTNAME.$USER.redist.p$$.tmp-scpfile
 	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE tmp-scpfile
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME tmp-scpfile $P_DST_HOSTLOGIN:$P_DSTFILE
-		rm -rf tmp-scpfile
+		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
+		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
+		rm -rf $F_LOCALNAME
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
 	else
-		scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE tmp-scpfile
+		scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
 		scp -q -B -p tmp-scpfile $P_DST_HOSTLOGIN:$P_DSTFILE
-		rm -rf tmp-scpfile
+		rm -rf $F_LOCALNAME
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
