@@ -605,11 +605,11 @@ function f_env_getsecretpropertylist() {
 	fi
 
 	if [ ! -f "$C_ENV_PROPERTY_SECRETFILE" ]; then
-		echo "f_env_getsecretpropertylist: unable to find secret property file $C_ENV_PROPERTY_SECRETFILE . Exiting
+		echo "f_env_getsecretpropertylist: unable to find secret property file $C_ENV_PROPERTY_SECRETFILE . Exiting"
 		exit 1
 	fi
 
-	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | cut -d "=" -f1` | tr "\n" " "`
+	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | cut -d "=" -f1 | tr "\n" " "`
 }
 
 function f_env_getenvpropertylist() {
@@ -636,7 +636,7 @@ function f_env_getsecretpropertyvalue() {
 	local P_PROPNAME=$1
 
 	# extract from secret property file
-	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | grep "^$P_PROPNAME=" | cut -d "=" -f2` | tr -d "\n"`
+	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | grep "^$P_PROPNAME=" | cut -d "=" -f2 | tr -d "\n"`
 }
 
 function f_env_getenvpropertyvalue() {
