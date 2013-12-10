@@ -7,6 +7,7 @@
 # C_ENV_PROPERTY_DISTR_USELOCAL
 # C_ENV_PROPERTY_DISTR_REMOTEHOST
 # C_ENV_PROPERTY_KEYNAME
+# C_ENV_PROPERTY_SECRETFILE
 # C_ENV_PROPERTY_SKYPE_CHATROOMFILE
 # C_ENV_PROPERTY_DBAUTHFILE=
 
@@ -176,6 +177,9 @@ function f_env_setpath() {
 
 	f_env_getxmlproperty "configuration-keepalive"
 	export GETOPT_KEEPALIVE=$C_ENV_XMLVALUE
+
+	f_env_getxmlproperty "configuration-secretpropertyfile"
+	export C_ENV_PROPERTY_SECRETFILE=$C_ENV_XMLVALUE
 
 	f_env_getxmlproperty "configuration-chatroomfile"
 	export C_ENV_PROPERTY_SKYPE_CHATROOMFILE=$C_ENV_XMLVALUE
