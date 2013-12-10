@@ -614,7 +614,7 @@ function f_env_getsecretpropertylist() {
 
 function f_env_getenvpropertylist() {
 	# extract from property elements
-	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/property" -v "@name" -o " " $C_ENV_PATH`
+	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/property" -v "@name" -o " " $C_ENV_PROPERTY_SECRETFILE`
 }
 
 function f_env_getdcpropertylist() {
