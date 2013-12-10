@@ -168,7 +168,7 @@ function f_local_construct_awk() {
 
 	# add secret props
 	for var in $S_CONFIGURE_PROPLIST_SECRET; do
-		f_local_getsecretpropertyvalue $var
+		f_env_getsecretpropertyvalue $var
 		f_local_construct_addawkvar secret.$var "$C_ENV_XMLVALUE"
 
 		# handle unprefixed variables
