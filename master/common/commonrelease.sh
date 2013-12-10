@@ -70,6 +70,7 @@ function f_release_getprojects() {
 		C_RELEASE_TARGETS="all"
 	else	
 		C_RELEASE_TARGETS=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project" -v "@name" -o " " $C_RELEASE_FNAME`
+		C_RELEASE_TARGETS=${C_RELEASE_TARGETS% }
 	fi
 }
 
@@ -83,6 +84,7 @@ function f_release_getprojectitems() {
 	fi
 
 	C_RELEASE_ITEMS=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECTNAME']/distitem" -v "@name" -o " " $C_RELEASE_FNAME`
+	C_RELEASE_ITEMS=${C_RELEASE_ITEMS% }
 }
 
 function f_release_getconfcomplist() {
@@ -92,6 +94,7 @@ function f_release_getconfcomplist() {
 		C_RELEASE_CONFCOMPLIST="all"
 	else
 		C_RELEASE_CONFCOMPLIST=`xmlstarlet sel -t -m "release/configure/component" -v "@name" -o " " $C_RELEASE_FNAME`
+		C_RELEASE_CONFCOMPLIST=${C_RELEASE_CONFCOMPLIST% }
 	fi
 }
 
