@@ -597,6 +597,21 @@ function f_env_getzerodowntimeinfo() {
 	C_ENV_DEPLOYMENT_SWITCH_RUNALL=$C_ENV_XMLVALUE
 }
 
+function f_env_getsecretpropertylist() {
+	# read secret properties...
+	if [ "$C_ENV_PROPERTY_SECRETFILE" = "" ]; then
+		C_ENV_XMLVALUE=""
+		return 0
+	fi
+
+	if [ ! -f "$C_ENV_PROPERTY_SECRETFILE" ]; then
+		echo "f_env_getsecretpropertylist: unable to find secret property file $C_ENV_PROPERTY_SECRETFILE . Exiting
+		exit 1
+	fi
+
+	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | cut -d "=" -f1` | tr "\n" " "`
+}
+
 function f_env_getenvpropertylist() {
 	# extract from property elements
 	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/property" -v "@name" -o " " $C_ENV_PATH`
@@ -615,6 +630,13 @@ function f_env_getserverpropertylist() {
 
 	# extract from attrs
 	C_ENV_XMLVALUE=`xmlstarlet sel -t -c "module/datacenter[@name='$P_DC']/server[@name='$P_SERVER']" $C_ENV_PATH | xmlstarlet el -a | grep "server/@" | sed "s/server\/@//g" | tr "\n" " "`
+}
+
+function f_env_getsecretpropertyvalue() {
+	local P_PROPNAME=$1
+
+	# extract from secret property file
+	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | grep "^$P_PROPNAME=" | cut -d "=" -f2` | tr -d "\n"`
 }
 
 function f_env_getenvpropertyvalue() {
