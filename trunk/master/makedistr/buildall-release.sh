@@ -180,6 +180,12 @@ function f_buildall_release() {
 			f_buildall_release_war "$F_RELEASE_WAR_TARGETS"
 		fi
 	fi
+
+	# getall if requested
+	if [ "$GETOPT_DIST" = "yes" ]; then
+		echo "get built binaries to distributive..."
+		./getall-release.sh $VERSIONDIR $MODULE "$MODULEPROJECTS"
+	fi
 }
 
 # execute

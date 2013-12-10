@@ -6,7 +6,7 @@ cd `dirname $0`
 
 VERSIONDIR=$1
 MODULE=$2
-MODULEPROJECT=$3
+MODULEPROJECTS="$3"
 
 # check params
 if [ "$VERSIONDIR" = "" ]; then
@@ -74,8 +74,8 @@ function f_local_getall_release() {
 			fi
 
 			local MODULELIST="$F_RELEASE_CORE_TARGETS"
-			if [ "$MODULEPROJECT" != "" ]; then
-				MODULELIST=$MODULEPROJECT
+			if [ "$MODULEPROJECTS" != "" ]; then
+				MODULELIST=$MODULEPROJECTS
 			fi
 
 			f_local_get_projectitems core "$MODULELIST"
@@ -93,8 +93,8 @@ function f_local_getall_release() {
 			fi
 
 			local MODULELIST="$F_RELEASE_WAR_TARGETS"
-			if [ "$MODULEPROJECT" != "" ]; then
-				MODULELIST=$MODULEPROJECT
+			if [ "$MODULEPROJECTS" != "" ]; then
+				MODULELIST=$MODULEPROJECTS
 			fi
 
 			echo downloading from Nexus - $MODULELIST
@@ -133,8 +133,8 @@ function f_local_getall_release() {
 			fi
 
 			local MODULELIST="$F_RELEASE_PREBUILT_TARGETS"
-			if [ "$MODULEPROJECT" != "" ]; then
-				MODULELIST=$MODULEPROJECT
+			if [ "$MODULEPROJECTS" != "" ]; then
+				MODULELIST=$MODULEPROJECTS
 			fi
 
 			f_local_get_projectitems prebuilt "$MODULELIST"
