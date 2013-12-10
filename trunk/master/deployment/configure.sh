@@ -38,6 +38,7 @@ S_CONFIGURE_TMP="/tmp/$HOSTNAME.$USER.configure.p$$"
 S_CONFIGURE_AWKPROGRAM="$S_CONFIGURE_TMP/process.awk"
 S_CONFIGURE_PREPAREDTEMPLATES="$S_CONFIGURE_TMP/templates.prepared"
 
+S_CONFIGURE_PROPLIST_SECRET=
 S_CONFIGURE_PROPLIST_ENV=
 S_CONFIGURE_PROPLIST_DC=
 S_CONFIGURE_PROPLIST_SERVER=
@@ -165,8 +166,26 @@ function f_local_construct_awk() {
 		fi
 	done
 
+	# add secret props
+	for var in $S_CONFIGURE_PROPLIST_SECRET; do
+		f_local_getsecretpropertyvalue $var
+		f_local_construct_addawkvar secret.$var "$C_ENV_XMLVALUE"
+
+		# handle unprefixed variables
+		if [[ ! " $S_CONFIGURE_PROPLIST_ENV " =~ " $var " ]] && [[ ! " $S_CONFIGURE_PROPLIST_SERVER " =~ " $var " ]] && [[ ! " $S_CONFIGURE_PROPLIST_DC " =~ " $var " ]]; then
+			f_local_construct_addawkvar $var "$C_ENV_XMLVALUE"
+		fi
+	done
+
 	echo "print" >> $S_CONFIGURE_AWKPROGRAM
 	echo "}" >> $S_CONFIGURE_AWKPROGRAM
+}
+
+function f_local_getproperties_secret() {
+	# read secret properties...
+	f_env_getsecretpropertylist
+	f_revertlist "$C_ENV_XMLVALUE"
+	S_CONFIGURE_PROPLIST_SECRET="$C_COMMON_LIST"
 }
 
 function f_local_getproperties_env() {
@@ -294,6 +313,7 @@ function f_local_execute_env() {
 	echo configure environment $C_ENV_ID in $P_DIR_LIVE using templates in $P_DIR_TEMPLATES ...
 
 	# read properties
+	f_local_getproperties_secret
 	f_local_getproperties_env
 
 	if [ "$GETOPT_SHOWALL" = "yes" ]; then
