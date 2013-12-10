@@ -46,6 +46,9 @@ function f_local_get_projectitems() {
 			fi
 		fi
 	done
+
+	F_DISTITEMS=${F_DISTITEMS% }
+	F_DISTITEMS=${F_DISTITEMS# }
 		
 	echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$MODULELIST" "$F_DISTITEMS"...
 	./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$MODULELIST" "$F_DISTITEMS"
