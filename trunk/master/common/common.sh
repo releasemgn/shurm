@@ -1,7 +1,8 @@
 #!/bin/bash
 # Copyright 2011-2013 vsavchik@gmail.com
 
-S_COMMON_EXTLIST="sh xml txt properties conf config groovy"
+S_COMMON_EXTLIST="sh xml txt properties conf config xconf groovy"
+S_COMMON_FINDEXTLIST='-name "*.sh" -o -name "*.xml" -o -name "*.txt" -o -name "*.properties" -o -name "*.conf" -o -name "*.config" -o -name "*.xconf" -o -name "*.sql"'
 
 function f_dos2unix_file() {
 	local P_FILEPATH=$1
@@ -46,7 +47,10 @@ function f_dos2unix_dir() {
 	cp -R $P_DIRPATH $F_DIRPATH_TMP
 
 	cd $F_DIRPATH_TMP
-	find . -type f \( -name "*.sql" -o -name "*.sh" -o -name "*.xml" -o -name "*.txt" -o -name "*.properties" -o -name "*.conf" -o -name "*.config" \) -exec bash -c "x=\$0; ( cat \"\$x\" | tr -d \"\r\" ) > $F_DOSEXECDIR/\"\$x\"" {} \;
+	local F_DIRNAME
+	eval "find . -type f \( $S_COMMON_FINDEXTLIST \)" | while read fname; do
+		( cat "$fname" | tr -d "\r" ) > "$F_DOSEXECDIR/$fname"
+	done
 
 	cd $F_DOSSAVEDIR
 	rm -rf $F_DIRPATH_TMP
