@@ -9,7 +9,11 @@
   * prerequisites (see framework diagram at https://code.google.com/p/shurm)
 {{{
 Allocate at least one linux box for release activities.
-It is better to create separate hosts for Release Build Machine (build box), UAT/Test Administration Host (deploy box) and Release Storage (distribution box), but you can have the only host for all purposes (release box)
+It is better to create separate hosts for:
+- Release Build Machine (build box)
+- UAT/Test Administration Host (deploy box)
+- Release Storage (distribution box)
+Still you can have the only host for all purposes (release box).
 }}}
   * framework setup
 {{{
