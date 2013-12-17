@@ -5,4 +5,4 @@
 
   * [setup] - quick start manual
   * [documentation] - complete URM documentation
-  * [release] - release notes and links to download
+  * [releases] - release notes and links to download
