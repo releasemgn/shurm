@@ -14,7 +14,8 @@ It is better to create separate hosts for:
 - UAT/Test Administration Host (deploy box)
 - Release Storage (distribution box)
 Still you can have the only host for all purposes (release box).
-Also you can move environment monitoring from deploy box to separate host (monitoring box)
+Also you can move environment monitoring from deploy box to separate host (monitoring box).
+You can have several build boxes, several deploy boxes and several monitoring boxes.
 }}}
   * framework setup
 {{{
@@ -39,6 +40,7 @@ Ensure environment management can be performed on deployment box:
 {{{
 1. select Your Product URM home, e.g. /release-mgn/urm/myp
 - set shell variable (add to profile) MYP_DEPLOYMENT_HOME to URM home (e.g. /release-mgn/urm/myp)
+- do it first on one build box
 2. create directory structure
 	/release-mgn/urm/myp
 	/release-mgn/urm/myp/etc
@@ -51,8 +53,11 @@ Ensure environment management can be performed on deployment box:
 	./upgrade.sh /release-mgn/urm/myp
 5. copy master/samples/etc/config.sh to /release-mgn/urm/myp/etc
 - change product identification properties in config.sh 
-6. add Your Product URM to your svn repository (recommended)
+6. add Your Product URM to your svn repository (optional, recommended)
 	svn import /release-mgn/urm/myp <my-svn-store-path>
+7. distribute  Your Product URM to all build, deploy and monitoring boxes (recommended using svn)
+- svn co <my-svn-store-path> /release-mgn/urm/myp
+- /release-mgn/urm/myp/master/svnget.sh /release-mgn/urm/myp
 }}}
 
 = Configure Your Product URM =
