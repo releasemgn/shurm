@@ -14,7 +14,7 @@ It is better to create separate hosts for:
 - UAT/Test Administration Host (deploy box)
 - Release Storage (distribution box)
 Still you can have the only host for all purposes (release box).
-Also you can move environment monitoring to separate host (monitoring box)
+Also you can move environment monitoring from deploy box to separate host (monitoring box)
 }}}
   * framework setup
 {{{
