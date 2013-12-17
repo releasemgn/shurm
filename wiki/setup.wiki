@@ -25,7 +25,7 @@ Accounts and access:
 
 Ensure build can be performed on build box:
 - check maven and nexus are available to build box
-- check project jdk versions are installed
+- check proper jdk versions are installed
 - install xmlstarlet 1.2.1 (or later) package
 
 Ensure environment management can be performed on deployment box:
