@@ -1,8 +1,8 @@
 #summary Quick Start notes
 [home] -> [setup]
-----
 
 <wiki:toc max_depth="2" />
+----
 
 = Create Your Product URM =
 
