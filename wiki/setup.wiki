@@ -31,6 +31,7 @@ Ensure build can be performed on build box:
 - check maven and nexus are available to build box
 - check proper jdk versions are installed
 - install xmlstarlet 1.2.1 (or later) package
+- install svn repository to store Your Product URM and database/configuration release items
 
 Ensure environment management can be performed on deployment box:
 - create release-mgn/release-mon ssh keypair and place public key to UAT/Test hosts
