@@ -51,7 +51,7 @@ Ensure environment management can be performed on deployment box:
 	./upgrade.sh /release-mgn/urm/myp
 5. copy master/samples/etc/config.sh to /release-mgn/urm/myp/etc
 - change product identification properties in config.sh 
-6. add Your Product URM to svn (recommended)
+6. add Your Product URM to your svn repository (recommended)
 	svn import /release-mgn/urm/myp <my-svn-store-path>
 }}}
 
