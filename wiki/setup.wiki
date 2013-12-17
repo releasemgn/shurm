@@ -95,17 +95,18 @@ URM design simplifies using URM and prevents from executing scripts with imprope
 - URM provides wrappers approach for distinct build modes and environments
 - wrappers are scripts placed in additional directory and calling genuine code scripts.
 - wrapper directory defines context of execution, so you don''t need to set basic parameters
+- single-dc environments slightly differ in structure from multi-dc environments
 
 Build modes and their wrappers are supplied with URM release.
 Wrappers and their directories for environments are created in Your Product URM location:
-- just after (re)defining environment(s), you need to update wrappers by calling master/configure.sh
-- single-dc environments slightly differ in structure from multi-dc environments
+- just after (re)defining environment(s), you need to update wrappers by calling configure.sh:
+	master/configure.sh
 }}}
   * save Your Product URM in your svn repository and redistribute:
 {{{
 - execute master/svnsave.sh to save (re)configuration results in your svn
 - redistribute Your Product URM to all build, deploy and monitoring boxes:
-	./svnget.sh <myproduct_home>
+	master/svnget.sh <myproduct_home>
 }}}
 
 = Upgrade URM Version =
