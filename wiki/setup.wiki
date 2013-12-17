@@ -19,7 +19,9 @@ Also you can move environment monitoring from deploy box to separate host (monit
   * framework setup
 {{{
 Accounts and access:
-- create release-mgn, release-reader, release-mon accounts
+- create release-mgn account on build, deploy and distribution boxes
+- create release-mon account on monitoring box
+- create release-reaser account on distribution box
 - provide access to svn or git source code to build box
 - provide access to UAT/Test hosts to deploy box
 - provide access to distribution box to build and deploy boxes
