@@ -1,5 +1,5 @@
 #summary Quick Start notes
-[Home] -> [setup]
+[home] -> [setup]
 ----
 
 {toc}
