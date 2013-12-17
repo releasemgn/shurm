@@ -2,7 +2,7 @@
 [home] -> [setup]
 ----
 
-{toc}
+<wiki:toc max_depth="2" />
 
 = Create Your Product URM =
 
