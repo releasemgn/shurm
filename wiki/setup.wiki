@@ -92,8 +92,8 @@ Define your environments (see samples/etc/env):
   * construct environment script wrappers
 {{{
 URM design simplifies using URM and prevents from executing scripts with improper parameters:
-- URM provides wrappers approach for distinct build modes and environments.
-- wrappers - are scripts placed in additional directory and calling genuine code scripts.
+- URM provides wrappers approach for distinct build modes and environments
+- wrappers are scripts placed in additional directory and calling genuine code scripts.
 - wrapper directory defines context of execution, so you don''t need to set basic parameters
 
 Build modes and their wrappers are supplied with URM release.
