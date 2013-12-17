@@ -20,7 +20,7 @@ Still you can have the only host for all purposes (release box).
 Accounts and access:
 - create release-mgn, release-reader, release-mon accounts
 - provide access to svn or git source code to build box
-- provide access to UAT hosts to deploy box
+- provide access to UAT/Test hosts to deploy box
 - provide access to distribution box to build and deploy boxes
 
 Ensure build can be performed on build box:
@@ -29,7 +29,7 @@ Ensure build can be performed on build box:
 - install xmlstarlet 1.2.1 (or later) package
 
 Ensure environment management can be performed on deployment box:
-- check UAT hosts are available by ssh from release-mgn and release-mon accounts
+- create release-mgn/release-mon ssh keypair and place public key to UAT/Test hosts
 - install xmlstarlet 1.2.1 (or later) package
 }}}
   * create Your Product URM module (see also [releases])
