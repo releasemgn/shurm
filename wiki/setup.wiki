@@ -6,7 +6,11 @@
 
 = Create Your Product URM =
 
-TBD
+  * prerequisites (see framework diagram at https://code.google.com/p/shurm)
+{{{
+- allocate at least one linux box for release activities
+- it is better to create separate hosts for Release Build Machine and UAT/Test Administration Hosts
+}}}
 
 = Configure Your Product URM =
 
