@@ -70,7 +70,7 @@ Ensure environment management can be performed on deployment box:
 Basic product configuration parameters need to be defined in etc/config.sh (see sample):
 - product identification data
 - certain product configuration data like list of database schemas
-- filesystem paths like git mirror repositories or release filesystem
+- filesystem paths like git mirror repositories or build log directory
 - major release information
 
 List source code repositories in etc/source.xml (see samples/etc/source.xml)
