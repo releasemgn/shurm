@@ -49,9 +49,9 @@ Ensure environment management can be performed on deployment box:
 	/release-mgn/urm/myp/etc
 	/release-mgn/urm/myp/etc/env
 	/release-mgn/urm/myp/master
-3. download latest release, untar release archive to temporary directory, which will be populated by:
-- upgrade.sh script
-- master directory
+3. download latest release, untar release archive to temporary directory, which will consist of:
+	upgrade.sh script
+	master directory
 4. cd to temporary directory and execute initial install using
 	./upgrade.sh /release-mgn/urm/myp
 5. copy master/samples/etc/config.sh to /release-mgn/urm/myp/etc
@@ -59,8 +59,8 @@ Ensure environment management can be performed on deployment box:
 6. add Your Product URM to your svn repository
 	svn import /release-mgn/urm/myp <my-svn-store-path>
 7. distribute Your Product URM to all build, deploy and monitoring boxes
-- svn co <my-svn-store-path> /release-mgn/urm/myp
-- /release-mgn/urm/myp/master/svnget.sh /release-mgn/urm/myp
+	svn co <my-svn-store-path> /release-mgn/urm/myp
+	/release-mgn/urm/myp/master/svnget.sh /release-mgn/urm/myp
 }}}
 
 = Configure Your Product URM =
