@@ -58,14 +58,55 @@ Ensure environment management can be performed on deployment box:
 - change product identification properties in config.sh 
 6. add Your Product URM to your svn repository
 	svn import /release-mgn/urm/myp <my-svn-store-path>
-7. distribute  Your Product URM to all build, deploy and monitoring boxes
+7. distribute Your Product URM to all build, deploy and monitoring boxes
 - svn co <my-svn-store-path> /release-mgn/urm/myp
 - /release-mgn/urm/myp/master/svnget.sh /release-mgn/urm/myp
 }}}
 
 = Configure Your Product URM =
 
-TBD
+  * define your product
+{{{
+Basic product configuration parameters need to be defined in etc/config.sh (see sample):
+- product identification data
+- certain product configuration data like list of database schemas
+- filesystem paths like git mirror repositories or release filesystem
+- major release information
+
+List source code repositories in etc/source.xml (see samples/etc/source.xml)
+- repository should have specific structure (see build docs)
+- product repository set defines build and tagging units
+- one repository produces set of distribution binaries and/or intermediate build objects
+- order of repositories in source.xml defines how to build all the product from the scratch
+- define items that are built beyond of URM framework and can be downloaded from specific storage locations
+
+List possible distributive items and their structure in etc/distr.xml (see samples/etc/distr.xml):
+- define binary files and archives and naming policy
+- combine several binary distributive items to binary components
+- define configuration components as sets of specific confiuguration files
+
+Define your environments (see samples/etc/env):
+- product can have unlimited number of environments having different configurations
+- every file stored in samples/etc/env defines additional environment
+}}}
+  * construct environment script wrappers
+{{{
+URM design simplifies using URM and prevents from executing scripts with improper parameters:
+- URM provides wrappers approach for distinct build modes and environments.
+- wrappers - are scripts placed in additional directory and calling genuine code scripts.
+- wrapper directory defines context of execution, so you don't need to set basic parameters
+
+Build modes and their wrappers are supplied with URM release.
+Wrappers and their directories for environments are created in Your Product URM location:
+- just after (re)defining environment(s), you need to update wrappers by calling master/configure.sh
+- single-dc environments slightly differ in structure from multi-dc environments
+}}}
+  * save Your Product URM in your svn repository and redistribute:
+{{{
+- execute master/svnsave.sh to save (re)configuration results in your svn
+- redistribute Your Product URM to all build, deploy and monitoring boxes:
+	./svnget.sh <myproduct_home>
+}}}
 
 = Upgrade URM Version =
 
