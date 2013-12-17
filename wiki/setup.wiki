@@ -105,6 +105,7 @@ Wrappers and their directories for environments are created in Your Product URM 
   * save Your Product URM in your svn repository and redistribute:
 {{{
 - execute master/svnsave.sh to save (re)configuration results in your svn
+	master/svnsave.sh
 - redistribute Your Product URM to all build, deploy and monitoring boxes:
 	master/svnget.sh <myproduct_home>
 }}}
