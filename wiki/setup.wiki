@@ -41,7 +41,8 @@ Ensure environment management can be performed on deployment box:
 }}}
   * create Your Product URM module (see also [releases])
 {{{
-1. choose Your Product URM home, e.g. /release-mgn/urm/myp, add to profile (perform on one box, later redistribute to others):
+1. choose Your Product URM home, e.g. /release-mgn/urm/myp, add to profile
+(perform on one box, later redistribute to others):
 	export MYP_DEPLOYMENT_HOME=/release-mgn/urm/myp
 2. create directory structure
 	/release-mgn/urm/myp
@@ -53,8 +54,8 @@ Ensure environment management can be performed on deployment box:
 	master directory
 4. cd to temporary directory and execute initial install using
 	./upgrade.sh /release-mgn/urm/myp
-5. copy master/samples/etc/config.sh to /release-mgn/urm/myp/etc
-- change product identification properties in config.sh 
+5. copy config.sh from samples and set product identification properties:
+	cp master/samples/etc/config.sh /release-mgn/urm/myp/etc
 6. add Your Product URM to your svn repository
 	svn import /release-mgn/urm/myp <my-svn-store-path>
 7. distribute Your Product URM to all build, deploy and monitoring boxes
