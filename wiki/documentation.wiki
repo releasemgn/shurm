@@ -16,9 +16,9 @@ Allows to establish standard unified release management process:
   * Database modifications - [database Database] (see also [sqlguidelines SQL Guidelines])
   * Setup environment monitoring - [monitoring Monitoring]
 
-== URM Usages ==
+== Using URM ==
 
   * Setup URM - [install Install]
   * URM Declarative Product Model - [model Model]
-  * Функциональные возможности - [features Features]
-  * Релизы URM - [releases Releases]
+  * Functional Capabilities of URM - [features Features]
+  * URM Releases - [releases Releases]
