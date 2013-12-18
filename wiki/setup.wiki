@@ -127,7 +127,7 @@ Wrappers and their directories for environments are created in Your Product URM 
 which will consist of upgrade.sh script, master directory:
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
 	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
-2. cd to temporary directory and execute initial install, copy svnget.sh script:
+2. cd to temporary directory and execute upgrade, copy svnget.sh script:
 	cd $UNTAR_RELEASE_DIRECTORY
 	./upgrade.sh $MYP_DEPLOYMENT_HOME
 	cp master/svnget.sh ~/
@@ -137,7 +137,7 @@ which will consist of upgrade.sh script, master directory:
 1. Execute reconfigure script - to adopt to possible wrapper changes
 	cd $MYP_DEPLOYMENT_HOME/master
 	./configure.sh
-2. Execute svnsave.sh to save (re)configuration results in your svn
+2. Execute svnsave.sh to save reconfiguration results in your svn
 	cd $MYP_DEPLOYMENT_HOME/master
 	./svnsave.sh
 3. Redistribute Your Product URM to all build, deploy and monitoring boxes:
@@ -146,4 +146,10 @@ which will consist of upgrade.sh script, master directory:
 
 = Next Steps =
 
-TBD
+  * Start control of your environments - integrate processes and URM using start/stop/status commands, clarify dependencies
+  * Start environment deployment - define layout and naming conventions, deployment approach
+  * Start database operations - create administration schema, modify tnsnames.ora, define database access approach
+  * Start monitoring of your environments - create rrd database, schedule monitoring activities
+  * Start managing your builds - setup product release repository, schedule regular builds
+  * Start regular deployment of releases - define intended state and lifecycle of every environment and setup appropriate regular builds and deployments
+  * Start control of configuration files - cover product settings with configuration components, implement them as environment-independent templates, store in svn, establish practices of release-aligned configuration modifications
