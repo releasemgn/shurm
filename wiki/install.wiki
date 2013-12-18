@@ -1,0 +1,7 @@
+#summary Setup URM
+[home] -> [documentation] -> [install]
+----
+
+Defines how to start using URM for a new product and how to upgrade its versions.
+
+TBD
