@@ -1,5 +1,7 @@
 #summary Build and manage distributions
 [home] -> [documentation] -> [makedistr]
+
+<wiki:toc max_depth="2" />
 ----
 
 Defines how to produce distributives from codebase, thirdparty items, required specific updates in settings and database.
