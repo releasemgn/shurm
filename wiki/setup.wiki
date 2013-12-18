@@ -127,10 +127,9 @@ Wrappers and their directories for environments are created in Your Product URM 
 which will consist of upgrade.sh script, master directory:
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
 	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
-2. cd to temporary directory and execute upgrade, copy svnget.sh script:
+2. cd to temporary directory and execute upgrade:
 	cd $UNTAR_RELEASE_DIRECTORY
 	./upgrade.sh $MYP_DEPLOYMENT_HOME
-	cp master/svnget.sh ~/
 }}}
   * reconfigure and redistribute Your Product URM
 {{{
