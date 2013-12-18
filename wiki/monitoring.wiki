@@ -1,0 +1,7 @@
+#summary Setup environment monitoring
+[home] -> [documentation] -> [monitoring]
+----
+
+Defines how to setup easy and useful monitoring of your environment.
+
+TBD
