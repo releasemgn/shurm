@@ -112,10 +112,10 @@ Wrappers and their directories for environments are created in Your Product URM 
 }}}
   * save Your Product URM in your svn repository and redistribute:
 {{{
-- execute svnsave.sh to save (re)configuration results in your svn
+1. Execute svnsave.sh to save (re)configuration results in your svn
 	cd $MYP_DEPLOYMENT_HOME/master
 	./svnsave.sh
-- redistribute Your Product URM to all build, deploy and monitoring boxes:
+2. Redistribute Your Product URM to all build, deploy and monitoring boxes:
 	~/svnget.sh $MYP_DEPLOYMENT_HOME
 }}}
 
@@ -137,10 +137,10 @@ which will consist of upgrade.sh script, master directory:
 1. Execute reconfigure script - to adopt to possible wrapper changes
 	cd $MYP_DEPLOYMENT_HOME/master
 	./configure.sh
-- execute svnsave.sh to save (re)configuration results in your svn
+2. Execute svnsave.sh to save (re)configuration results in your svn
 	cd $MYP_DEPLOYMENT_HOME/master
 	./svnsave.sh
-- redistribute Your Product URM to all build, deploy and monitoring boxes:
+3. Redistribute Your Product URM to all build, deploy and monitoring boxes:
 	~/svnget.sh $MYP_DEPLOYMENT_HOME
 }}}
 
