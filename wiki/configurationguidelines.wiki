@@ -56,7 +56,8 @@ In the first case Deployment Plan should have mark "partial=true", which will le
 }}}
 
   * configuration component specification in distr.xml
-{code}
+
+{{{
 Component has attribute type="dir", type="mixed-dir" or type="files"
 Component environment directory is defined in environment specification file
 
@@ -79,14 +80,14 @@ files can be defined by mask, using "*", "[]" expressions
 matching is performed only among immediate childs in Component environment directory
 
 <component name="tpweb.bin.conf" type="files" files="run.conf" layer="server"/>
-
-{code}
+}}}
 
 == Environment-Dependent Properties ==
 
   * defined by environment specification file:
 {{{
-Environment-dependent property can be defined on environment, datacenter or server level. More detailed overrides more generic.
+Environment-dependent property can be defined on environment,
+datacenter or server level. More detailed overrides more generic.
 More generic can be referenced using prefix "env." or "dc." or "server.".
 
 Property can reference secret property file variable using prefix "secret.".
