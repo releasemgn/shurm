@@ -14,7 +14,7 @@ This page contains guidelines to developers on how to prepare configuration chan
 *release engeneer*:
   * checks change is valid concerning required attributes and specific product rules
   * marks change as planned on Deployment Plan
-  * applies to UAT and mark as applied
+  * applies to UAT and marks as applied
   * requests developer to verify in UAT
 
 *developer*:
@@ -22,7 +22,7 @@ This page contains guidelines to developers on how to prepare configuration chan
   * if change cancelled, marks change as DESCOPED on Deployment Plan page and notifies release engineer
 
 *release engeneer*:
-  * adds change to supported set of configuration files and mark it on Deployment Plan page
+  * adds change to supported set of configuration files and marks it on Deployment Plan page
 
 == Configuration Changes Overview ==
 
