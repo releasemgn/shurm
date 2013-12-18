@@ -2,7 +2,7 @@
 [home] -> [documentation]
 ----
 
-UNIFIED RELEASE MANAGEMENT (URM)
+*UNIFIED RELEASE MANAGEMENT (URM)*
 
 Allows to establish standard unified release management process:
   * Planning and plan vs fact control
