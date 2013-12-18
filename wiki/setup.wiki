@@ -41,9 +41,8 @@ Ensure environment management can be performed on deployment box:
 }}}
   * create Your Product URM module (see also [releases])
 {{{
-1. select Your Product URM home, e.g. /release-mgn/urm/myp
-- set shell variable (add to profile) MYP_DEPLOYMENT_HOME to URM home (e.g. /release-mgn/urm/myp)
-- do it first on one build box
+1. choose Your Product URM home, e.g. /release-mgn/urm/myp, add to profile (perform on one box, later redistribute to others):
+	export MYP_DEPLOYMENT_HOME=/release-mgn/urm/myp
 2. create directory structure
 	/release-mgn/urm/myp
 	/release-mgn/urm/myp/etc
