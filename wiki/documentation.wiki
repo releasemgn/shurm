@@ -11,14 +11,14 @@ h2. UNIFIED RELEASE MANAGEMENT (URM)
 
 h2. URM Components
 
-* Build and manage distributions - [makedistr]
-* Deploy binary and configuration files - [deployment] (see also [configurationguidelines]
-* Database modifications - [DBDeployment] (see also [sqlguidelines])
-* Monitoring - [monitoring]
+  * Build and manage distributions - [makedistr]
+  * Deploy binary and configuration files - [deployment] (see also [configurationguidelines]
+  * Database modifications - [database] (see also [sqlguidelines])
+  * Monitoring - [monitoring]
 
 h2. URM Usages
 
-* Setup URM - [install]
-* URM Declarative Product Model - [model]
-* Функциональные возможности - [features]
-* Релизы URM - [releases]
+  * Setup URM - [install]
+  * URM Declarative Product Model - [model]
+  * Функциональные возможности - [features]
+  * Релизы URM - [releases]
