@@ -12,7 +12,7 @@ Allows to establish standard unified release management process:
 == URM Components ==
 
   * Build and manage distributions - [makedistr]
-  * Deploy binary and configuration files - [deployment] (see also [configurationguidelines]
+  * Deploy binary and configuration files - [deployment] (see also [configurationguidelines])
   * Database modifications - [database] (see also [sqlguidelines])
   * Monitoring - [monitoring]
 
