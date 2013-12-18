@@ -5,7 +5,7 @@
 Defines how to produce distributives from codebase, thirdparty items, required specific updates in settings and database.
 
 See also:
-  * [deployment]
+  * [deployment Deployment]
 
 == Definitions ==
 
