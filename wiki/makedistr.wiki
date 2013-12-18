@@ -10,10 +10,11 @@ See also:
 == Definitions ==
 
   * *VCS*: Version Control System, supported - svn, git
-  * *Codebase Repository*: VCS location which corresponds to URM rules
-  * *Work Copy*: local copy of repository source code or copy of repository indended to review or source code modifications
-  * *Branch*: VCS location where repository codebase is consistent and store specific set of changes
-  * *Tag*: VCS element allowing to assign name to specific state in specific branch history
+  * *VCS repository*: repository in terms of VCS
+  * *codebase repository*: VCS location which corresponds to URM rules
+  * *work copy*: local copy of repository source code or copy of repository indended to review or source code modifications
+  * *branch*: VCS location where repository codebase is consistent and store specific set of changes
+  * *tag*: VCS element allowing to assign name to specific state in specific branch history
 
 == Overview ==
 
