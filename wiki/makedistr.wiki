@@ -9,7 +9,7 @@ Defines how to produce distributives from codebase, thirdparty items, required s
 See also:
   * [deployment Deployment]
 
-== Definitions ==
+= Definitions =
 
   * *VCS*: Version Control System, supported - svn, git
   * *VCS repository*: repository in terms of VCS
@@ -18,7 +18,7 @@ See also:
   * *branch*: VCS location where repository codebase is consistent and store specific set of changes
   * *tag*: VCS element allowing to assign name to specific state in specific branch history
 
-== Overview ==
+= Overview =
 
   * makedist module implements URM baseline release policy of builds  
   * makedist module is accessed in $MYP_DEPLOYMENT_HOME/master/makedistr
@@ -28,7 +28,7 @@ See also:
    * repository and build items in source.xml
    * definition of distributive in distr.xml
 
-== Version Control System Support ==
+= Version Control System Support =
 
 Scripts to execute common VCS operations using the same interface disregarding VCS type:
 
@@ -45,7 +45,7 @@ Scripts to execute common VCS operations using the same interface disregarding V
 || vcsrenametag.sh || rename tag in codebase workcopy || yes || yes ||
 || vcssettag.sh || set tag to branch head in codebase workcopy || yes || yes ||
 
-== Using git ==
+= Using git =
 
   * repository name - $PROJECTNAME.git
   * only one codebase repository can be stored in one VCS repository
