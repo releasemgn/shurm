@@ -4,25 +4,25 @@
 
 This page contains guidelines to developers on how to prepare configuration changes in releases.
 
-== Change Procedures ==
+== Change Procedure ==
 
 *developer*:
-  * add change to Deployment Plan
+  * adds change to Deployment Plan
   * configuration change should be part of ChangeSet as implementation of functional change or as a dedicated change, referenced by change ticket on Deployment Plan page
-  * request release engeneer to approve change if added after planning freeze
+  * requests release engeneer to approve change if added after planning freeze
 
 *release engeneer*:
-  * check change is valid concerning required attributes and specific product rules
-  * mark change as planned on Deployment Plan
-  * apply to UAT and mark as applied
-  * request developer to verify in UAT
+  * checks change is valid concerning required attributes and specific product rules
+  * marks change as planned on Deployment Plan
+  * applies to UAT and mark as applied
+  * requests developer to verify in UAT
 
 *developer*:
-  * verify change is correct and mark it on Deployment Plan page
-  * if change cancelled, mark change as DESCOPED on Deployment Plan page and notify release engineer
+  * verifies change is correct and mark it on Deployment Plan page
+  * if change cancelled, marks change as DESCOPED on Deployment Plan page and notifies release engineer
 
 *release engeneer*:
-  * add change to supported set of configuration files and mark it on Deployment Plan page
+  * adds change to supported set of configuration files and mark it on Deployment Plan page
 
 == Configuration Changes Overview ==
 
