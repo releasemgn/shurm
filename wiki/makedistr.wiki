@@ -20,10 +20,10 @@ See also:
 
 = Overview =
 
-  * makedist module implements URM baseline release policy of builds  
-  * makedist module is accessed in $MYP_DEPLOYMENT_HOME/master/makedistr
-  * makedist module supports svn and git VCS
-  * makedist module depends on:
+  * *makedist* module implements URM baseline release policy of builds  
+  * *makedist* module is accessed in $MYP_DEPLOYMENT_HOME/master/makedistr
+  * *makedist* module supports svn and git VCS
+  * *makedist* module depends on:
    * primary product parameters in config.sh
    * repository and build items in source.xml
    * definition of distributive in distr.xml
