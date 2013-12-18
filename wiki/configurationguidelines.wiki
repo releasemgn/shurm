@@ -8,7 +8,7 @@ This page contains guidelines to developers on how to prepare configuration chan
 
 *developer*:
   * adds change to Deployment Plan
-  * configuration change should be part of ChangeSet as implementation of functional change or as a dedicated change, referenced by change ticket on Deployment Plan page
+  * configuration change should be part of release change set as implementation of functional change or as a dedicated change, referenced by change ticket on Deployment Plan page
   * requests release engeneer to approve change if added after planning freeze
 
 *release engeneer*:
