@@ -52,7 +52,8 @@ svn/releases/(release directory)/.../<configuration component>/
 svn/releases/(release directory)/.../<configuration component>/<configuration subdirectory>/<configuration file>
 
 Release can contain all component files or only some.
-In the first case Deployment Plan should have mark "partial=true", which will lead to deletion of all component files before copiying new ones from release distributive.
+In the first case Deployment Plan should have mark "partial=true",
+which will lead to deletion of all component files before copying new ones from release distributive.
 }}}
 
   * configuration component specification in distr.xml
