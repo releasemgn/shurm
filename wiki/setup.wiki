@@ -50,7 +50,7 @@ Ensure environment management can be performed on deployment box:
 	$MYP_DEPLOYMENT_HOME/etc/env
 	$MYP_DEPLOYMENT_HOME/master
 3. download latest release, untar release archive to temporary directory, 
-which will consist of upgrade.sh script, master directory:
+which consists of upgrade.sh script and master directory:
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
 	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
 4. cd to temporary directory and execute initial install, copy svnget.sh script:
@@ -124,7 +124,7 @@ Wrappers and their directories for environments are created in Your Product URM 
   * download URM release using any box deployed with Your Product URM (see also [releases])
 {{{
 1. download latest release, untar release archive to temporary directory, 
-which will consist of upgrade.sh script, master directory:
+which consists of upgrade.sh script and master directory:
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
 	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
 2. cd to temporary directory and execute upgrade:
