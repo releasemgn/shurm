@@ -6,10 +6,10 @@ Defines how to apply distributives to environments in consistent manner.
 
 = Overview =
 
-  * deployment module supports binary and configuration deployment
+  * *deployment* module supports binary and configuration deployment
    * see [database Database] for database modification details
-  * deployment module performs template processing when rolling out configuration files, see [configurationguidelines Configuration Guidelines] for template processing details
-  * deployment module supports cold and hold deployments
+  * *deployment* module performs template processing when rolling out configuration files, see [configurationguidelines Configuration Guidelines] for template processing details
+  * *deployment* module supports cold and hold deployments
    * cold deployment consists of rolling out binaries and configuration files while server is stopped and loading new versions on startup
    * cold deployment in clustered configuration can be performed without loss of service
    * hot deployment can be supported by application server software allowing redeploying applications without stopping them
