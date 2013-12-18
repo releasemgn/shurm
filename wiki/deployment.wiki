@@ -12,7 +12,7 @@ Defines how to apply distributives to environments in consistent manner.
   * *environment* - set of hosts, databases and processes which implement part of product functionality
   * *server* - process type in given environment, defines set of application items running in process of given server
   * *server node* - specific instance of server implementing server functionality
-  * *server node process* - operating system process running in cotext of given server node
+  * *server node process* - operating system process running in context of given server node
   * *server cluster* - set of server nodes implementing server functionality aimed to increase reliability or total throughput of the system
 
 = Overview =
