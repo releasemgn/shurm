@@ -1,4 +1,4 @@
-#summary URM Documentation Home
+#summary Build and manage distributions
 [home] -> [documentation] -> [makedistr]
 ----
 
