@@ -1,0 +1,7 @@
+#summary URM Documentation Home
+[home] -> [documentation] -> [makedistr]
+----
+
+Defines how to produce distributives from codebase, thirdparty items, required specific updates in settings and database.
+
+TBD
