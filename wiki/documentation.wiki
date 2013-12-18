@@ -2,4 +2,23 @@
 [home] -> [documentation]
 ----
 
-TBD
+h2. UNIFIED RELEASE MANAGEMENT (URM)
+
+*Allows to establish standard unified release management process*:
+  * Planning and plan vs fact control
+  * Build from codebase to produce binaries, apply database scripts, adjust settings in configuration files, use third-party binaries
+  * Deploy releases, configure, add easy and useful monitoring to test and production Linux-hosted distributed environments
+
+h2. URM Components
+
+* Build and manage distributions - [makedistr]
+* Deploy binary and configuration files - [deployment] (see also [configurationguidelines]
+* Database modifications - [DBDeployment] (see also [sqlguidelines])
+* Monitoring - [monitoring]
+
+h2. URM Usages
+
+* Setup URM - [install]
+* URM Declarative Product Model - [model]
+* Функциональные возможности - [features]
+* Релизы URM - [releases]
