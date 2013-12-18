@@ -45,22 +45,29 @@ Ensure environment management can be performed on deployment box:
 (perform on one box, later redistribute to others):
 	export MYP_DEPLOYMENT_HOME=/release-mgn/urm/myp
 2. create directory structure
-	/release-mgn/urm/myp
-	/release-mgn/urm/myp/etc
-	/release-mgn/urm/myp/etc/env
-	/release-mgn/urm/myp/master
-3. download latest release, untar release archive to temporary directory, which will consist of:
-	upgrade.sh script
-	master directory
-4. cd to temporary directory and execute initial install using
-	./upgrade.sh /release-mgn/urm/myp
+	$MYP_DEPLOYMENT_HOME
+	$MYP_DEPLOYMENT_HOME/etc
+	$MYP_DEPLOYMENT_HOME/etc/env
+	$MYP_DEPLOYMENT_HOME/master
+3. download latest release, untar release archive to temporary directory, 
+which will consist of upgrade.sh script, master directory:
+	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
+	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
+4. cd to temporary directory and execute initial install, copy svnget.sh script:
+	cd $UNTAR_RELEASE_DIRECTORY
+	./upgrade.sh $MYP_DEPLOYMENT_HOME
+	cp master/svnget.sh ~/
 5. copy config.sh from samples and set product identification properties:
-	cp master/samples/etc/config.sh /release-mgn/urm/myp/etc
-6. add Your Product URM to your svn repository
-	svn import /release-mgn/urm/myp <my-svn-store-path>
+	cd $MYP_DEPLOYMENT_HOME
+	cp master/samples/etc/config.sh etc
+6. add Your Product URM to your svn repository and restore from svn
+	svn import $MYP_DEPLOYMENT_HOME <my-svn-store-path>
+	rm -rf $MYP_DEPLOYMENT_HOME
+	svn co <my-svn-store-path> $MYP_DEPLOYMENT_HOME
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
 7. distribute Your Product URM to all build, deploy and monitoring boxes
-	svn co <my-svn-store-path> /release-mgn/urm/myp
-	/release-mgn/urm/myp/master/svnget.sh /release-mgn/urm/myp
+	svn co <my-svn-store-path> $MYP_DEPLOYMENT_HOME
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
 }}}
 
 = Configure Your Product URM =
@@ -100,14 +107,16 @@ URM design simplifies using URM and prevents from executing scripts with imprope
 Build modes and their wrappers are supplied with URM release.
 Wrappers and their directories for environments are created in Your Product URM location:
 - just after (re)defining environment(s), you need to update wrappers by calling configure.sh:
-	master/configure.sh
+	cd $MYP_DEPLOYMENT_HOME/master
+	./configure.sh
 }}}
   * save Your Product URM in your svn repository and redistribute:
 {{{
 - execute master/svnsave.sh to save (re)configuration results in your svn
-	master/svnsave.sh
+	cd $MYP_DEPLOYMENT_HOME/master
+	./svnsave.sh
 - redistribute Your Product URM to all build, deploy and monitoring boxes:
-	master/svnget.sh <myproduct_home>
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
 }}}
 
 = Upgrade URM Version =
