@@ -1,0 +1,7 @@
+#summary Deploy binary and configuration files
+[home] -> [documentation] -> [deployment]
+----
+
+Defines how to apply distributives to environments in consistent manner.
+
+TBD
