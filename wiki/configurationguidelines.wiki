@@ -56,7 +56,6 @@ In the first case Deployment Plan should have mark "partial=true", which will le
 }}}
 
   * configuration component specification in distr.xml
-
 {{{
 Component has attribute type="dir", type="mixed-dir" or type="files"
 Component environment directory is defined in environment specification file
