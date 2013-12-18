@@ -112,7 +112,7 @@ Wrappers and their directories for environments are created in Your Product URM 
 }}}
   * save Your Product URM in your svn repository and redistribute:
 {{{
-- execute master/svnsave.sh to save (re)configuration results in your svn
+- execute svnsave.sh to save (re)configuration results in your svn
 	cd $MYP_DEPLOYMENT_HOME/master
 	./svnsave.sh
 - redistribute Your Product URM to all build, deploy and monitoring boxes:
@@ -121,7 +121,28 @@ Wrappers and their directories for environments are created in Your Product URM 
 
 = Upgrade URM Version =
 
-TBD
+  * download URM release using any box deployed with Your Product URM (see also [releases])
+{{{
+1. download latest release, untar release archive to temporary directory, 
+which will consist of upgrade.sh script, master directory:
+	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
+	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
+2. cd to temporary directory and execute initial install, copy svnget.sh script:
+	cd $UNTAR_RELEASE_DIRECTORY
+	./upgrade.sh $MYP_DEPLOYMENT_HOME
+	cp master/svnget.sh ~/
+}}}
+  * reconfigure and redistribute Your Product URM
+{{{
+1. Execute reconfigure script - to adopt to possible wrapper changes
+	cd $MYP_DEPLOYMENT_HOME/master
+	./configure.sh
+- execute svnsave.sh to save (re)configuration results in your svn
+	cd $MYP_DEPLOYMENT_HOME/master
+	./svnsave.sh
+- redistribute Your Product URM to all build, deploy and monitoring boxes:
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
+}}}
 
 = Next Steps =
 
