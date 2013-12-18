@@ -1,0 +1,7 @@
+#summary Database modifications
+[home] -> [documentation] -> [database]
+----
+
+Defines how to apply changes to database.
+
+TBD
