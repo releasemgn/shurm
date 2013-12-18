@@ -42,7 +42,7 @@ Scripts to make common VCS operations using the same interface disregarding VCS 
 || vcsrenametag.sh || rename tag in codebase workcopy || yes || yes ||
 || vcssettag.sh || set tag to branch head in codebase workcopy || yes || yes ||
 
-== git Support Details ==
+== Using git ==
 
   * repository name - $PROJECTNAME.git
   * only one codebase repository can be stored in one VCS repository
