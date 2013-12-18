@@ -22,4 +22,4 @@ Defines how to apply distributives to environments in consistent manner.
   * *deployment* module supports cold and hold deployments
    * cold deployment consists of rolling out binaries and configuration files while server is stopped and loading new versions on startup
    * cold deployment in clustered configuration can be performed without loss of service
-   * hot deployment can be supported by application server software allowing redeploying applications without stopping them
+   * hot deployment can be supported by application server software allowing redeploying applications without stopping application server
