@@ -27,7 +27,7 @@ See also:
 
 == Version Control System Support ==
 
-  * scripts to make common VCS operations using the same interface disregarding VCS type:
+Scripts to make common VCS operations using the same interface disregarding VCS type:
 
 || *Script* ||*Function* || *svn* || *git* ||
 || vcscheckout.sh || create codebase work copy to modify || yes || yes ||
