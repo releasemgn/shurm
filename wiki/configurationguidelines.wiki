@@ -41,15 +41,16 @@ This page contains guidelines to developers on how to prepare configuration chan
   * release directory has below structure:
 {{{
 templates
-templates/(component)
+templates/<configuration component>
+templates/<configuration component>
+...
 
 where:
-(component) - one of omponents, defined in distr.xml (see model)
+<configuration component> - one of omponents, defined in distr.xml (see model)
 
 Possible component directory contents:
-svn/releases/(release directory)/.../<configuration component>/<configuration file>
-svn/releases/(release directory)/.../<configuration component>/
-svn/releases/(release directory)/.../<configuration component>/<configuration subdirectory>/<configuration file>
+<configuration component>/<configuration file>
+<configuration component>/<configuration subdirectory>/<configuration file>
 
 Release can contain all component files or only some.
 In the first case Deployment Plan should have mark "partial=true",
