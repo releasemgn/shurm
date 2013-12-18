@@ -9,7 +9,7 @@ Allows to establish standard unified release management process:
   * Build from codebase to produce binaries, apply database scripts, adjust settings in configuration files, use third-party binaries
   * Deploy releases, configure, add easy and useful monitoring to test and production Linux-hosted distributed environments
 
-== URM Components ==
+== URM Modules ==
 
   * Build and manage distributions - [makedistr Makedistr]
   * Deploy binary and configuration files - [deployment Deployment] (see also [configurationguidelines Configuration Guidelines])
