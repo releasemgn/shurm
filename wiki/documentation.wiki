@@ -2,9 +2,9 @@
 [home] -> [documentation]
 ----
 
-== UNIFIED RELEASE MANAGEMENT (URM) ==
+UNIFIED RELEASE MANAGEMENT (URM)
 
-*Allows to establish standard unified release management process*:
+Allows to establish standard unified release management process:
   * Planning and plan vs fact control
   * Build from codebase to produce binaries, apply database scripts, adjust settings in configuration files, use third-party binaries
   * Deploy releases, configure, add easy and useful monitoring to test and production Linux-hosted distributed environments
