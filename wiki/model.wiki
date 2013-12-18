@@ -1,0 +1,7 @@
+#summary URM Declarative Product Model
+[home] -> [documentation] -> [model]
+----
+
+Defines declarative approach used to specify product sources, distributions and environments.
+
+TBD
