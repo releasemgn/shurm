@@ -11,14 +11,14 @@ Allows to establish standard unified release management process:
 
 == URM Components ==
 
-  * Build and manage distributions - [makedistr]
-  * Deploy binary and configuration files - [deployment] (see also [configurationguidelines])
-  * Database modifications - [database] (see also [sqlguidelines])
-  * Monitoring - [monitoring]
+  * Build and manage distributions - [makedistr Makedistr]
+  * Deploy binary and configuration files - [deployment] (see also [configurationguidelines Configuration Guidelines])
+  * Database modifications - [database] (see also [sqlguidelines SQL Guidelines])
+  * Monitoring - [monitoring Monitoring]
 
 == URM Usages ==
 
-  * Setup URM - [install]
-  * URM Declarative Product Model - [model]
-  * Функциональные возможности - [features]
-  * Релизы URM - [releases]
+  * Setup URM - [install Install]
+  * URM Declarative Product Model - [model Model]
+  * Функциональные возможности - [features Features]
+  * Релизы URM - [releases Releases]
