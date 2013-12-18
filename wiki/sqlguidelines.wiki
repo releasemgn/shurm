@@ -1,0 +1,7 @@
+#summary How to prepare configuration changes in releases
+[home] -> [documentation] -> [makedistr] -> [sqlguidelines]
+----
+
+This page contains guidelines to developers on how to prepare database changes in releases.
+
+TBD
