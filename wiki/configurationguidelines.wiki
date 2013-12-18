@@ -1,0 +1,7 @@
+#summary How to prepare configuration changes in releases
+[home] -> [documentation] -> [makedistr] -> [configurationguidelines]
+----
+
+This page contains guidelines to developers on how to prepare configuration changes in releases.
+
+TBD
