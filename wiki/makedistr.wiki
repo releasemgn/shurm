@@ -28,15 +28,6 @@ See also:
 == Version Control System Support ==
 
   * scripts to make common VCS operations using the same interface disregarding VCS type:
-   * 
-Библиотека работы с системой контроля версий (далее VCS) состоит из набора функций, выполняющих стандартные действия, такие как:
-* выгрузка версии исходного кода проекта из VCS (vcscheckout.sh)
-* установка тега на ветку в VCS (vcssettag.sh)
-* переименование тега в VCS (vcsrenametag.sh)
-* удаление тега из ветки VCS (vcsdroptag.sh)
-* копирование тега (vcscopytag.sh)
-* копирование тега с новым именем (vcscopynewtag.sh)
-* печать различий между тегами в VCS (vcsdiffbranchtag.sh)
 
 || *Script* ||*Function* || *svn* || *git* ||
 || vcscheckout.sh || create codebase work copy to modify || yes || yes ||
