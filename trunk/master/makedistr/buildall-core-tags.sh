@@ -26,10 +26,12 @@ MODULEPROJECTS=$*
 
 echo buildall-core-tags.sh TAG=$TAG
 
-OLDLOGS=$OUTDIR/oldlogs/core
-rm -rf $OLDLOGS
-mkdir -p $OLDLOGS
-mv $OUTDIR/core $OLDLOGS
+if [ -d $OUTDIR/core ]; then
+	OLDLOGS=$OUTDIR/oldlogs/core
+	rm -rf $OLDLOGS
+	mkdir -p $OLDLOGS
+	mv $OUTDIR/core $OLDLOGS
+fi
 
 C_BUILD_OUTDIR=$OUTDIR/core
 mkdir -p $C_BUILD_OUTDIR
