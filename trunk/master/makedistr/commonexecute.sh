@@ -140,7 +140,7 @@ function f_execute_vcssetbranchtag() {
 		F_BRANCHNAME=branches/$F_BRANCHNAME
 	fi
 
-	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCHNAME $C_TAG
+	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCHNAME $C_TAG "$GETOPT_DATE"
 }
 
 function f_execute_vcscopytag() {

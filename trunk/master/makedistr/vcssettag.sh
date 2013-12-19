@@ -8,6 +8,7 @@ MODULE=$1
 MODULEPATH=$2
 BRANCH=$3
 TAG=$4
+BRANCHDATE=$5
 
 . ./common.sh
 
@@ -35,7 +36,12 @@ function f_local_vcs_settag_svn() {
 	local P_SVNPATH=$2
 	local P_SVNAUTH=$3
 
-	svn copy $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
+	local F_REVOPT=
+	if [ "$BRANCHDATE" != "" ]; then
+		F_REVOPT="--revision {$BRANCHDATE}"
+	fi
+	
+	svn copy $P_SVNAUTH $F_REVOPT $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
 }
 
 function f_local_vcs_settag_git() {
@@ -50,7 +56,7 @@ function f_local_vcs_settag_git() {
 	fi
 
 	f_git_refreshmirror $CO_PATH
-	f_git_setmirrortag $CO_PATH $CO_BRANCH $TAG "$C_CONFIG_ADM_TRACKER-0000: create tag"
+	f_git_setmirrortag $CO_PATH $CO_BRANCH $TAG "$C_CONFIG_ADM_TRACKER-0000: create tag" $BRANCHDATE
 	f_git_pushmirror $CO_PATH
 }
 
