@@ -36,12 +36,11 @@ function f_local_vcs_settag_svn() {
 	local P_SVNPATH=$2
 	local P_SVNAUTH=$3
 
-	local F_REVOPT=
 	if [ "$BRANCHDATE" != "" ]; then
-		F_REVOPT="--revision {\"$BRANCHDATE\"}"
+		svn copy $P_SVNAUTH --revision {"$BRANCHDATE"} $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
+	else
+		svn copy $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
 	fi
-	
-	svn copy $P_SVNAUTH $F_REVOPT $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
 }
 
 function f_local_vcs_settag_git() {
