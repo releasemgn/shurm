@@ -179,12 +179,23 @@ function f_git_setmirrortag() {
 	local P_BRANCH=$2
 	local P_TAG=$3
 	local P_MESSAGE=$4
+	local P_TAGDATE=$5
 	
 	local F_SAVEPATH=`pwd`
 	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
-	git tag tag-$P_TAG -a -f -m "$P_MESSAGE" refs/heads/branch-$P_BRANCH
+	# get revision by date
+	local F_REVMARK=
+	if [ "$P_TAGDATE" != "" ]; then
+		F_REVMARK=`git log --format=oneline -n 1 --before="$P_TAGDATE" refs/heads/branch-$P_BRANCH | tr -d " " -f1`
+		if [ "$F_REVMARK" = "" ]; then
+			echo "f_git_setmirrortag: unable to find branch revision on given date. Exiting
+			exit 1
+		fi
+	fi
+
+	git tag tag-$P_TAG -a -f -m "$P_MESSAGE" refs/heads/branch-$P_BRANCH $F_REVMARK
 	local RES=$?
 	cd $F_SAVEPATH
 

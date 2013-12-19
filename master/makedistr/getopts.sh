@@ -43,6 +43,10 @@ while [ "$#" -gt "0" ]; do
 			export GETOPT_TAG=$2
 			shift 2
 			;;
+		'-date')
+			export GETOPT_DATE=$2
+			shift 2
+			;;
 		*)
 			return 0
 	esac
