@@ -190,7 +190,7 @@ function f_git_setmirrortag() {
 	if [ "$P_TAGDATE" != "" ]; then
 		F_REVMARK=`git log --format=oneline -n 1 --before="$P_TAGDATE" refs/heads/branch-$P_BRANCH | tr -d " " -f1`
 		if [ "$F_REVMARK" = "" ]; then
-			echo "f_git_setmirrortag: unable to find branch revision on given date. Exiting
+			echo "f_git_setmirrortag: unable to find branch revision on given date. Exiting"
 			exit 1
 		fi
 	fi
