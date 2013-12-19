@@ -38,7 +38,7 @@ function f_local_vcs_settag_svn() {
 
 	local F_REVOPT=
 	if [ "$BRANCHDATE" != "" ]; then
-		F_REVOPT="--revision {$BRANCHDATE}"
+		F_REVOPT="--revision {\"$BRANCHDATE\"}"
 	fi
 	
 	svn copy $P_SVNAUTH $F_REVOPT $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: create tag"
