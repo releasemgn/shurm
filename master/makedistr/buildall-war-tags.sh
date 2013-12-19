@@ -26,10 +26,12 @@ MODULEPROJECTS=$*
 
 echo buildall-war-tags.sh TAG=$TAG, MODULEPROJECTS=$MODULEPROJECTS
 
-OLDLOGS=$OUTDIR/oldlogs/war
-rm -rf $OLDLOGS
-mkdir -p $OLDLOGS
-mv $OUTDIR/war $OLDLOGS
+if [ -d $OUTDIR/war ]; then
+	OLDLOGS=$OUTDIR/oldlogs/war
+	rm -rf $OLDLOGS
+	mkdir -p $OLDLOGS
+	mv $OUTDIR/war $OLDLOGS
+fi
 
 C_BUILD_OUTDIR=$OUTDIR/war
 mkdir -p $C_BUILD_OUTDIR
