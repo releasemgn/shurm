@@ -28,6 +28,31 @@ Defines how to apply distributives to environments in consistent manner.
 
 == Script Options ==
 
+*Flags*:
+  * option: "-all|-app"
+  * option: "-backup|-nobackup"
+  * option: "-binary|-nobinary"
+  * option: "-conf|-noconf|-partialconf"
+  * option: "-downtime|-nodowntime"
+  * option: "-execute|-showonly"
+  * option: "-hot|-cold"
+  * option: "-ignoreerrors"
+  * option: "-keepalive|-nokeepalive"
+  * option: "-nodes"
+  * option: "-nomsg"
+  * option: "-obsolete|-noobsolete"
+  * option: "-root"
+  * option: "-showall|-showmain"
+  * option: "-skiperrors|-strict"
+
+*Parameters*:
+  * option: "-buildinfo <parameter>"
+  * option: "-dc <dc>"
+  * option: "-deploygroup <deploygroup>"
+  * option: "-release <release>"
+  * option: "-tag <tag>"
+  * option: "-unit <unit>"
+
 == Start/Stop/Status Scripts ==
 
   * checkenv.sh
