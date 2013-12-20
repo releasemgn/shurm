@@ -45,6 +45,36 @@ See also:
   * option: "-branch branch"
   * option: "-tag tag"
 
+== Build and Creating Distributives ==
+
+  * buildall-core-tags.sh
+  * buildall-release.sh
+  * buildall-tags.sh
+  * buildall-war-tags.sh
+  * buildone-core.sh
+  * buildone-war.sh
+  * checkset.sh
+  * getall.sh
+  * getall-release.sh
+
+== Codebase Maintenance ==
+
+  * codebase-copybranch.sh
+  * codebase-copynewtags.sh
+  * codebase-copytags.sh
+  * codebase-dropcandidatetags.sh
+  * codebase-dropoldcandidatetags.sh
+  * codebase-droptags.sh
+  * codebase-finishtags.sh
+  * codebase-renamebranch.sh
+  * codebase-renametags.sh
+  * codebase-setversion.sh
+  * codebase-startcandidatetags.sh
+  * codebase-updatetags.sh
+  * custom.sh
+  * settags.sh
+  * uploadthirdparty.sh
+
 = Version Control System Support =
 
 Scripts to execute common VCS operations using the same interface disregarding VCS type:
