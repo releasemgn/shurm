@@ -38,7 +38,7 @@ Defines how to apply changes to database.
   * option: "-db db"
   * option: "-dbpassword password"
   * option: "-pending pendingid"
-  * option: "-regions \"regions\""
+  * option: "-regions "regions""
 
 == Prepare Distributive Scripts ==
 
