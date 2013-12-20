@@ -23,3 +23,39 @@ Defines how to apply distributives to environments in consistent manner.
    * cold deployment consists of rolling out binaries and configuration files while server is stopped and loading new versions on startup
    * cold deployment in clustered configuration can be performed without loss of service
    * hot deployment can be supported by application server software allowing redeploying applications without stopping application server
+
+= Scripts =
+
+== Script Options ==
+
+== Start/Stop/Status Scripts ==
+
+  * checkenv.sh
+  * getbuildinfo.sh
+  * restartenv.sh
+  * startenv.sh
+  * stopenv.sh
+  * waitenv.sh
+  * waitweb.sh
+
+== Deployment Scripts ==
+
+  * confcheck.sh
+  * configureall.sh
+  * deployall.sh
+  * deployredist.sh
+  * dropredist.sh
+  * getredistinfo.sh
+  * redist.sh
+  * rollback.sh
+  * rollout.sh
+  * verifydeploy.sh
+
+== Environment Maintenance Scripts ==
+
+  * login.sh
+  * runcmd.sh
+  * sendchatmsg.sh
+  * sendchatmsgall.sh
+  * svnrestoreconfig.sh
+  * svnsaveconfig.sh
