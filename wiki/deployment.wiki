@@ -46,12 +46,12 @@ Defines how to apply distributives to environments in consistent manner.
   * option: "-skiperrors\|-strict"
 
 *Parameters*:
-  * option: "-buildinfo \<parameter\>"
-  * option: "-dc \<dc\>"
-  * option: "-deploygroup \<deploygroup\>"
-  * option: "-release \<release\>"
-  * option: "-tag \<tag\>"
-  * option: "-unit \<unit\>"
+  * option: "-buildinfo parameter"
+  * option: "-dc dc"
+  * option: "-deploygroup deploygroup"
+  * option: "-release release"
+  * option: "-tag tag"
+  * option: "-unit unit"
 
 == Start/Stop/Status Scripts ==
 
