@@ -42,4 +42,11 @@ Defines how to apply changes to database.
 
 == Prepare Distributive Scripts ==
 
+  * getsql.sh
+  * getsvninfo.sh
+
 == Apply Distributive Scripts ==
+
+  * manage.sh
+  * sqlapply.sh
+  * sqlmanual.sh
