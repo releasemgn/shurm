@@ -23,7 +23,7 @@ Allows to establish standard unified release management process:
 
 == Using URM ==
 
-  * Setup URM - [install Install]
+  * Setup URM - [setup Install]
   * URM Declarative Product Model - [model Model]
   * Functional Capabilities of URM - [features Features]
   * URM Releases - [releases Releases]
