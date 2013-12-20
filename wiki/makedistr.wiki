@@ -28,6 +28,23 @@ See also:
    * repository and build items in source.xml
    * definition of distributive in distr.xml
 
+= Scripts =
+
+== Script Options ==
+
+*Flags:*
+  * option: "-dist"
+  * option: "-get"
+  * option: "-showall|-showmain"
+  * option: "-showonly"
+  * option: "-updatenexus"
+  * option: "-nocheck"
+
+*Parameters:*
+  * option: "-release release"
+  * option: "-branch branch"
+  * option: "-tag tag"
+
 = Version Control System Support =
 
 Scripts to execute common VCS operations using the same interface disregarding VCS type:
