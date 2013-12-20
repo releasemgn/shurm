@@ -4,4 +4,42 @@
 
 Defines how to apply changes to database.
 
-TBD
+= Definitions =
+
+  * *database server* - Oracle (probably clustered) database server, available by given tnsname in Oracle configuration file tnsnames.ora
+  * *product schema* - Oracle database schema, containing only procedural or data objects of given product
+  * *product database* - set of product schemes, controlled by specific database server
+  * *sqlplus* - standard Oracle utility to apply PL-SQL/SQL scripts to Oracle database
+  * *sqlldr* - standard Oracle utility to fast load data to Oracle database, able to perform orders of magnitude more than sqlplus
+  * *federal schema* - product schema, existing only in federal datacenter
+  * *regional schema* - product schema, allocated for specific geographic region
+
+= Overview =
+
+  * *database* module allows to control set of scripts for specific release
+  * *database* module supports sqlplus and sqlldr operations
+  * *database* module provides accounting of database operations and conditional execution of scripts
+  * *database* module supports controlled UAT/PROD-only operations
+
+= Scripts =
+
+== Script Options ==
+
+  * option: "-showall"
+  * option: "-execute|-showonly"
+  * option: "-a|-f|-x|-c|-r|-p"
+  * option: "-s"
+  * option: "-m"
+  * option: "-l"
+  * option: "-nodist"
+  * option: "-auth|-noauth"
+  * option: "-aligned alignedid"
+  * option: "-dc dc"
+  * option: "-db db"
+  * option: "-dbpassword password"
+  * option: "-pending pendingid"
+  * option: "-regions \"regions\""
+
+== Prepare Distributive Scripts ==
+
+== Apply Distributive Scripts ==
