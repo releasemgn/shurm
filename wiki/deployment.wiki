@@ -63,7 +63,7 @@ Defines how to apply distributives to environments in consistent manner.
   * waitenv.sh
   * waitweb.sh
 
-== Deployment Scripts ==
+== Update Scripts ==
 
   * confcheck.sh
   * configureall.sh
