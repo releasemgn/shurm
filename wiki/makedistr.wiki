@@ -75,7 +75,7 @@ See also:
   * settags.sh
   * uploadthirdparty.sh
 
-= Version Control System Support =
+== Version Control System Support ==
 
 Scripts to execute common VCS operations using the same interface disregarding VCS type:
 
