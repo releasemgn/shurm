@@ -45,7 +45,7 @@ See also:
   * option: "-branch branch"
   * option: "-tag tag"
 
-== Build and Creating Distributives ==
+== Build and Create Distributive ==
 
   * buildall-core-tags.sh
   * buildall-release.sh
