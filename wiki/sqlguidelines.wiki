@@ -56,7 +56,7 @@ Script release has no predefined constant and
 its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
 }}}
 
-= Preparing Database Change = 
+= Prepare Database Change = 
 
 == Release Directory Structure ==
 
