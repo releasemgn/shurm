@@ -58,6 +58,15 @@ its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.
 
 = Release Modes =
 
+  * release can be planned or emergency
+  * emergency can be to bring new feature in time or to fix production bug
+  * emergency release can contain only database changes, and named script release
+  * in many cases applications are tolerant to database changes, at least if these changes do not contain DDL code, and hence no application restart is required after applying such a script release
+  * there are common rules in doing releases related to release types:
+   * major release means changing core architecture, principal flows and all the system should be went down to apply both application and database changes
+   * script releases means that no application will be restarted by default, so you need to be sure how your changes will take into effect; if you need application restart - better do not name this release as "script release" and request proper release cycle and testing
+   * other minor planned and уьукпутсн releases have typical restart only for updated components; these updates most probably are related to commited database changes, other logic should be articulated in deployment plan
+
 = How to Prepare Database Change = 
 
 == Release Directory Structure ==
