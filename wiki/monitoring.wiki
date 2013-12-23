@@ -14,7 +14,7 @@ Defines how to setup easy and useful monitoring of your environment.
 
   * *monitoring* module - allows to view total status of environment evailability, based on checkev.sh sctipt outputs
   * *monitoring* module - tracks basic environment availability metrics and generates history graphs
-  * *monitoring* module - enables to drill from top sign of unhealthy state to its reason referencing specific process or host
+  * *monitoring* module - enables to drill from top sign of unhealthy state to specific process or host
 
 = Scripts =
 
