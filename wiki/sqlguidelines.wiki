@@ -1,7 +1,32 @@
 #summary How to prepare database changes in releases
 [home] -> [documentation] -> [makedistr] -> [sqlguidelines]
-----
 
 This page contains guidelines to developers on how to prepare database changes in releases.
 
-TBD
+<wiki:toc max_depth="2" />
+----
+
+= Change Procedure = 
+
+*developer:*
+  * adds change to change set or initiates release (see release modes)
+  * commits changes to release codebase
+  * adds instructions to deployment plan if change is manual
+  * prepares data files if high-volume data are going to be loaded into the database
+
+*release engeneer:*
+  * reviews change details and prepares distributive
+  * applies change to database using automatic or manual procedure
+
+*developer:*
+  * verifies change and reports change as tested
+
+= Database Changes Overview = 
+
+= Database Changes Codebase = 
+
+= Environment-Dependent Changes = 
+
+= Release Modes = 
+
+= Manual Operations = 
