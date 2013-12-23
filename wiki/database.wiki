@@ -1,9 +1,9 @@
 #summary Database modifications
 [home] -> [documentation] -> [database]
 
-<wiki:toc max_depth="2" />
-
 Defines how to apply changes to database.
+
+<wiki:toc max_depth="2" />
 ----
 
 = Definitions =
