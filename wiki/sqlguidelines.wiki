@@ -18,7 +18,7 @@ This page contains guidelines to developers on how to prepare database changes i
   * reviews change details and prepares distributive
   * applies change to database using automatic or manual procedure
 
-*developer:*
+*developer & QA:*
   * verifies change and reports change as tested
 
 = Database Changes Overview = 
