@@ -47,7 +47,9 @@ $C_CONFIG_APPVERSION_RELEASEFOLDER:
 for all modes, except minor planned release and script release
 
 In minor release $C_CONFIG_APPVERSION_RELEASEFOLDER:
-"prod-patch-$C_CONFIG_NEXT_MAJORRELEASE"
+"prod-patch-$C_CONFIG_NEXT_MAJORRELEASE.$C_CONFIG_NEXT_VERSION_BUILD"
+$C_CONFIG_NEXT_VERSION_BUILD is defined by default as 
+number in etc/last-prod-tag.txt + 1
 
 Script release has no predefined constant and 
 its name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
