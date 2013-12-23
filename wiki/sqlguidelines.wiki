@@ -56,7 +56,7 @@ Script release has no predefined constant and
 its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
 }}}
 
-= Prepare Database Change = 
+= How to Prepare Database Change = 
 
 == Release Directory Structure ==
 
@@ -75,6 +75,22 @@ aligned/regional/<primary script folder>
 }}}
 
 == Release File Names ==
+
+  * file name is subject to URM policy as it is used to derive database schema, order of execution and reference index
+{{{
+file name in release folder, except for data files and manual files, should have name NNN-schema-name.sql
+- prefix "NNN-" is "source index", where NNN is 3-digit number from 001 to 999
+- schema is the name of schema under which the script will be executed
+- name - any string
+
+Data files should have name NNN-dataname, where NNN - is source index of related ctl file
+Manual files have no rules, except Linux file system ones.
+}}}
+  * when source file is placed in distributive in more flat structure, its prefixe is replaced with another prefix to make indexes unique for all files, this prefix in distributive is named "distributive index"
+  * before distributive file is applied to database, it is copied to runtime directory, where its distributive index can be replaced with execution index
+   * execution index differs from distributive index only for regional scripts, which have distributive index, containing RR
+  * execution index is used for script execution accounting 
+  * source index is used for execution of selected scripts
 
 == Adding Files for sqlldr ==
 
