@@ -167,8 +167,14 @@ will delete 2 rows/
 
 == Environment-Dependent Changes ==
 
-  * script placed into prodonly directory is executed only in environment having property <property name="prod" value="yes"/>
-  * script placed into uatonly directory is executed only in environment having property <property name="prod" value="no"/>
+  * script placed into prodonly directory is executed only in environment having property in environment specification file:
+{{{
+<property name="prod" value="yes"/>
+}}}
+  * script placed into uatonly directory is executed only in environment having property in environment specification file:
+{{{
+<property name="prod" value="no"/>
+}}}
 
 == Manual Operations ==
 
