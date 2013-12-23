@@ -108,7 +108,7 @@ If you don't need such activity - use any other extension
 
 == Syntax Notes ==
 
-== Applied Script Accounting ==
+== Script Execution Accounting ==
 
 = Environment-Dependent Changes = 
 
