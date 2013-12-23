@@ -22,7 +22,7 @@ This page contains guidelines to developers on how to prepare database changes i
   * verifies change and reports change as tested
 
 *DBA:*
-  * applies the change to production database
+  * applies change to production database
 
 = Database Changes Overview = 
 
