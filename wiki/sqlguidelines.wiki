@@ -26,7 +26,28 @@ This page contains guidelines to developers on how to prepare database changes i
 
 = Database Changes Overview = 
 
+  * database changes differ from binaries in that code changes for binary files are applied to VCS and binary files are delivered as a state snapshot to environment, while database changes are generally incremental, except for changing database code like stored procedures
+  * when replicating database changes in distributed environment or among environments, it is important to avoid storing duplicate files in VCS, because of repetitive nature of release preparation stage (which requires a sort of templating for sql scripts)
+  * when database change is applied to database it is important that its initial state is the same as will be in production database (which requires manual rollbacks or database refresh process)
+  * database change can be SQL script, PL-SQL script or sqlldr control and data files
+
 = Database Changes Codebase = 
+
+= Preparing Database Change = 
+
+== Release Directory Structure ==
+
+== Adding Files for sqlldr ==
+
+== Release File Names ==
+
+== Database Change Numbering ==
+
+== Script File Content Rules ==
+
+== Syntax Notes ==
+
+== Applied Script Accounting ==
 
 = Environment-Dependent Changes = 
 
