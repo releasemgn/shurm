@@ -153,7 +153,8 @@ delete from my_table where rownum=1;
 /
 will delete 2 rows/
 
-3. Note, that CREATE TYPE is PL-SQL operation and should be ended like PL-SQL block, but CREATE TABLE - is SQL operation and should be ended appropriately.
+3. Note, that CREATE TYPE is PL-SQL operation and should be ended like PL-SQL block, 
+but CREATE TABLE - is SQL operation and should be ended appropriately.
 
 4. End DML operators (INSERT/UPDATE/DELETE/MERGE) with commit, do not relay on auto-commits.
 
