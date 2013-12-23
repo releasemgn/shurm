@@ -60,7 +60,7 @@ its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.
 
   * release can be planned or emergency
   * emergency can be to bring new feature in time or to fix production bug
-  * emergency release can contain only database changes, and named script release
+  * if emergency release contains only database changes, it can named "script release"
   * in many cases applications are tolerant to database changes, at least if these changes do not contain DDL code, and hence no application restart is required after applying such a script release
   * there are common rules in doing database changes related to release types:
    * major release (X.Y) means changing core architecture, principal flows and all the system should be went down to apply both application and database changes
@@ -117,10 +117,60 @@ If you don't need such activity - use any other extension
 
 == Script File Content Rules ==
 
+  * sql scripts in release folder is intended for execution using sqlplus utility in separate session
+  * certain minimum script formatting is required to ensure smooth releases:
+{{{
+Default codepage is set to 1251, set codepage explicitly if required
+Script should have below information in the heading:
+-- Author: Alexey Balandin
+-- Change: PGU-2282
+-- Description: recover top-level org-categories and
+--              link 2nd level org-categories to top-level org-categories
+
+This information let DBA know how to handle any issues arising in production environment when doing the release.
+}}}
+
 == Syntax Notes ==
+
+  * below rules are listed to prevent from common mistakes:
+{{{
+1. End every SQL operator with ';'
+2. PL-SQL block is not SQL operator and should be introduced using:
+[DECLARE
+	declare-specs]
+BEGIN
+	body-operators
+[EXCEPTION
+	exception-specs]
+END;
+/
+
+Do not end SQL operator like:
+<operator>;
+/
+e.g. 
+delete from my_table where rownum=1;
+/
+will delete 2 rows/
+
+3. Note, that CREATE TYPE is PL-SQL operation and should be ended like PL-SQL block, but CREATE TABLE - is SQL operation and should be ended appropriately.
+
+4. End DML operators (INSERT/UPDATE/DELETE/MERGE) with commit, do not relay on auto-commits.
+
+5. Any DDL operator automatically ends previous transaction and is not a transaction itself. That makes no sense to end DDL operator with commit;
+}}}
 
 == Script Execution Accounting ==
 
+  * script execution is automatically accounted in the same database
+  * schema and table names are configured per product - see config.sh
+
 == Environment-Dependent Changes ==
 
+  * script placed into prodonly directory is executed only in environment having property <property name="prod" value="yes"/>
+  * script placed into uatonly directory is executed only in environment having property <property name="prod" value="no"/>
+
 == Manual Operations ==
+
+  * any operations that need special care in execution by DBA, should be placed in manual release folder
+  * when and how execute manual scripts and what additional actions to perform - should be explained in release deployment plan
