@@ -35,7 +35,7 @@ This page contains guidelines to developers on how to prepare database changes i
 
   * database changes have to be commited to:
 {{{
-$C_CONFIG_SOURCE_RELEASEROOTDIR/$C_CONFIG_RELEASE_GROUPFOLDER/$C_CONFIG_APPVERSION_RELEASEFOLDER
+$C_CONFIG_SOURCE_RELEASEROOTDIR/$C_CONFIG_RELEASE_GROUPFOLDER/$C_CONFIG_APPVERSION_RELEASEFOLDER/sql
 
 All params are defined in config.sh.
 Default practices:
@@ -46,22 +46,47 @@ $C_CONFIG_APPVERSION_RELEASEFOLDER:
 "major-release-$C_CONFIG_NEXT_MAJORRELEASE"
 for all modes, except minor planned release and script release
 
-In minor release $C_CONFIG_APPVERSION_RELEASEFOLDER:
+In minor release 
+$C_CONFIG_APPVERSION_RELEASEFOLDER:
 "prod-patch-$C_CONFIG_NEXT_MAJORRELEASE.$C_CONFIG_NEXT_VERSION_BUILD"
 $C_CONFIG_NEXT_VERSION_BUILD is defined by default as 
 number in etc/last-prod-tag.txt + 1
 
 Script release has no predefined constant and 
-its name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
+its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
 }}}
 
 = Preparing Database Change = 
 
 == Release Directory Structure ==
 
-== Adding Files for sqlldr ==
+  * codebase splits changes into groups to establish database change policy and allow DBA to review changes:
+{{{
+primary script folders:
+coreddl - SQL or PL-SQL files with DDL SQL (can include related DML SQL)
+coredml - SQL or PL-SQL files with DML SQL
+coreuatonly - DML SQL scripts to be applied only to non-prod environments
+coreprodonly - DML SQL scripts to be applied only to prod environments
+dataload - control and data files for sqlldr utility
+
+additional folders to enable replicated regional scripts:
+aligned/<alignedid>/<primary script folder>
+aligned/regional/<primary script folder>
+}}}
 
 == Release File Names ==
+
+== Adding Files for sqlldr ==
+
+  * to make of of sqlldr functionality you need to place control and data files to dataload folder of release directory
+  * sqlldr file set consists of one control file and one or several data files
+  * control file and referenced data files should have the same index number
+  * see Oracle Documentation on how to prepare control and data files
+{{{
+Note, that file with txt extension will be processed by removing CR symbols, created in Windows environment
+If you don't need such activity - use any other extension
+}}}
+  * if data files are too big to pass through VCS, contact release engineer to place sqlldr file set directly into distributive, better create separate script release for such a change 
 
 == Database Change Numbering ==
 
