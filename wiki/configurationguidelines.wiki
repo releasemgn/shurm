@@ -6,7 +6,7 @@ This page contains guidelines to developers on how to prepare configuration chan
 <wiki:toc max_depth="2" />
 ----
 
-== Change Procedure ==
+= Change Procedure =
 
 *developer*:
   * adds change to Deployment Plan
@@ -26,7 +26,7 @@ This page contains guidelines to developers on how to prepare configuration chan
 *release engeneer*:
   * adds change to supported set of configuration files and marks it on Deployment Plan page
 
-== Configuration Changes Overview ==
+= Configuration Changes Overview =
 
   * configuration changes are related to setting files, key files and files potentially containing enrionment-dependent content, changes to structure of the product and to administration tools
   * any configuration change should be declared on Deployment Plan page
@@ -34,7 +34,7 @@ This page contains guidelines to developers on how to prepare configuration chan
   * configuration changes are downloaded to distributive in config folder
   * URM configuring supports templates and environment-dependent variables
 
-== Configuration Changes Codebase ==
+= Configuration Changes Codebase =
 
   * to add change you need to commit files to $C_CONFIG_SOURCE_RELEASEROOTDIR/$C_CONFIG_RELEASE_GROUPFOLDER/$C_CONFIG_APPVERSION_RELEASEFOLDER/config/templates
   * $C_CONFIG_SOURCE_CFG_ROOTDIR/templates is svn location of full set of product configuration files, which can be used to create tags and setup/restore environment
@@ -85,7 +85,7 @@ matching is performed only among immediate childs in Component environment direc
 <component name="tpweb.bin.conf" type="files" files="run.conf" layer="server"/>
 }}}
 
-== Environment-Dependent Properties ==
+= Environment-Dependent Properties =
 
   * defined by environment specification file:
 {{{
@@ -101,11 +101,11 @@ To reference environment-dependent property in configuration file one need to us
 Earlier-defined parameter can be referenced in any later defined within its scope.
 }}}
 
-== Major and Minor Releases ==
+= Major and Minor Releases =
 
   * if major release introduces essential reconfiguring, then probably it makes sense to use full set of configuration in release scope
   * minor release generally should use incremental approach in reconfiguring the product
 
-== Manual Configuring ==
+= Manual Configuring =
 
   * certain changes cannot be specified in declarative manner and require manual instructions in Deployment Plan
