@@ -46,6 +46,9 @@ $C_CONFIG_APPVERSION_RELEASEFOLDER:
 "major-release-$C_CONFIG_NEXT_MAJORRELEASE"
 for all modes, except minor planned release and script release
 
+In minor release $C_CONFIG_APPVERSION_RELEASEFOLDER:
+"prod-patch-$C_CONFIG_NEXT_MAJORRELEASE"
+
 Script release has no predefined constant and 
 its name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
 }}}
