@@ -104,8 +104,6 @@ If you don't need such activity - use any other extension
 }}}
   * if data files are too big to pass through VCS, contact release engineer to place sqlldr file set directly into distributive, better create separate script release for such a change 
 
-== Database Change Numbering ==
-
 == Script File Content Rules ==
 
 == Syntax Notes ==
