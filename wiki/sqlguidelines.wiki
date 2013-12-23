@@ -14,7 +14,7 @@ This page contains guidelines to developers on how to prepare database changes i
   * adds instructions to deployment plan if change is manual
   * prepares data files if huge data are going to be loaded into the database
 
-*release engeneer or DBA:*
+*release engineer or DBA:*
   * reviews change details and prepares distributive
   * applies change to database using automatic or manual procedure
 
