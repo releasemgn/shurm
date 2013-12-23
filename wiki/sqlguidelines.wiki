@@ -39,10 +39,11 @@ $C_CONFIG_SOURCE_RELEASEROOTDIR/$C_CONFIG_RELEASE_GROUPFOLDER/$C_CONFIG_APPVERSI
 
 All params are defined in config.sh.
 Default practices:
-$C_CONFIG_RELEASE_GROUPFOLDER = R_${C_CONFIG_VERSION_BRANCH_MAJOR}_${C_CONFIG_VERSION_BRANCH_NEXTMINOR}
+$C_CONFIG_RELEASE_GROUPFOLDER "R_${C_CONFIG_VERSION_BRANCH_MAJOR}_${C_CONFIG_VERSION_BRANCH_NEXTMINOR}"
 
 $C_CONFIG_APPVERSION_RELEASEFOLDER:
-- major-release-$C_CONFIG_NEXT_MAJORRELEASE for all modes, except minor planned release and script release
+"major-release-$C_CONFIG_NEXT_MAJORRELEASE"
+for all modes, except minor planned release and script release
 
 Script release has no predefined constant and 
 its name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
