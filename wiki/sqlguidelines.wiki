@@ -151,7 +151,7 @@ Do not end SQL operator like:
 e.g. 
 delete from my_table where rownum=1;
 /
-will delete 2 rows/
+will delete 2 rows
 
 3. Note, that CREATE TYPE is PL-SQL operation and should be ended like PL-SQL block, 
 but CREATE TABLE - is SQL operation and should be ended appropriately.
