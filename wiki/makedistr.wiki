@@ -3,10 +3,10 @@
 
 Defines how to produce distributives from codebase, thirdparty items, required specific updates in settings and database.
 
+<wiki:toc max_depth="2" />
+
 See also:
   * [deployment Deployment]
-
-<wiki:toc max_depth="2" />
 ----
 
 = Definitions =
