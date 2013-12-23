@@ -14,12 +14,15 @@ This page contains guidelines to developers on how to prepare database changes i
   * adds instructions to deployment plan if change is manual
   * prepares data files if high-volume data are going to be loaded into the database
 
-*release engeneer:*
+*release engeneer or DBA:*
   * reviews change details and prepares distributive
   * applies change to database using automatic or manual procedure
 
 *developer & QA:*
   * verifies change and reports change as tested
+
+*DBA:*
+  * applies the change to production database
 
 = Database Changes Overview = 
 
