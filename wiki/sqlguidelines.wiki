@@ -157,7 +157,8 @@ will delete 2 rows/
 
 4. End DML operators (INSERT/UPDATE/DELETE/MERGE) with commit, do not relay on auto-commits.
 
-5. Any DDL operator automatically ends previous transaction and is not a transaction itself. That makes no sense to end DDL operator with commit;
+5. Any DDL operator automatically ends previous transaction and is not a transaction itself. 
+That makes no sense to end DDL operator with commit;
 }}}
 
 == Script Execution Accounting ==
