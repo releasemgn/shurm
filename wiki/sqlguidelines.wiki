@@ -56,6 +56,8 @@ Script release has no predefined constant and
 its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
 }}}
 
+= Release Modes =
+
 = How to Prepare Database Change = 
 
 == Release Directory Structure ==
@@ -110,8 +112,6 @@ If you don't need such activity - use any other extension
 
 == Script Execution Accounting ==
 
-= Environment-Dependent Changes = 
+== Environment-Dependent Changes ==
 
-= Release Modes = 
-
-= Manual Operations = 
+== Manual Operations ==
