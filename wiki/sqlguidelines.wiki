@@ -12,7 +12,7 @@ This page contains guidelines to developers on how to prepare database changes i
   * adds change to change set or initiates release (see release modes)
   * commits changes to release codebase
   * adds instructions to deployment plan if change is manual
-  * prepares data files if high-volume data are going to be loaded into the database
+  * prepares data files if huge data are going to be loaded into the database
 
 *release engeneer or DBA:*
   * reviews change details and prepares distributive
