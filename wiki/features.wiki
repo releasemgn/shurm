@@ -9,15 +9,16 @@ Defines features implemented in URM.
 = Application Deployment =
 
   * [featuresappaccess Host Access and Operation Audit]
-   * key-based access to hosts
-   * file upload logging
-   * execution logging
-   * track environment configuration changes
+   * Key-based access to hosts
+   * File upload logging
+   * Execution logging
+   * Track environment configuration changes
    * Skype-notification
   * [featuresredist Copying Files to Environment]
    * Local and remove distributives
    * Renaming files in environment
    * Staging area
+   * Automatic binary file renaming
    * Partial deployments, using "-unit" option
    * Safe copy over network
    * Multiple server locations
