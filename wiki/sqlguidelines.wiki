@@ -127,7 +127,7 @@ Script should have below information in the heading:
 -- Description: recover top-level org-categories and
 --              link 2nd level org-categories to top-level org-categories
 
-This information let DBA know how to handle any issues arising in production environment when doing the release.
+This information lets DBA know how to handle any issues arising in production environment when doing the release.
 }}}
 
 == Syntax Notes ==
