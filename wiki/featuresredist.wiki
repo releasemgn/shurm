@@ -186,10 +186,11 @@ Sometimes locations do not have common root path, except "/"
   * if you need to automatically extract archive, then you need to define distributive item as archive
 
 {{{
-Distributive specification file distr.xml can reference archive as one of - "archive.direct", "archive.child", "archive.subdir":
-	e.g., <distitem name="pgu-dependencies" distname="pgu-dependencies" type="archive.direct" extension="-libs.tar.gz"/>
+Distributive specification file distr.xml can reference archive as one of
+"archive.direct", "archive.child", "archive.subdir",
+e.g., <distitem name="pgu-dependencies" distname="pgu-dependencies" type="archive.direct" extension="-libs.tar.gz"/>
 
-Ditrributive item is then included to the component as usual:
+Distributive item is then included to the component as usual:
 		<component name="pguweb.dependencies" unit="core">
 			<distitem name="pgu-dependencies"/>
 		</component>
@@ -269,7 +270,8 @@ Configurations files are referenced in configuration components in distr.xml
 - mapping component to files is defined in distributive specification file:
 			<component name="pguapp.cryptopro.ca" 		unit="core" type="dir" layer="server"/>
 			<component name="pguapp.app.conf" 		unit="core" type="dir" layer="server"/>
-			<component name="pguapp.jbossweb-sar.conf" 	unit="core" type="files" files="server.xml" layer="server"/>
+			<component name="pguapp.jbossweb-sar.conf" 	unit="core" type="files" files="server.xml" 
+				layer="server"/>
 
 Environment configuration files are stored in $C_CONFIG_SOURCE_CFG_LIVEROOTDIR/<env> by calling:
 	./svnsaveconfig.sh
@@ -347,7 +349,8 @@ Rollback operation automatically deletes previous version if any:
 
 Files are restored from rollback directory in staging area:
 - configuration component rollback files can differ from release ones if files are defined using mask
-- to support rollback of hotdeploy files rollout.sh logic copies files to deploypath where files are not used by process but persisted
+- to support rollback of hotdeploy files rollout.sh logic copies files to deploypath where files are not used 
+by process but persisted
 
 Release rollback is partially manual because of unpredictable reasons:
 - rollback.sh command restores in runtime area files saved by redist.sh in rollback directory of staging area
