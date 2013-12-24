@@ -39,7 +39,9 @@ Environment specification file defines one of two possible distributive location
 Product parameter file defines location of staging area for all hosts on all environments:
 	C_CONFIG_REDISTPATH=/oracle/d/redist
 
-Command ./redist.sh relocates files from distributive to staging area subdirectory - $C_CONFIG_REDISTPATH/<server>/<release>
+Command ./redist.sh relocates files from distributive to staging area subdirectory:
+	$C_CONFIG_REDISTPATH/<server>/<release>
+
 - $C_CONFIG_REDISTPATH should be created on initial setup of environment
 - staging area directory stores all releases for all servers hosted there
 - copy is performed using server user, that's why $C_CONFIG_REDISTPATH better should be chmod 777
@@ -67,15 +69,18 @@ release directory name format is <releasever>[-<distname>], where
 
 Environment file name is [<releasever>-]<deployname><extension>, where
 	<releasever> - release directory version
-		- setting version can be skipped if distributive item has below property in distributive specification file:
-			<distitem name="axis" type="binary" extension=".jar" options="N"/>
+
+- setting version can be skipped if distributive item has below property in distributive specification file:
+	<distitem name="axis" type="binary" extension=".jar" options="N"/>
+
 	<deployname> - binary file basename
 
 In release directory binary file is usually named <distname>-<majorversion><extension>, where
 	<distname> - binary file basename in distributive, can be different from built basename, if required:
 			<distitem name="ojdbc.jar" type="binary" distname="ojdbc6-11.2.0.1.0" extension=".jar"
 					deployname="ojdbc6" options="N"/>
-		<majorversion> - major release version, e.g. in messagelog-1.13.ear - is 1.13, while release version is 1.13.14
+		
+- <majorversion> - major release version, e.g. in messagelog-1.13.ear - is 1.13, while release version is 1.13.14
 
 If versioning is not turned off, environment file will be renamed:
 	from <distname>-<majorversion><extension> to <releasever>-<deployname><extension>
@@ -94,7 +99,8 @@ To deploy only specified servers, execute commands:
 
 Note:
 - command ./redist.sh if servers are specified, does not change other server staging area, except static servers
-- dist item of type "war" (see. distr.xml) causes automatic redist to static server, defined in environment specification file:
+- dist item of type "war" (see. distr.xml) causes automatic redist to static server, 
+defined in environment specification file:
 		<server name="formweb" type="generic.web"
 			proxy-server="formweb.nginx"
 			...
@@ -105,7 +111,8 @@ Note:
 
 Option "-unit <unitname>" limits scope of ./redist.sh command:
 - only components being part of specified unit are copied to destination servers, see distributive specification file:
-		<component name="formweb.conf" 			unit="core" type="files" files="run.pguweb.conf" layer="server"/>
+		<component name="formweb.conf" 			
+			unit="core" type="files" files="run.pguweb.conf" layer="server"/>
 
 		<component name="pguweb.regcommon" unit="core">
 			<distitem name="cms-public-web"/>
