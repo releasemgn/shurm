@@ -40,7 +40,7 @@ Thu May 30 08:14:08 MSK 2013: release-mgn - uploaded /oracle/d/redist/pguapp/2.7
 ...	
 }}}
 
-= Óxecution logging  =
+= Execution logging  =
 
   * every execute operation, which changes actual state of target environment, is automatically logged both on release box, from where action is executed, and on environment host
   * actual state is changed when files are changes within deploydir folders, defined in environment specification file, or due to hot deploy or start/stop operations
