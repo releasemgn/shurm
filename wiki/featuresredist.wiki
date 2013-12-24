@@ -101,7 +101,7 @@ Note:
 		here ./redist.sh <release> formweb automatically copies static archives to formweb.nginx
 
 - ./deployredist.sh command use only servers defined in parameters or all servers with non-empty staging area:
-		т.е. ./deployredist.sh <release> formweb will not change formweb.nginx
+		i.e. ./deployredist.sh <release> formweb will not change formweb.nginx
 
 Option "-unit <unitname>" limits scope of ./redist.sh command:
 - only components being part of specified unit are copied to destination servers, see distributive specification file:
@@ -167,7 +167,7 @@ Every defined path for the server is named "deployment location".
 
 Sometimes locations do not have common root path, except "/"
 - then it is recommended to create soft link:
-	ln -s <real directory path> <server root path>/<virtual location>, где
+	ln -s <real directory path> <server root path>/<virtual location>, where
 		<real directory path> - path usexd by server process 
 		<server root path> - server root path
 		<virtual location> - synthetic location for URM
@@ -320,7 +320,7 @@ redist.sh command when deploying to web application server automatically copies 
 - it is assumed that proxy-server has the same numebr of nodes as web application server
 }}}
 
-= Backup and rollack =
+= Backup and rollback =
 
   * standard approach to recover from bad release is rollback to previous distribution
   * URM support automated rollback
