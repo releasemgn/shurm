@@ -60,7 +60,7 @@ its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.
 
   * release can be planned or emergency
   * emergency can be to bring new feature in time or to fix production bug
-  * if emergency release contains only database changes, it can named "script release"
+  * if emergency release contains only database changes, it can be named "script release"
   * in many cases applications are tolerant to database changes, at least if these changes do not contain DDL code, and hence no application restart is required after applying such a script release
   * there are common rules in doing database changes related to release types:
    * major release (X.Y) means changing core architecture, principal flows and all the system should be went down to apply both application and database changes
