@@ -1,0 +1,187 @@
+#summary Functional Capabilities of URM - Start and Stop Environment Processes
+[home] -> [documentation] -> [features] -> [featurescontrol]
+
+Control distributed environment from administrative host.
+
+<wiki:toc max_depth="2" />
+----
+
+= Start and stop of selected servers =
+
+  * URM supports managing hightly distributed clustered system
+  * single administrative box and command line can be used to start, stop and check status of any server in the system
+  * several products and several environments of one product can be controlled from the same administration box
+
+{{{
+Start/stop scripts are wrappers, created by product configuring (see setup).
+
+Syntax:
+	startenv.sh/stopenv.sh [<serverlist>] or 
+	startenv.sh/stopenv.sh <server> <node>, where
+	<serverlist> - space-delimited list of servers to start/stop
+
+- server is defined within given datacenter in environment specification file
+- startenv.sh depending on parameters will start specific set of servers
+- stopenv.sh depending on parameters will stop specific set of servers
+
+If <serverlist> is not defined then all the environment is started/stopped.
+By default database servers and servers w/o binaries are not subject to full start/stop.
+For instance, below server is not stopped:
+		<server name="nlb" type="service" servicename="nginx"
+			starttime="30"
+			rootpath="/oracle/ora_app2"
+			>
+			<node hostlogin="root@u00nlb02"/>
+			<configure component="nlb.conf" deploypath="nginx/etc/nginx/pgu.uat"/>
+		</server>
+
+To include in restart configuration-only servers, you need to set option "-all":
+	./stopenv.sh -all
+}}}
+
+= Services and pure processes =
+
+  * URM supports two types of processes - services and pure processes
+  * service process is isolated by using init.d script
+  * pure process is visible to URM in operating system and can be directly addressed, e.g. killed
+
+{{{
+Service process is introduced in environment specification file by:
+		<server name="nlb" type="service" servicename="nginx"
+			...
+- server name is defined by servicename attribute and is used in operations:
+	/sbin/service <servicename> start|stop|status
+
+- service <servicename> should have script /etc/init.d/<servicename>.sh, implementing at least:
+	/sbin/service <servicename> start - async start of server
+	/sbin/service <servicename> stop - async stop of server
+	/sbin/service <servicename> status - should print status string, containing:
+		"is stopped" or "is not running" - if server is stopped
+		"is running" or "is already running" - if server is started
+		all other cases are regarded as erroneous
+
+Pure process is defined by:
+		<server name="uddi" type="generic.server"
+			rootpath="/oracle/ora_app3"
+			binpath="jboss/bin"
+			...
+- pure process should have command line containing "-Dprogram.name=<server name>"
+- every pure process should have 3 control scripts in <rootpath>/<binpath>:
+	server.start.sh, server.stop.sh, server.status.sh
+
+- control scripts are not part of URM, but are provided interfaces of environment
+
+server.start.sh script starts server:
+- it should start process asynchronously in separate session using nohup
+- any output of start script is regarded as error message
+- in 10 seconds after calling server.start.sh URM expects that one or more processes will appear in operating system
+
+server.status.sh script checks server status:
+- URM executes server.status.sh only if process exists in operating system
+- process check is performed using 
+	pgrep -f "-Dprogram.name=<server name>"
+
+- server can be represented by several nodes, which should have different login/host pairs
+- it is possible that server logical process is represented by several operating processes
+- in successful but not completed startup sequence script should not print anything
+- when startup sequence is successfully completed script should print "Started=true" or string containing "RUNNING" or "is running"
+- anything else is regarded as erroneous condition and inability to work properly
+
+server.stop.sh scripts stops the server:
+- any non-empty output is regarded as error message
+}}}
+
+= Process start control =
+
+  * startenv.sh before starting server, checks current state
+  * if server process is started and is in correct status, command is regarded as completed
+  * if server process is started and is not in correct status, URM issues error message and stops execution
+  * server start is performed in async mode: first server start is initiated then status is repeatedly checked to wait for completion
+  * server can have property defining timeout to start, by default - 60 seconds
+
+{{{
+		<server name="regweb.war5" type="generic.web"
+			starttime="900"
+			...
+
+If server is not started within timeout, total process is canceled
+After start is completed checkenv.sh is executed to be sure that server is in healthy state.
+If server is not healthy - URM reports error and cancels current execution.
+}}}
+
+
+= Process stop control =
+
+  * stopenv.sh before stopping server, checks current state - only process existence
+  * if server process does not exist, command is regarded as completed
+  * if server process exists, stop command is executed and status is repeatedly queried to wait for actual stop
+
+{{{
+if process is not stopped within 60 seconds:
+- for service process URM reports error condition and stops execution
+- for pure process URM executes "kill -9 <server process set>"
+}}}
+
+
+= Proxy-processes and subordinate processes =
+
+  * given server can have closely related helper servers - proxy-server and subordinate servers
+  * proxy-server is usually an light server providing interface to main server
+  * subordinate process - is helper process which used by given main server only
+
+{{{
+Order of calling is expected:
+	some client process -> proxy-server -> given server -> subordinate servers
+
+- call order defines order of starting/stopping of this process group
+- to start subordinate processes are started first, then given server and finally proxy server
+- to stop the order is reversed
+
+All the servers are defined in environment specification file:
+		<server name="siaweb.tc" type="generic.server"
+			...
+
+		<server name="siaweb.nginx" type="service" servicename="nginx"
+			...
+
+		<server name="siaweb" type="generic.web"
+			...
+			proxy-server="siaweb.nginx"
+			subordinate-servers="siaweb.tc"
+
+Start group includes only given server and does not include proxy-servers and subordinate servers:
+	<startgroup name="fedweb" servers="siaweb fedweb formweb"/>
+
+Any helper server can be referenced in ordinary way:
+	./redish.sh 1.0 siaweb.nginx siaweb.tc siaweb
+}}}
+
+= Parallel start and stop of processes, start groups =
+
+  * to spped up start and stop operations servers are started/stopped in parallel
+  * parallel operations are performed for nodes, servers and datacenters
+
+{{{
+All nodes are always operated in parallel.
+For instance, if starting server having 2 nodes for pure server process, start sequence will be:
+	initiate start for both nodes (should be async)
+		node1: ./server.start.sh
+		node2: ./server.start.sh
+	wait until all nodes are successfully started:
+		node1: ./waitenv.sh
+		node2: ./waitenv.sh
+
+To make start/stop operations in parallel among servers, there are start groups in envionment specification file:
+		<startorder>
+			<startgroup name="uddi" servers="tlssrv nlb uddi"/>
+			<startgroup name="app" servers="siaapp pguapp commapp"/>
+			<startgroup name="fedweb" servers="siaweb fedweb formweb"/>
+		</startorder>
+
+- start groups are started sequentially with order in environment specification file, stopped in reverse order
+- sequence of groups can be caused by interprocess dependencies
+- servers in the group are started/stopped in parallel
+
+Start/stop operations in several datacenters are sequential by default, but can be made parallel using:
+	./startenv.sh -parallel -dcmask "dc.k[1-6]"
+}}}
