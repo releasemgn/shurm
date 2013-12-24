@@ -18,7 +18,7 @@ Defines declarative approach used to specify product sources, distributions and 
   * URM model ensures product flexibility, which gives developer a means to deliver changes to production without risk and without explaining all the details to operation team
   * URM model allows to manage huge distributed system in a consistent manner with common terms and release approaches
   * URM model is quite compact and helps to engineer, review and re-engineer IT system
-  * because URM model is used for automated deployment and environment control, it can be used as trusted source of information regarding physical elements of the system
+  * as well as URM model is used for automated deployment and environment control, it can be used as trusted source of information regarding physical elements of the system
 
 = URM Model =
 
