@@ -84,7 +84,8 @@ server.status.sh script checks server status:
 - server can be represented by several nodes, which should have different login/host pairs
 - it is possible that server logical process is represented by several operating processes
 - in successful but not completed startup sequence script should not print anything
-- when startup sequence is successfully completed script should print "Started=true" or string containing "RUNNING" or "is running"
+- when startup sequence is successfully completed script should print "Started=true" or 
+string containing "RUNNING" or "is running"
 - anything else is regarded as erroneous condition and inability to work properly
 
 server.stop.sh scripts stops the server:
