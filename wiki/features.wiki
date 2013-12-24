@@ -8,7 +8,7 @@ Defines features implemented in URM.
 
 = Application Deployment =
 
-  * [featuresappaccess Audit Access and Operation Audit]
+  * [featuresappaccess Host Access and Operation Audit]
    * key-based access to hosts
    * file upload logging
    * execution logging
