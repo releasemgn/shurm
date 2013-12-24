@@ -12,7 +12,7 @@ Defines process of relocation of files to environment.
   * distributives are given from filesystem path defined in environment specification path, remote or local
 
 {{{
-Environment specification file $PRODUCT_DEPLOYMENT_HOME/etc/env/<env>.xml defines one of two possible distributive locations:
+Environment specification file defines one of two possible distributive locations:
 
 1. Local on deployment host:
 	<property name="distr-use-local" value="true"/>
