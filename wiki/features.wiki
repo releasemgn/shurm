@@ -1,7 +1,60 @@
 #summary Functional Capabilities of URM
 [home] -> [documentation] -> [features]
-----
 
 Defines features implemented in URM.
 
-TBD
+<wiki:toc max_depth="2" />
+----
+
+= Application Deployment =
+
+  * [featuresappaccess Audit Access and Operation Audit]
+   * key-based access to hosts
+   * file upload logging
+   * execution logging
+   * track environment configuration changes
+   * Skype-notification
+  * [featuresredist Copying Files to Environment]
+   * Local and remove distributives
+   * Renaming files in environment
+   * Staging area
+   * Partial deployments, using "-unit" option
+   * Safe copy over network
+   * Multiple server locations
+   * Archive deployment
+   * Deployment of configuration files 
+   * Save and restore overall configuration
+   * nginx static files deployment
+   * Backup and rollack
+  * [featurescontrol Start and Stop Environment Processes]
+   * Start and stop of selected servers
+   * Services and pure processes
+   * Process start control
+   * Process stop control
+   * Proxy-processes and subordinate processes
+   * Parallel start and stop of processes, start groups
+  * [featureszerodowntime Zero Downtime Deployment]
+   * Using deploygroup
+   * Configuration swtching deployment
+   * Hot deploy
+
+= Prepare and Apply Database Changes =
+
+  * [featuresdbaccess Database Access and Operation Audit]
+   * Simple database authentification
+   * Password files
+   * Using database system account
+   * Execution audit
+   * Storing log files of execution
+  * [featuresdbdist Prepare Database Distributive]
+   * Complex database configurations
+   * Source code structure
+   * Creating distributive
+   * Manual database mofifications
+   * Prepare bulk load file set
+   * Aligned-scripts for datacenters and regions
+  * [featuresdbapply Apply Database Changes]
+   * Using sqlplus to apply changes
+   * Apply manual administration scripts using sys account
+   * Load data using sqlldr
+   * Handling errors
