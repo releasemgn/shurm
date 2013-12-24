@@ -97,7 +97,7 @@ file name in release folder, except for data files and manual files, should have
 Data files should have name NNN-dataname, where NNN - is source index of related ctl file
 Manual files have no rules, except Linux file system ones.
 }}}
-  * when source file is placed in distributive in more flat structure, its prefixe is replaced with another prefix to make indexes unique for all files, this prefix in distributive is named "distributive index"
+  * when source file is placed in distributive in more flat structure, its prefix is replaced with another prefix to make indexes unique for all files, this prefix in distributive is named "distributive index"
   * before distributive file is applied to database, it is copied to runtime directory, where its distributive index can be replaced with execution index
    * execution index differs from distributive index only for regional scripts, which have distributive index, containing RR
   * execution index is used for script execution accounting 
