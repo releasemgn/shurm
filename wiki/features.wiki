@@ -43,7 +43,7 @@ Defines features implemented in URM.
 
   * [featuresdbaccess Database Access and Operation Audit]
    * Simple database authentification
-   * Password files
+   * Password file
    * Using database system account
    * Execution audit
    * Storing log files of execution
