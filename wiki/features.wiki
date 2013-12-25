@@ -51,7 +51,7 @@ Defines features implemented in URM.
    * Complex database configurations
    * Source folders
    * Creating distributive
-   * Manual database modifications
+   * Declare manual database modifications
    * Prepare bulk load file set
    * Aligned-scripts
   * [featuresdbapply Apply Database Changes]
