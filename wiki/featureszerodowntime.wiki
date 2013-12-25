@@ -126,7 +126,7 @@ Without "-nodowntime" option deployment uses default sequential start/rollout/st
 
 = Hot deploy =
 
-  * if application server like JBoss or WebLogic supports uploading applications without restart, then you can use hot deploy URM feature
+  * if application server like JBoss or !WebLogic supports uploading applications without restart, then you can use hot deploy URM feature
   * hotdeploy components can be both binaries and configuration files
   * specific server can have both colddeploy (requiring restart) and hotdeploy components
   * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
