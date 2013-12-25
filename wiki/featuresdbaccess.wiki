@@ -101,9 +101,14 @@ REL_STATUS - final release status - A=Applied (all scripts have A status), S=Sta
   * release script set is executed in steps, one for each database affected
   * each step creates separate log folder to store log files
 {{{
-$C_CONFIG_SOURCE_SQL_LOGDIR/<release>-<env>-<dc>-<start timestamp> 
+LOGDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/<release>-<env>-<dc>-<start timestamp>/<dbserver>
+
+Before and after applying scripts to database state of script execution statuses 
+extracted from administration tables and saved to files:
+	$LOGDIR/status.before.<tnsname>.<start timestamp>.txt
+	$LOGDIR/status.after.<tnsname>.<start timestamp>.txt
+
+Before applying scripts every script file is copied to log dir
+When applying specific script, it wrapped up by additional commands and saved as .sql.run file
+Execution output (.sql.run.out) and spool (.sql.spool) files are automaticlly created
 }}}
-  * before and after applying scripts to database state of script execution statuses extracted from administration tables and saved to files status.after/before.
-  * before applying scripts every script file is copied to log dir
-  * when applying specific script, it wrapped up by additional commands and saved as .sql.run file
-  * execution output (.sql.run.out) and spool (.sql.spool) files are automaticlly created
