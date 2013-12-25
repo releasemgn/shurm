@@ -1,5 +1,5 @@
 #summary Functional Capabilities of URM - Zero Downtime Deployment
-[home] -> [documentation] -> [features] -> [featureszeroowntime]
+[home] -> [documentation] -> [features] -> [featureszerodowntime]
 
 Allows to deploy releases without loss of service.
 Zero downtime deployment is not possible sometimes without regard to deploy procedure.
