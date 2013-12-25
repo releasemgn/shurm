@@ -53,7 +53,7 @@ Defines features implemented in URM.
    * Creating distributive
    * Manual database mofifications
    * Prepare bulk load file set
-   * Aligned-scripts for datacenters and regions
+   * Aligned-scripts
   * [featuresdbapply Apply Database Changes]
    * Using sqlplus to apply changes
    * Apply manual administration scripts using sys account
