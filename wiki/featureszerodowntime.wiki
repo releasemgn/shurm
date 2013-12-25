@@ -32,7 +32,9 @@ where group can be either of listed in attributes.
 
 foe example, 
 	./stopenv.sh -deploygroup second tpweb
-will stop two nodes included in the "second" deploygroup, but will not stop node 1, which is in the "first" deploy group
+
+will stop two nodes included in the "second" deploygroup, but will not stop node 1, 
+which is in the "first" deploy group
 }}}
 
 = Configuration swtching deployment =
@@ -133,7 +135,8 @@ Without "-nodowntime" option deployment uses default sequential start/rollout/st
 {{{
 Hotdeploy operation uses below directories on environment host:
 - ordinary staging area directory - $C_CONFIG_REDISTPATH
-- deployed hotdeploy state directory, containing latest versions of all binaries uploaded to the server (for rollback purposes)
+- deployed hotdeploy state directory, containing latest versions of all binaries 
+	uploaded to the server (for rollback purposes)
 	note, that hotdeploy state directory cannot be the same as any colddeploy component location
 - hotdeploy upload directory, which contains binaries to be uploaded in current operation and used in upload command
 
@@ -159,7 +162,8 @@ Server having hotdeploy components, should have hotdeploypath attribute, contain
 
 Standard deploy path attribute play role of hotdeploy state directory.
 
-redist.sh with "-hot/cold" option limits copied files from distributive to respectively cold or hot component binaries
+redist.sh with "-hot/cold" option limits copied files from distributive to respectively cold or 
+	hot component binaries
 rollout.sh, rollback.sh with "-hot/cold" option limits rollout to cold or hot deploy components (cold by default)
 deployredist.sh without "-hot/cold" option will deploy first cold components, then hot components
 deployredist.sh with "-hot/cold" will limit start/rollout/stop operations to corresponding items and related servers
@@ -190,17 +194,17 @@ See also:
 
 *Hot vs. Cold Deployment*:
 
-* Hot deployment is cool, but there is a risk of:
-** Class-Loader exceptions
-** Unrecognized configuration settings
-** Lost session/application scoped data
+  * Hot deployment is cool, but there is a risk of:
+   * Class-Loader exceptions
+   * Unrecognized configuration settings
+   * Lost session/application scoped data
 
-* Cold deployment is slow but stable
-** Stop JBoss AS
-** Optionally delete data/, log/, tmp/, work/
-** Redeploy your application(s)
-** Start JBoss AS
+  * Cold deployment is slow but stable
+   * Stop JBoss AS
+   * Optionally delete data/, log/, tmp/, work/
+   * Redeploy your application(s)
+   * Start JBoss AS
 
-* Hot deployment is generally considered safe for:
-** Java Server Pages (.jsp) files. They get recompiled automatically by the servlet engine following a change.
-** Class files that do not change their public interfaces, especially when there is no RMI involved. This requires full redeployment, so it is still somewhat risky.
+  * Hot deployment is generally considered safe for:
+   * Java Server Pages (.jsp) files. They get recompiled automatically by the servlet engine following a change.
+   * Class files that do not change their public interfaces, especially when there is no RMI involved. This requires full redeployment, so it is still somewhat risky.
