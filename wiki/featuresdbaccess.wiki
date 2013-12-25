@@ -30,7 +30,6 @@ Then giving specific password option in command line makes the authorization:
 
   * if required each schema in each database can have its own password
   * to apply scripts in automated mode password can be placed to the password file
-
 {{{
 Environment configuration file should have below properties set:
 	<property name="db-auth" value="yes"/>
@@ -68,7 +67,6 @@ To apply script using hidden file:
   * these records are also used to apply "still not applied" scripts to the database
   * every database should have these administration tables to stop execution data
   * find template script in release - see [https://code.google.com/p/shurm/source/browse/trunk/master/samples/database/001-sys-admindb.sql link], substitute your values and apply to database manually, e.g. using sqlplus utility
-
 {{{
 Template script contains following placeholders:
 	<ADMSCHEMA> - should the same as $C_CONFIG_SCHEMAADMIN
