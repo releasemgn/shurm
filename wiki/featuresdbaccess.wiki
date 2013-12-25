@@ -67,7 +67,7 @@ To apply script using hidden file:
    * it makes possible to find when and with what result every script was applied
   * these records are also used to apply "still not applied" scripts to the database
   * every database should have these administration tables to stop execution data
-  * find template script in release - [see https://code.google.com/p/shurm/source/browse/trunk/master/samples/database/001-sys-admindb.sql link], substitute your values and apply to database manually, e.g. using sqlplus utility
+  * find template script in release - see [https://code.google.com/p/shurm/source/browse/trunk/master/samples/database/001-sys-admindb.sql link], substitute your values and apply to database manually, e.g. using sqlplus utility
 
 {{{
 Template script contains following placeholders:
