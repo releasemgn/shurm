@@ -36,7 +36,7 @@ Defines features implemented in URM.
    * Parallel start and stop of processes, start groups
   * [featureszerodowntime Zero Downtime Deployment]
    * Using deploygroup
-   * Configuration swtching deployment
+   * Configuration switching deployment
    * Hot deploy
 
 = Prepare and Apply Database Changes =
