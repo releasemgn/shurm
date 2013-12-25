@@ -99,7 +99,10 @@ REL_STATUS - final release status - A=Applied (all scripts have A status), S=Sta
 
   * release script set is executed in steps, one for each database affected
   * if using scope parameters in sqlapply.sh, not all release scripts are applied but only selected
-  * each step creates separate log folder $C_CONFIG_SOURCE_SQL_LOGDIR/<release>-<env>-<dc>-<start timestamp> to stop log files
+{{{
+each step creates separate log folder $C_CONFIG_SOURCE_SQL_LOGDIR/<release>-<env>-<dc>-<start timestamp> 
+to stop log files
+}}}
   * before and after applying scripts to database state of script execution statuses extracted from administration tables and saved to files status.after/before.
   * before applying scripts every script file is copied to log dir
   * when applying specific script, it wrapped up by additional commands and saved as .sql.run file
