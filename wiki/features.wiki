@@ -49,7 +49,7 @@ Defines features implemented in URM.
    * Storing log files of execution
   * [featuresdbdist Prepare Database Distributive]
    * Complex database configurations
-   * Source code structure
+   * Source folders
    * Creating distributive
    * Manual database mofifications
    * Prepare bulk load file set
