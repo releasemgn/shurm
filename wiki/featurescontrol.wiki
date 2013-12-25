@@ -110,7 +110,6 @@ After start is completed checkenv.sh is executed to be sure that server is in he
 If server is not healthy - URM reports error and cancels current execution.
 }}}
 
-
 = Process stop control =
 
   * stopenv.sh before stopping server, checks current state - only process existence
@@ -123,8 +122,7 @@ if process is not stopped within 60 seconds:
 - for pure process URM executes "kill -9 <server process set>"
 }}}
 
-
-= Proxy-processes and subordinate processes =
+= Helper servers =
 
   * given server can have closely related helper servers - proxy-server and subordinate servers
   * proxy-server is usually an light server providing interface to main server
