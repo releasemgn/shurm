@@ -25,3 +25,4 @@ Defines declarative approach used to specify product sources, distributions and 
   * codebase URM specification - see [https://code.google.com/p/shurm/source/browse/trunk/master/samples/etc/source.xml sample]
   * distributive URM specification - see [https://code.google.com/p/shurm/source/browse/trunk/master/samples/etc/distr.xml sample]
   * environment URM specification - see [https://code.google.com/p/shurm/source/browse/trunk/master/samples/etc/env/uat.xml sample]
+  * URM release specification 
