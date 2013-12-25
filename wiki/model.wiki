@@ -14,8 +14,7 @@ Defines declarative approach used to specify product sources, distributions and 
 = Overview =
 
   * declarative specifications define product to a level of detail, sufficient to perform generic release engineering activities
-  * URM model allows to limit product knowledge, required from release engineer
-  * URM model ensures product operating flexibility, which gives developer a means to deliver changes to production without risk and without explaining all the details to operation team
+  * URM model allows to limit product knowledge, required from operation teams, ensures product operating flexibility, which gives developer a means to deliver changes to production without risk and without explaining all the details to operation team
   * URM model allows to manage huge distributed system in a consistent manner with common terms and release approaches
   * URM model is quite compact and helps to engineer, review and re-engineer your IT system
   * as well as URM model is used for automated deployment and environment control, it can be used as reliable source of information regarding physical elements of the system
