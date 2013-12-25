@@ -32,7 +32,7 @@ Defines features implemented in URM.
    * Services and pure processes
    * Process start control
    * Process stop control
-   * Proxy-processes and subordinate processes
+   * Helper servers
    * Parallel start and stop of processes, start groups
   * [featureszerodowntime Zero Downtime Deployment]
    * Using deploygroup
