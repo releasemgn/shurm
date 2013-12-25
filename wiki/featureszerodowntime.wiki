@@ -138,7 +138,8 @@ Hotdeploy operation uses below directories on environment host:
 - deployed hotdeploy state directory, containing latest versions of all binaries 
 	uploaded to the server (for rollback purposes)
 	note, that hotdeploy state directory cannot be the same as any colddeploy component location
-- hotdeploy upload directory, which contains binaries to be uploaded in current operation and used in upload command
+- hotdeploy upload directory, which contains binaries to be uploaded in current operation and 
+	used in upload command
 
 Order or deployment:
 - redist.sh copies hotdeploy component files to staging area, like colddeploy
@@ -154,7 +155,8 @@ Hotdeploy components are instructed for hot deploy by:
 
 One environment or server may use hot deploy, while another one can request cold deploy for the same component.
 
-Server having hotdeploy components, should have hotdeploypath attribute, containing relative path to upload directory:
+Server having hotdeploy components, should have hotdeploypath attribute, 
+containing relative path to upload directory:
 		<server name="bpm" type="generic.server"
 			...
 			hotdeploypath="hotupload"
