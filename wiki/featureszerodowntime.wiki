@@ -37,7 +37,7 @@ will stop two nodes included in the "second" deploygroup, but will not stop node
 which is in the "first" deploy group
 }}}
 
-= Configuration swtching deployment =
+= Configuration switching deployment =
 
   * ensures consistent application update in distributed fully clustered environment
   * uses configuration switching server which allows to change cluster node configuration without loss of service
