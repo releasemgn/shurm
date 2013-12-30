@@ -20,7 +20,7 @@ sqlplus sets below environment parameters:
 	set define off
 	set echo on
 
-Output from execution is sent tu .out file
+Output from execution is sent to .out file
 Spool operator is defined which adds execuited script text to the spool file:
 	spool $P_OUTDIR/$P_SCRIPTNAME.spool append
 
