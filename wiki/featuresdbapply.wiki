@@ -66,7 +66,6 @@ Execute options:
 
   * Some scripts are manual in nature and require execution using system account
   * URM supports such scripts by allowing to reference them by name, setting proper logging and providing useful access control
-
 {{{
 To execute manual script from release 1.0 folder with specified password to skimdb database server:
 	./sqlmanual.sh -db skimdb 1.0 mymanual1.sql <sys password>
@@ -82,7 +81,6 @@ Aligned logic can be used for manual scripts.
   * sqlldr is Oracle client utility allowing to load big data to database much faster than with sqlplus
   * URM allows to have regular sqlload file sets in releases without involving custom manual steps to load data
   * URM takes care about pre-load and post-load processing
-
 {{{
 To use dataload feature, you need to prepare one control file and one ot more data files.
 Data files are referenced from control file of from other data files.
@@ -104,7 +102,6 @@ To perform specific post-load processing, place script to dataload folder with t
   * error can be produced as application exception by script application logic or from called stored procedure
   * URM provides means to track and handle errors in database modifications
   * of course, script can bring to erroneous inconsistent database state or make incorrect modification, and this cannot be spotted by automatic execution engine of URM
-
 {{{
 Default logic stops executing release scripts to allow examine errors and make proper corrections before continuation.
 Still, if you are sure (e.g. in test environment), you can ignore any errors and proceed to next script.
