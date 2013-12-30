@@ -50,7 +50,8 @@ Path to environment log file:
 	~<appuser>/execute.log
 
 Sample file records:
-Thu May 30 14:52:53 MSK 2013 (SSH_CLIENT=192.168.100.29 34907 22): cd /oracle/ora_app3/jboss/bin; ./server.stop.sh 1148  > /dev/null
+Thu May 30 14:52:53 MSK 2013 (SSH_CLIENT=192.168.100.29 34907 22): 
+cd /oracle/ora_app3/jboss/bin; ./server.stop.sh 1148  > /dev/null
 - log contants exection time, release box and executed command
 
 In showonly mode executed command not added to envirponment host file, but logged to release box file, e.g.:
