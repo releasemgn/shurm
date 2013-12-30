@@ -11,7 +11,6 @@ Defines how to access environment hosts and automated audit of application deplo
   * Release files are copied to environment hosts using scp
   * In progress of deployment URM executes host commands via ssh
   * URM uses ssh-keypair to authorize operations on environment hosts
-
 {{{
 One-time environment setup:
 - generate public and private keys using e.g. OpenSSH - ssh-keygen -t dsa
@@ -27,7 +26,6 @@ Add public key to every environment host to the file:
 = File upload logging =
 
   * every upload operation is automatically logged both on release box, from where action is executed, and on environment host
-
 {{{
 On release box log file is deploy.log in run directory.
 Path to environment log file:
@@ -44,7 +42,6 @@ Thu May 30 08:14:08 MSK 2013: release-mgn - uploaded /oracle/d/redist/pguapp/2.7
 
   * every execute operation, which changes actual state of target environment, is automatically logged both on release box, from where action is executed, and on environment host
   * actual state is changed when files are changes within deploydir folders, defined in environment specification file, or due to hot deploy or start/stop operations
-
 {{{
 On release box log file is deploy.log in run directory.
 Path to environment log file:
@@ -73,7 +70,6 @@ stopenv.sh: SUCCESSFULLY DONE.
 
   * sometimes configuration changes are performed by direct manual editing of configuration files in the environment
   * URM allows to track configuration history both for controlled releases and manual modifications
-
 {{{
 After manual configuration execute command:
 	./svnsaveconfig.sh
@@ -115,7 +111,6 @@ You will know when and why configuration change occured.
 = Skype-notification =
 
   * if Skype-server was started on release box, you can use automatic notificcation to the chat information about start, stop and deploy operations
-
 {{{
 Notification is performed to the chat room file having name,derived from Skype chat ID.
 File name can be seen in Skype server log.
