@@ -87,7 +87,8 @@ Data files are referenced from control file of from other data files.
 To define load place file having correct index, schema, basename and extention ".ctl" to dataload subfolder
 
 Place datafiles to dataload folder - with the same index as ctl file.
-Note that extension ".txt" will lead automatical removal of "\r" symbol from data file before download to distributive.
+Note that extension ".txt" will lead automatical removal of "\r" symbol from data file 
+before download to distributive.
 
 Dataload is executed in order after all other processing.
 If you need pre-load processing, place script in ordinary coredml folder.
@@ -103,7 +104,8 @@ To perform specific post-load processing, place script to dataload folder with t
   * URM provides means to track and handle errors in database modifications
   * of course, script can bring to erroneous inconsistent database state or make incorrect modification, and this cannot be spotted by automatic execution engine of URM
 {{{
-Default logic stops executing release scripts to allow examine errors and make proper corrections before continuation.
+Default logic stops executing release scripts to allow examine errors and 
+make proper corrections before continuation.
 Still, if you are sure (e.g. in test environment), you can ignore any errors and proceed to next script.
 	./sqlapply.sh -a -s 1.0
 
