@@ -27,20 +27,25 @@ Defines how to apply changes to database.
 
 == Script Options ==
 
-  * option: "-showall"
-  * option: "-execute|-showonly"
-  * option: "-a|-f|-x|-c|-r|-p"
-  * option: "-s"
-  * option: "-m"
-  * option: "-l"
-  * option: "-nodist"
-  * option: "-auth|-noauth"
-  * option: "-aligned alignedid"
-  * option: "-dc dc"
-  * option: "-db db"
-  * option: "-dbpassword password"
-  * option: "-pending pendingid"
-  * option: "-regions "regions""
+  * option: "-showall" - add debug informing
+  * option: "-execute|-showonly" - actual execution or show command to be excuted
+  * option: "-a|-f|-x" - apply new (-a), old (-f), all (-a) scripts
+  * option: "-c|-r|-p" - change adminstration statuses - change to correct (-c), remove (-r), show current status (-p)
+  * option: "-s" - do not stop on error in execution
+  * option: "-m" - move erroneous scripts to separate source code folder in svn
+  * option: "-l" - do load files in execution of release set
+  * option: "-nodist" - do not copy downloaded release scripts to distributive, leave in stanging folder
+  * option: "-auth|-noauth" - strict/simple authentification
+  * option: "-aligned alignedid" - apply only given aligned scripts
+  * option: "-dc dc" - apply scripts only for specific datacenter
+  * option: "-db db" - apply scripts only for specific database server
+  * option: "-dbpassword password" - use given password to authentificate
+  * option: "-pending pendingid" - use given pending source code folder to download scripts
+{{{
+Use source folder $C_CONFIG_SOURCE_SQL_GLOBALPENDING/<pendingid>, not release folder
+Download scripts to $C_CONFIG_DISTR_PATH/pending-<pendingid>
+}}}
+  * option: "-regions "regions"" - apply scripts to given set of regions
 
 == Prepare Distributive Scripts ==
 
