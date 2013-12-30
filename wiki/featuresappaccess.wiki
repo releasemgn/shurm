@@ -33,8 +33,10 @@ Path to environment log file:
 
 Sample file records:
 ...
-Thu May 30 08:14:02 MSK 2013: release-mgn - uploaded /oracle/d/redist/pguapp/2.7.9.3-prod/deploy/jboss/server/default/lib/spellcheck_ru.zip
-Thu May 30 08:14:08 MSK 2013: release-mgn - uploaded /oracle/d/redist/pguapp/2.7.9.3-prod/deploy/solr/dist/2.7.9.3-apache-solr-dataimporthandler.jar
+Thu May 30 08:14:02 MSK 2013: release-mgn - uploaded 
+	/oracle/d/redist/pguapp/2.7.9.3-prod/deploy/jboss/server/default/lib/spellcheck_ru.zip
+Thu May 30 08:14:08 MSK 2013: release-mgn - 
+	uploaded /oracle/d/redist/pguapp/2.7.9.3-prod/deploy/solr/dist/2.7.9.3-apache-solr-dataimporthandler.jar
 ...	
 }}}
 
@@ -92,10 +94,12 @@ execute datacenter=dc.fed...
 execute server=pguapp node=1...
 extract configuraton component=commonapp.p6spy.conf...
 jboss@172.20.15.173: copy configuration from /oracle/ora_app3/jboss/server/default/conf ...
-jboss@172.20.15.173: no changes at http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/commonapp.p6spy.conf@172.20.15.173
+jboss@172.20.15.173: no changes at 
+http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/commonapp.p6spy.conf@172.20.15.173
 extract configuraton component=pguapp.cryptopro.ca...
 jboss@172.20.15.173: copy configuration from /oracle/ora_app3/jboss_keys/ECPrOVrP.TEST ...
-jboss@172.20.15.173: svn updated at http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/pguapp.cryptopro.ca@172.20.15.173
+jboss@172.20.15.173: svn updated at 
+http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/pguapp.cryptopro.ca@172.20.15.173
 
 Release-aligned configuration changes are automatically stored in live svn if environment has property:
 	<property name="configuration-keepalive" value="yes"/>
