@@ -72,7 +72,8 @@ Pure process is defined by:
 server.start.sh script starts server:
 - it should start process asynchronously in separate session using nohup
 - any output of start script is regarded as error message
-- in 10 seconds after calling server.start.sh URM expects that one or more processes will appear in operating system
+- in 10 seconds after calling server.start.sh URM expects that one or more processes 
+will appear in operating system
 
 server.status.sh script checks server status:
 - URM executes server.status.sh only if process exists in operating system
