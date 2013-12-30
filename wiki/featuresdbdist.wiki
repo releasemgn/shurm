@@ -115,7 +115,7 @@ Download of regular release is executed from $/makedistr/<buildmode>/database
 
 Distributive folders:
 <release-folder>/SQL/ - release folder containing all database modification files downloaded from svn
-	<dstindex>-<schema>-<name>.sql - скрипты из папок codeddl, coredml
+	<dstindex>-<schema>-<name>.sql - scripts from codeddl, coredml
 	aligned/ - see "Aligned-scripts" below 
 	dataload/ - see "Prepare bulk load file set" below
 	manual/ - see "Declare manual database modifications" below
