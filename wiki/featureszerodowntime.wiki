@@ -13,7 +13,6 @@ Zero downtime deployment is not possible sometimes without regard to deploy proc
   * any operation with nodes of given deploy group does not affect any toher nodes
   * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
   * does not prevent from application inconsistency - when updated nodes are called from not updated ones
-
 {{{
 Every node in environment specification file can have attribute "deploygroup", e.g.:
 		<server name="tpweb" type="generic.server" startorder="05"
@@ -42,7 +41,6 @@ which is in the "first" deploy group
   * ensures consistent application update in distributed fully clustered environment
   * uses configuration switching server which allows to change cluster node configuration without loss of service
   * one possible implementation of configuration switch server is nginx, which allows to reload configuration file on pair with graceful node shutdown where commands are completed
-
 {{{
 To implement this zero-downtime approach you need configuration switching server and 
 all nodes aplit between 2 groups named "first" and "second".
@@ -131,7 +129,6 @@ Without "-nodowntime" option deployment uses default sequential start/rollout/st
   * specific server can have both colddeploy (requiring restart) and hotdeploy components
   * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
   * does not prevent from application inconsistency - when there are both colddeploy and hotdeploy items
-
 {{{
 Hotdeploy operation uses below directories on environment host:
 - ordinary staging area directory - $C_CONFIG_REDISTPATH

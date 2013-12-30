@@ -11,7 +11,6 @@ Features enabling preparation of database changes in distributives
   * URM supports concepts of datacenters, database servers and application schemas
   * currently only Oracle database is supported
   * release can contain scripts and data files for sqlplus and sqlldr
-
 {{{
 Your product can be configured to run in several geographically distributed datacenters.
 Datancenter is named so because it usually contains one or more database.
@@ -59,7 +58,6 @@ See "Aligned-scripts" below.
   * source code folders and file naming define order of script execution
   * there are environment-dependent folders, but limited enough to be sure in prod-like database
   * see [sqlguidelines SQL Guidelines] to find guidelines for developers
-
 {{{
 Release folder in svn can contain sql subfolder, where all database modifications are stored
 When data and script files are enormously big, it is recommended to place them directly into distributive
@@ -97,7 +95,6 @@ where:
   * download from svn to distributive simplifies folder set
   * download script verifies folders and filenames created in svn to avoid misprints and performs simple checks
   * svn file indexes are converted to distributive indexes
-
 {{{
 To download any distributive:
 - can be performed from $PRODUCT_DEPLOYMENT_HOME/master/database
@@ -135,7 +132,6 @@ When copying files to distributive source indexes are transformed to distributiv
   * script can be applied by DBA manually if specified in deployment plan
   * any details on time and specific operations should be described in deployment plan
   * script should be executed using sys user if user is not specified explicitly
-
 {{{
 Ordinary scripts are applied using account defined in file name.
 If administrative permissions are required then script should be released as manual.
@@ -155,7 +151,6 @@ Manual folder is downloaded to distributive without changes.
 
   * to add or update millions of rows it is impractical to use transactional operations in SQL and PL-SQL and better consider using bulk load Oracle utility - sqlldr
   * bulk load operation in many cases requires preliminary or post-processing scripting using SQL/PL-SQL
-
 {{{
 Bulk load file set in svn release folder and in distributive are placed to dataload subfolder
 	control file - <srcindex>-<schema>-<name>.ctl
@@ -183,7 +178,6 @@ Download to distributive:
 
   * when all datacenters have the same schema set, but you want to control which scripts should go to which datacenter, you can use aligned scripts approach
   * aligned scripts can also be used for introducing more generic scope sets
-
 {{{
 To make feature more simplier to understand, it is better to describe datacenter-aligned scripts.
 Consider you have in PROD 7 datacenters where schema set is the same and only data are different.
@@ -221,7 +215,6 @@ Given script is related to scheme armp_RR, region RR=56 and will be applied only
    * it is possible to have regional customization when region has its own custom code
    * another approach to regional customization is to have product option which can be installed in one or more specific regions
   * to prevent from having duplicated database modification scripts in codebase, URM provides regional scripts feature
-
 {{{
 Scripts which are regional have alignedid=9.
 Regionid is two-digit number 01-99.

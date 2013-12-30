@@ -10,7 +10,6 @@ Defines process of relocation of files to environment.
 
   * generally there are distribution host, deployment host and environment host which participate in operation
   * distributives are given from filesystem path defined in environment specification path, remote or local
-
 {{{
 Environment specification file defines one of two possible distributive locations:
 
@@ -32,9 +31,8 @@ Environment specification file defines one of two possible distributive location
 = Staging area =
 
   * to handle network copy risks and to reduce downtime required, deployment is performed in two steps:
-   * intially distributive is copied to environment hosts, to staging area folders, without affecting running processes
-   * when all files are relocated to staging area, actual deployment can be executed, with affecting runtime area
-
+  * intially distributive is copied to environment hosts, to staging area folders, without affecting running processes
+  * when all files are relocated to staging area, actual deployment can be executed, with affecting runtime area
 {{{
 Product parameter file defines location of staging area for all hosts on all environments:
 	C_CONFIG_REDISTPATH=/oracle/d/redist
@@ -61,7 +59,6 @@ In hotdeploy mode rollout executes hotdeploy command.
 
   * distributive and environment files can have different names
   * reason is having different basename or adding versioning prefix
-
 {{{
 release directory name format is <releasever>[-<distname>], where
 	<releasever> - version corresponding to tag set on source code files
@@ -91,7 +88,6 @@ If versioning is not turned off, environment file will be renamed:
   * in some cases, one may need to have partial deployment
   * one way to to deploy by giving server list in command line
   * another way is to use "-unit" option, which filters distributive selecting only items, related to specific unit
-
 {{{
 To deploy only specified servers, execute commands:
 	./redist.sh <release> <server1> <server2> ... <serverN>
@@ -135,7 +131,6 @@ Option "-unit <unitname>" limits scope of ./redist.sh command:
 
   * files copied over network may become corrupted due to network failure
   * to ensure safe releases after copying to staging area file is automatically verified
-
 {{{
 Before copy and after copy md5sum is calculated vs file.
 If values are different, redist.sh scripts informs about problem and cancels its work.
@@ -146,7 +141,6 @@ Just run redist.sh again or resolve network issue
 
   * simple deployment is using single location on host filesystem to roll out release files
   * practically most servers require several directories where distributive files should be placed to
-
 {{{
 Every server in environment specification file has root path.
 		<server name="osb" type="generic.server" deploytype="default"
@@ -184,7 +178,6 @@ Sometimes locations do not have common root path, except "/"
 
   * archives which need to be copied to runtime without extracting files, are regarded by URM as binaries
   * if you need to automatically extract archive, then you need to define distributive item as archive
-
 {{{
 Distributive specification file distr.xml can reference archive as one of
 "archive.direct", "archive.child", "archive.subdir",
@@ -254,7 +247,6 @@ Even if environment property is set to ignore configuration files, one can overr
 
   * environment configuration files can be saved in svn and restored from templates
   * all of the defined configuration components are updated
-
 {{{
 Configurations files are referenced in configuration components in distr.xml
 - server configuration components are defined in environment specification file:
@@ -288,7 +280,6 @@ Still, files are restored from template directory $C_CONFIG_SOURCE_CFG_ROOTDIR/t
   * war-files for web-applications can be separated in distributive from static data - one war file and one related static file
   * useful design is when static files are returned to browser immediately from filesystem, without querying application server
   * static file can be rolled out using archive approach but another way is to use special distributive item type
-
 {{{
 War-file with static is defined in distr.xml:
 			<distitem name="gu-web" type="war" context="pgu"/>
@@ -333,7 +324,6 @@ redist.sh command when deploying to web application server automatically copies 
 
   * standard approach to recover from bad release is rollback to previous distribution
   * URM support automated rollback
-
 {{{
 Rollbacks files are created in staging area if using option "-backup" in redist.sh.
 Option can be set as default by defining property in environment specification file:
