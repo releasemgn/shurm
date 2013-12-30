@@ -38,7 +38,8 @@ where:
 	"reg" - schema set defined by C_CONFIG_SCHEMAREGLIST
 		e.g., C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
 	"all" - schema set defined by C_CONFIG_SCHEMAALLLIST
-		e.g., C_CONFIG_SCHEMAALLLIST="$C_CONFIG_SCHEMAFEDLIST $C_CONFIG_SCHEMAREGLIST armp_RR xwikiRR sir_stat_RR"
+		e.g., C_CONFIG_SCHEMAALLLIST=
+		"$C_CONFIG_SCHEMAFEDLIST $C_CONFIG_SCHEMAREGLIST armp_RR xwikiRR sir_stat_RR"
 	"custom" - schema set defined by database server attribute - "schemalist"
 		e.g.:
 		<server name="skimdb" type="database" deploytype="manual"
@@ -142,7 +143,8 @@ then place original script to manual release folder and describe required modifi
 If any script is running more that 10 minutes, URM forces cancel of script execution.
 If developer knows about huge long-running modifications in his script, 
 script should be placed to manual release folder and deployment plan should contain estamated time of execution.
-Usually it means that DBA and operation team will have specific precaution operations to handle downtime of the system.
+Usually it means that DBA and operation team will have specific precaution operations 
+to handle downtime of the system.
 
 Manual folder is downloaded to distributive without changes.
 }}}
@@ -161,14 +163,16 @@ Bulk load file set in svn release folder and in distributive are placed to datal
 Data files:
 	use extensions .dat and .txt for data files
 	.txt files are processed by URM to remove "\r" symbol to make Unix-like newlines
-	if control file does not specify codepage, then by default URM will set NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	if control file does not specify codepage, then by default URM 
+		will set NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
 
 Download to distributive:
 	if data files are too big (gigabytes) then it is useful to ask release engineer 
 	to place files directly to the release folder in release directory without commit to svn.
 
 	data files are not changed with download to save correct references in control file
-	ctl and sql files will have distributive indexes 8<alignedid><srcindex> and 9<alignedid><srcindex> respectively
+	ctl and sql files will have distributive indexes 8<alignedid><srcindex> and 
+		9<alignedid><srcindex> respectively
 	<alignedid> - usually 0, see "Aligned-scripts" below 
 }}}
 
@@ -227,7 +231,7 @@ Database can have regional schemas - e.g. xwiki_56, xwiki_89.
 - regional database schemas are defined by mask with regionid placeholder - RR
 - generally given database has both shared schemas and regional (non-numbered) schemas
 - regional schemas are defined in product parameter file
-		C_CONFIG_SCHEMAALLLIST="apex_040000 siradm armp_RR sir_srdRR mvspider_RR jbpmRR xwikiRR sir_stat_RR"
+	C_CONFIG_SCHEMAALLLIST="apex_040000 siradm armp_RR sir_srdRR mvspider_RR jbpmRR xwikiRR sir_stat_RR"
 
 Enrionment specification file can define set of regions hosted in given database server:
 		<server name="sirdb" type="database" deploytype="none"
