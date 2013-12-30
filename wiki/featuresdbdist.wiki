@@ -173,7 +173,7 @@ Download to distributive:
 	to place files directly to the release folder in release directory without commit to svn.
 
 	data files are not changed with download to save correct references in control file
-	ctl and sql files will have distributive indexes 8<alignedid><srcindex> è 9<alignedid><srcindex> respectively
+	ctl and sql files will have distributive indexes 8<alignedid><srcindex> and 9<alignedid><srcindex> respectively
 	<alignedid> - usually 0, see "Aligned-scripts" below 
 }}}
 
