@@ -11,7 +11,6 @@ Control distributed environment from administrative host.
   * URM supports managing hightly distributed clustered system
   * single administrative box and command line can be used to start, stop and check status of any server in the system
   * several products and several environments of one product can be controlled from the same administration box
-
 {{{
 Start/stop scripts are wrappers, created by product configuring (see setup).
 
@@ -44,7 +43,6 @@ To include in restart configuration-only servers, you need to set option "-all":
   * URM supports two types of processes - services and pure processes
   * service process is isolated by using init.d script
   * pure process is visible to URM in operating system and can be directly addressed, e.g. killed
-
 {{{
 Service process is introduced in environment specification file by:
 		<server name="nlb" type="service" servicename="nginx"
@@ -99,7 +97,6 @@ server.stop.sh scripts stops the server:
   * if server process is started and is not in correct status, URM issues error message and stops execution
   * server start is performed in async mode: first server start is initiated then status is repeatedly checked to wait for completion
   * server can have property defining timeout to start, by default - 60 seconds
-
 {{{
 		<server name="regweb.war5" type="generic.web"
 			starttime="900"
@@ -115,7 +112,6 @@ If server is not healthy - URM reports error and cancels current execution.
   * stopenv.sh before stopping server, checks current state - only process existence
   * if server process does not exist, command is regarded as completed
   * if server process exists, stop command is executed and status is repeatedly queried to wait for actual stop
-
 {{{
 if process is not stopped within 60 seconds:
 - for service process URM reports error condition and stops execution
@@ -127,7 +123,6 @@ if process is not stopped within 60 seconds:
   * given server can have closely related helper servers - proxy-server and subordinate servers
   * proxy-server is usually an light server providing interface to main server
   * subordinate process - is helper process which used by given main server only
-
 {{{
 Order of calling is expected:
 	some client process -> proxy-server -> given server -> subordinate servers
@@ -159,7 +154,6 @@ Any helper server can be referenced in ordinary way:
 
   * to spped up start and stop operations servers are started/stopped in parallel
   * parallel operations are performed for nodes, servers and datacenters
-
 {{{
 All nodes are always operated in parallel.
 For instance, if starting server having 2 nodes for pure server process, start sequence will be:
