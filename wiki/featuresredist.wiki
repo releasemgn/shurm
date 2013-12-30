@@ -62,7 +62,8 @@ In hotdeploy mode rollout executes hotdeploy command.
 {{{
 release directory name format is <releasever>[-<distname>], where
 	<releasever> - version corresponding to tag set on source code files
-	<distname> - can be used to support several distributives for the same version (e.g. cumulative and incremental)
+	<distname> - can be used to support several distributives for the same version 
+	(e.g. cumulative and incremental)
 
 Environment file name is [<releasever>-]<deployname><extension>, where
 	<releasever> - release directory version
@@ -105,8 +106,9 @@ defined in environment specification file:
 - ./deployredist.sh command use only servers defined in parameters or all servers with non-empty staging area:
 		i.e. ./deployredist.sh <release> formweb will not change formweb.nginx
 
-Option "-unit <unitname>" limits scope of ./redist.sh command:
-- only components being part of specified unit are copied to destination servers, see distributive specification file:
+Option "-unit <unitname>" limits scope of ./redist.sh command
+Only components being part of specified unit are copied to destination servers, 
+see distributive specification file:
 		<component name="formweb.conf" 			
 			unit="core" type="files" files="run.pguweb.conf" layer="server"/>
 
@@ -180,8 +182,8 @@ Sometimes locations do not have common root path, except "/"
   * if you need to automatically extract archive, then you need to define distributive item as archive
 {{{
 Distributive specification file distr.xml can reference archive as one of
-"archive.direct", "archive.child", "archive.subdir",
-e.g., <distitem name="pgu-dependencies" distname="pgu-dependencies" type="archive.direct" extension="-libs.tar.gz"/>
+"archive.direct", "archive.child", "archive.subdir", e.g., 
+<distitem name="pgu-dependencies" distname="pgu-dependencies" type="archive.direct" extension="-libs.tar.gz"/>
 
 Distributive item is then included to the component as usual:
 		<component name="pguweb.dependencies" unit="core">
@@ -250,20 +252,20 @@ Even if environment property is set to ignore configuration files, one can overr
 {{{
 Configurations files are referenced in configuration components in distr.xml
 - server configuration components are defined in environment specification file:
-		<server name="pguapp" type="generic.server"
-			...
-			>
-			...
-			<configure component="commonapp.p6spy.conf" deploypath="jboss/server/default/conf"/>
-			<configure component="pguapp.cryptopro.ca" deploypath="jboss_keys/ECPrOVrP.TEST"/>
-			<configure component="pguapp.app.conf" deploypath="jboss/server/default/conf/pgu"/>
-			<configure component="pguapp.config.ds" deploypath="jboss/server/default/deploy"/>
+	<server name="pguapp" type="generic.server"
+		...
+		>
+		...
+		<configure component="commonapp.p6spy.conf" deploypath="jboss/server/default/conf"/>
+		<configure component="pguapp.cryptopro.ca" deploypath="jboss_keys/ECPrOVrP.TEST"/>
+		<configure component="pguapp.app.conf" deploypath="jboss/server/default/conf/pgu"/>
+		<configure component="pguapp.config.ds" deploypath="jboss/server/default/deploy"/>
 
 - mapping component to files is defined in distributive specification file:
-			<component name="pguapp.cryptopro.ca" 		unit="core" type="dir" layer="server"/>
-			<component name="pguapp.app.conf" 		unit="core" type="dir" layer="server"/>
-			<component name="pguapp.jbossweb-sar.conf" 	unit="core" type="files" files="server.xml" 
-				layer="server"/>
+		<component name="pguapp.cryptopro.ca" 		unit="core" type="dir" layer="server"/>
+		<component name="pguapp.app.conf" 		unit="core" type="dir" layer="server"/>
+		<component name="pguapp.jbossweb-sar.conf" 	unit="core" type="files" files="server.xml" 
+			layer="server"/>
 
 Environment configuration files are stored in $C_CONFIG_SOURCE_CFG_LIVEROOTDIR/<env> by calling:
 	./svnsaveconfig.sh
@@ -282,34 +284,34 @@ Still, files are restored from template directory $C_CONFIG_SOURCE_CFG_ROOTDIR/t
   * static file can be rolled out using archive approach but another way is to use special distributive item type
 {{{
 War-file with static is defined in distr.xml:
-			<distitem name="gu-web" type="war" context="pgu"/>
+		<distitem name="gu-web" type="war" context="pgu"/>
 
 Then this item is included to component as usual:
-		<component name="pguweb.fedcore" unit="core">
-			<distitem name="pgu-esperanto-web"/>
-			...
+	<component name="pguweb.fedcore" unit="core">
+		<distitem name="pgu-esperanto-web"/>
+		...
 
 Environment specification file references war item also like ordinary binary item:
-		<server name="fedweb" type="generic.web"
-			...
-			proxy-server="fedweb.nginx"
-			>
-			<deploy component="pguweb.fedcore"/>
-			...
+	<server name="fedweb" type="generic.web"
+		...
+		proxy-server="fedweb.nginx"
+		>
+		<deploy component="pguweb.fedcore"/>
+		...
 - but if server has proxy-server attribute defined then proxy-server will be target for the static:
-		<server name="fedweb.nginx" type="service" servicename="nginx"
-			starttime="30"
-			port="3010"
-			rootpath="/oracle/ora_app2"
-			deploypath="nginx/html"
-			webdomain="feddemo1.gosuslugi.ru"
-			>
-			<node hostlogin="root@172.20.15.40"/>
-			<node hostlogin="root@172.20.15.65"/>
-			<configure component="pguweb.nginx.conf" deploypath="nginx/etc/nginx"/>
-			<configure component="commonweb.nginx.htmlroot" deploypath="nginx/html"/>
-			<configure component="commonweb.nginx.static-errors" deploypath="nginx/html/static_errors"/>
-		</server>
+	<server name="fedweb.nginx" type="service" servicename="nginx"
+		starttime="30"
+		port="3010"
+		rootpath="/oracle/ora_app2"
+		deploypath="nginx/html"
+		webdomain="feddemo1.gosuslugi.ru"
+		>
+		<node hostlogin="root@172.20.15.40"/>
+		<node hostlogin="root@172.20.15.65"/>
+		<configure component="pguweb.nginx.conf" deploypath="nginx/etc/nginx"/>
+		<configure component="commonweb.nginx.htmlroot" deploypath="nginx/html"/>
+		<configure component="commonweb.nginx.static-errors" deploypath="nginx/html/static_errors"/>
+	</server>
 - proxy-server will be target for deployment but its definition does not contain deployments
 - root path and default deployment location from proxy-server are used to roll out static
 - static archive type expected - "archive.subdir"
