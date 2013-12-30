@@ -56,6 +56,7 @@ Defines features implemented in URM.
    * Aligned-scripts
   * [featuresdbapply Apply Database Changes]
    * Using sqlplus to apply changes
+   * Select what and where to apply
    * Apply manual administration scripts using sys account
    * Load data using sqlldr
    * Handling errors
