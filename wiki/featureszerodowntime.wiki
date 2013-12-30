@@ -165,7 +165,8 @@ redist.sh with "-hot/cold" option limits copied files from distributive to respe
 	hot component binaries
 rollout.sh, rollback.sh with "-hot/cold" option limits rollout to cold or hot deploy components (cold by default)
 deployredist.sh without "-hot/cold" option will deploy first cold components, then hot components
-deployredist.sh with "-hot/cold" will limit start/rollout/stop operations to corresponding items and related servers
+deployredist.sh with "-hot/cold" will limit start/rollout/stop operations 
+	to corresponding items and related servers
 
 All binaries and configuration archives are placed to "hotdeploypath" directory:
 - before execution upload directory is cleared (by rollout.sh)
