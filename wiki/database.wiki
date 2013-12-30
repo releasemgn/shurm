@@ -45,7 +45,7 @@ Defines how to apply changes to database.
 Use source folder $C_CONFIG_SOURCE_SQL_GLOBALPENDING/<pendingid>, not release folder
 Download scripts to $C_CONFIG_DISTR_PATH/pending-<pendingid>
 }}}
-  * option: "-regions "regions"" - apply scripts to given set of regions
+  * option: *"-regions "regions""* - apply scripts to given set of regions
 
 == Prepare Distributive Scripts ==
 
