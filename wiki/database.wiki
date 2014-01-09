@@ -29,7 +29,7 @@ Defines how to apply changes to database.
 
   * option: *"-showall"* - add debug informing
   * option: *"-execute|-showonly"* - actual execution or show command to be excuted
-  * option: *"-a|-f|-x"* - apply new (-a), old (-f), all (-a) scripts
+  * option: *"-a|-f|-x"* - apply new (-a), old (-f), all (-x) scripts
   * option: *"-c|-r|-p"* - change adminstration statuses - change to correct (-c), remove (-r), show current status (-p)
   * option: *"-s"* - do not stop on error in execution
   * option: *"-m"* - move erroneous scripts to separate source code folder in svn
