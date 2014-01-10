@@ -8,7 +8,7 @@ Control distributed environment from administrative host.
 
 = Start and stop of selected servers =
 
-  * URM supports managing hightly distributed clustered system
+  * URM supports managing highly distributed clustered system
   * single administrative box and command line can be used to start, stop and check status of any server in the system
   * several products and several environments of one product can be controlled from the same administration box
 {{{
