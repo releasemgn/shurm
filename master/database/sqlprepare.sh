@@ -630,10 +630,10 @@ function f_local_process_uddi_smevattrs() {
 	cat $LOCAL_UDDI_FNAME | while read line; do
 		local line=`echo $line | sed "s/\"/@/g;s/\n//"`
 		local UDDI_ATTR_ID=`echo $line | cut -d " " -f3`
-		local UDDI_ATTR_NAME=`echo $line | sed 's/.*name=@\([^@]*\)@.*/\1/g'`
-		local UDDI_ATTR_CODE=`echo $line | sed 's/.*code=@\([^@]*\)@.*/\1/g'`
-		local UDDI_ATTR_REGION=`echo $line | sed 's/.*region=@\([^@]*\)@.*/\1/g'`
-		local UDDI_ATTR_ACCESSPOINT=`echo $line | sed 's/.*accesspoint=@\([^@]*\)@.*/\1/g'`
+		local UDDI_ATTR_NAME=`echo $line | sed "s/.*name=@\([^@]*\)@.*/\1/g;s/'/''/g"`
+		local UDDI_ATTR_CODE=`echo $line | sed "s/.*code=@\([^@]*\)@.*/\1/g"`
+		local UDDI_ATTR_REGION=`echo $line | sed "s/.*region=@\([^@]*\)@.*/\1/g"`
+		local UDDI_ATTR_ACCESSPOINT=`echo $line | sed "s/.*accesspoint=@\([^@]*\)@.*/\1/g"`
 
 		if [ "$UDDI_ATTR_ID" = "" ] || [ "$UDDI_ATTR_NAME" = "" ] || [ "$UDDI_ATTR_CODE" = "" ] || [ "$UDDI_ATTR_REGION" = "" ] || [ "$UDDI_ATTR_ACCESSPOINT" = "" ]; then
 			echo "sqlprepare.sh: invalid string - line=$line"
