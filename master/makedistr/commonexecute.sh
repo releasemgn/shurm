@@ -213,10 +213,18 @@ function f_execute_vcscopybranch() {
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
 	local P_VCSPATH=$4
+	local P_PROD_BRANCH=$5
 
 	if [ "$C_BRANCH1" = "" ] || [ "$C_BRANCH2" = "" ]; then
 		echo "f_execute_vcscopybranch: C_BRANCH1, C_BRANCH2 not set"
 		exit 1
+	fi
+
+	if [ "$C_BRANCH1" = "prod" ]; then
+		C_BRANCH1=$P_PROD_BRANCH
+	fi
+	if [ "$C_BRANCH2" = "prod" ]; then
+		C_BRANCH2=$P_PROD_BRANCH
 	fi
 
 	./vcscopybranch.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_BRANCH1 $C_BRANCH2
@@ -227,10 +235,18 @@ function f_execute_vcsrenamebranch() {
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
 	local P_VCSPATH=$4
+	local P_PROD_BRANCH=$5
 
 	if [ "$C_BRANCH1" = "" ] || [ "$C_BRANCH2" = "" ]; then
 		echo "f_execute_vcsrenamebranch: C_BRANCH1, C_BRANCH2 not set"
 		exit 1
+	fi
+
+	if [ "$C_BRANCH1" = "prod" ]; then
+		C_BRANCH1=$P_PROD_BRANCH
+	fi
+	if [ "$C_BRANCH2" = "prod" ]; then
+		C_BRANCH2=$P_PROD_BRANCH
 	fi
 
 	./vcsrenamebranch.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_BRANCH1 $C_BRANCH2
@@ -417,10 +433,10 @@ function f_execute_one() {
 			f_execute_vcsrenametag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
 			;;
 		VCSCOPYBRANCH)
-			f_execute_vcscopybranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcscopybranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSRENAMEBRANCH)
-			f_execute_vcsrenamebranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcsrenamebranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
 		STARTCANDIDATETAGS)
 			f_execute_start_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
