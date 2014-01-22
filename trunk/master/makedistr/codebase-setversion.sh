@@ -19,8 +19,6 @@ fi
 
 . ./common.sh
 
-echo C_VERSION=$VERSION
-
 # core and wars
 export C_VERSION=$VERSION # used in common.sh - SETVERSION
 
