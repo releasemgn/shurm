@@ -23,7 +23,7 @@ function f_local_setvesion() {
 	echo setversion.sh MODULENAME=$P_MODULENAME, MODULEPATH=$P_MODULEPATH, BRANCH=$P_BRANCH, VERSION=$P_VERSION, PATCHPATH=$PATCHPATH ...
 
 	rm -rf $PATCHPATH
-	./vcscheckout.sh "$PATCHPATH" "$P_MODULENAME" "$P_MODULEPATH" "$P_BRANCH"
+	./vcscheckout.sh "$PATCHPATH" "$P_MODULENAME" "$P_MODULEPATH" "$P_BRANCH" > /dev/null
 
 	if [ "$?" != "0" ]; then
 		echo error calling vcscheckout.sh. Exiting
