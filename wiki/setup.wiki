@@ -125,8 +125,10 @@ Wrappers and their directories for environments are created in Your Product URM 
 {{{
 1. download latest release, untar release archive to temporary directory, 
 which consists of upgrade.sh script and master directory:
+	mkdir $UNTAR_RELEASE_DIRECTORY
+	cd $UNTAR_RELEASE_DIRECTORY
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
-	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
+	tar xf master.tar
 2. cd to temporary directory and execute upgrade:
 	cd $UNTAR_RELEASE_DIRECTORY
 	./upgrade.sh $MYP_DEPLOYMENT_HOME
