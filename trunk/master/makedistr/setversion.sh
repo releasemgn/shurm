@@ -57,9 +57,12 @@ function f_local_setvesion() {
 		exit 1
 	fi
 
-	for pom in `find . -name "pom.xml"`; do
-		git add $pom
-	done
+	# handle git specifics
+	if [[ "$P_MODULEPATH" =~ ^git: ]]; then
+		for pom in `find . -name "pom.xml"`; do
+			git add $pom
+		done
+	fi
 
 	cd $F_SAVEDIR
 	
