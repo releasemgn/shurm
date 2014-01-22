@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-# Usage example: ./buildall-release.sh -showall war pgu-reg12
+# Usage example: ./buildall-release.sh -showall core
 
 . ./_context.sh
 export VERSION_MODE=$C_CONTEXT_VERSIONMODE
