@@ -31,8 +31,8 @@ function f_local_setvesion() {
 	fi
 
 	# set version
-	JAVA_HOME=/usr/java/$C_CONFIG_JAVA_VERSION
-	PATH=$JAVA_HOME/bin:$PATH
+	export JAVA_HOME=/usr/java/$C_CONFIG_JAVA_VERSION
+	export PATH=$JAVA_HOME/bin:$PATH
 
 	if [ "$C_CONFIG_MAVEN_VERSION" = "" ]; then
 		echo C_CONFIG_MAVEN_VERSION is not defined - maven version is unknown. Exiting
@@ -41,9 +41,9 @@ function f_local_setvesion() {
 	
 	F_MAVEN_CMD="mvn versions:set -DnewVersion=$P_VERSION"
 
-	M2_HOME=/usr/local/apache-maven-$C_CONFIG_MAVEN_VERSION
-	M2=$M2_HOME/bin
-	PATH="$M2:$PATH"
+	export M2_HOME=/usr/local/apache-maven-$C_CONFIG_MAVEN_VERSION
+	export M2=$M2_HOME/bin
+	export PATH="$M2:$PATH"
 
 	local F_SAVEDIR=`pwd`
 	cd $PATCHPATH
