@@ -1,5 +1,12 @@
 #!/bin/bash 
 
+# Usage example: ./buildall-release.sh -showall core
+
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
+
+cd ..
+. ./getopts.sh
 MODULE=$1
 if [ "$MODULE" != "" ]; then
 	shift 1
@@ -8,14 +15,10 @@ else
 	MODULE_PROJECTLIST=
 fi
 
-cd ..
-. ./getopts.sh
-
-export VERSION_MODE=majorbranch
-
 . ./common.sh
 
-VERSION=$F_CONFIG_VERSION_BRANCH_NEXT
+VERSION=$C_CONFIG_VERSIONBRANCH
+
 TSVALUE=`date +%Y-%m-%d.%H-%M-%S`
 
 # override params by options
@@ -26,6 +29,10 @@ fi
 OUTDIR=$VERSION_MODE/$VERSION
 mkdir -p $OUTDIR
 
-./buildall-release.sh $VERSION $OUTDIR $MODULE "$MODULE_PROJECTLIST" > $OUTDIR/buildall-$TSVALUE.out 2>&1
+if [ "$GETOPT_SHOWALL" = "yes" ]; then
+	./buildall-release.sh $VERSION $OUTDIR $MODULE "$MODULE_PROJECTLIST" 2>&1 | tee $OUTDIR/buildall-$TSVALUE.out
+else
+	./buildall-release.sh $VERSION $OUTDIR $MODULE "$MODULE_PROJECTLIST" > $OUTDIR/buildall-$TSVALUE.out 2>&1
+fi
 
 cd branch
