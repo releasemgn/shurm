@@ -51,8 +51,10 @@ Ensure environment management can be performed on deployment box:
 	$MYP_DEPLOYMENT_HOME/master
 3. download latest release, untar release archive to temporary directory, 
 which consists of upgrade.sh script and master directory:
+	mkdir $UNTAR_RELEASE_DIRECTORY
+	cd $UNTAR_RELEASE_DIRECTORY
 	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
-	tar xf master.tar $UNTAR_RELEASE_DIRECTORY
+	tar xf master.tar
 4. cd to temporary directory and execute initial install, copy svnget.sh script:
 	cd $UNTAR_RELEASE_DIRECTORY
 	./upgrade.sh $MYP_DEPLOYMENT_HOME
