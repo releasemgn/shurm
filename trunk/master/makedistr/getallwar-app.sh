@@ -158,17 +158,19 @@ function f_local_update_libs() {
 	#   current release - if microportal exists in current release distributive
 	#   previous release (prod) - otherwise
 
-	cd pgu-services-lib
-
-	# pgu-fed-common-util - always use last built
-	if [ "$P_DISTR_SRCDIR" = "" ]; then
-		f_copy_specific_built pgu-fed-common
-	fi
-
-	echo copy libs to servicecall.ear and storageservice.ear from pgu-services-lib and servicecall-prod-libs...
 	f_source_projectlist war
 	local F_LOCAL_PROJECTSET=$C_SOURCE_PROJECTLIST
 
+	cd pgu-services-lib
+
+	if [[ " $F_LOCAL_PROJECTSET " =~ " pgu-fed " ]]; then
+		# pgu-fed-common-util - always use last built
+		if [ "$P_DISTR_SRCDIR" = "" ]; then
+			f_copy_specific_built pgu-fed-common
+		fi
+	fi
+
+	echo copy libs to servicecall.ear and storageservice.ear from pgu-services-lib and servicecall-prod-libs...
 	local project
 	for project in $F_LOCAL_PROJECTSET; do
 		f_local_get_projectlib $project
