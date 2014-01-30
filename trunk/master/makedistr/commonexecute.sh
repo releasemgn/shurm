@@ -482,8 +482,10 @@ function f_execute_core() {
 		f_release_setfile $F_FNAME_REL
 		f_release_getprojects core
 
-		f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
-		F_FULLLIST=$C_COMMON_SUBSET
+		if [ "$C_RELEASE_TARGETS" = "all" ]; then
+			f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
+			F_FULLLIST=$C_COMMON_SUBSET
+		fi
 	fi
 
 	echo commonexecute.sh: execute function=$P_FUNCTION for core projects=$P_EXECUTE_LIST ...
@@ -515,8 +517,10 @@ function f_execute_wars() {
 		f_release_setfile $F_FNAME_REL
 		f_release_getprojects war
 
-		f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
-		F_FULLLIST=$C_COMMON_SUBSET
+		if [ "$C_RELEASE_TARGETS" = "all" ]; then
+			f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
+			F_FULLLIST=$C_COMMON_SUBSET
+		fi
 	fi
 
 	echo commonexecute.sh: execute function=$P_FUNCTION for war projects=$P_EXECUTE_LIST ...
