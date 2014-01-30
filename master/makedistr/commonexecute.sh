@@ -482,7 +482,7 @@ function f_execute_core() {
 		f_release_setfile $F_FNAME_REL
 		f_release_getprojects core
 
-		if [ "$C_RELEASE_TARGETS" = "all" ]; then
+		if [ "$C_RELEASE_TARGETS" != "all" ]; then
 			f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
 			F_FULLLIST=$C_COMMON_SUBSET
 		fi
@@ -517,7 +517,7 @@ function f_execute_wars() {
 		f_release_setfile $F_FNAME_REL
 		f_release_getprojects war
 
-		if [ "$C_RELEASE_TARGETS" = "all" ]; then
+		if [ "$C_RELEASE_TARGETS" != "all" ]; then
 			f_getsubsetexact "$F_FULLLIST" "$C_RELEASE_TARGETS"
 			F_FULLLIST=$C_COMMON_SUBSET
 		fi
