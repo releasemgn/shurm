@@ -249,7 +249,7 @@ function f_redist_transfer_configset() {
 
 		# transfer files
 		f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
-		f_upload_remotefile $P_REDIST_DISTR_REMOTEHOST $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE
+		f_upload_remotefile $P_REDIST_DISTR_REMOTEHOST $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE.md5
 
 		# cleanup
 		f_run_cmdcheck $P_REDIST_DISTR_REMOTEHOST "rm -rf $F_TMPDIR"
@@ -279,7 +279,7 @@ function f_redist_transfer_configset() {
 
 		# transfer files
 		f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
-		f_upload_file $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE
+		f_upload_file $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE.md5
 
 		# cleanup
 		rm -rf $F_TMPDIR
