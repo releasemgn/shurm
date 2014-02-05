@@ -69,55 +69,13 @@ function f_redist_copy_file() {
 	fi
 
 	local F_REDIST_SRCFILE=$P_SRCDIR/$P_SRCFILENAME
-	local F_REDIST_MD5_SRC
-	if [ "$P_SRC_HOSTLOGIN" != "" ]; then
-		f_run_cmd $P_SRC_HOSTLOGIN "if [ ! -d $P_SRCDIR ]; then echo true; fi"
-		if [ "$RUN_CMD_RES" = "true" ]; then
-			echo f_redist_copy_file: directory $P_SRCDIR does not exist. Exiting
-			exit 1
-		fi
-
-		f_run_cmd $P_SRC_HOSTLOGIN "if [ ! -f $F_REDIST_SRCFILE ]; then echo true; fi"
-		if [ "$RUN_CMD_RES" = "true" ]; then
-			echo f_redist_copy_file: file $P_SRCFILENAME is missing in $P_SRCDIR, skipped.
-			return 1
-		fi
-
-		# calculate md5
-		f_run_cmd $P_SRC_HOSTLOGIN "md5sum $F_REDIST_SRCFILE | cut -d\" \" -f1"
-		F_REDIST_MD5_SRC=$RUN_CMD_RES
-	else
-		if [ ! -d "$P_SRCDIR" ]; then
-			echo f_redist_copy_file: directory P_SRCDIR=$P_SRCDIR does not exist. Exiting
-			exit 1
-		fi
-
-		if [ ! -f "$F_REDIST_SRCFILE" ]; then
-			echo f_redist_copy_file: file $P_SRCFILENAME is missing in $P_SRCDIR, skipped.
-			return 1
-		fi
-
-		# calculate md5
-		F_REDIST_MD5_SRC=`md5sum $F_REDIST_SRCFILE | cut -d " " -f1`
-	fi
+	local F_REDIST_DSTFILE=$P_DSTDIR/$P_DSTFILENAME
 
 	# copy file
-	local F_REDIST_DSTFILE=$P_DSTDIR/$P_DSTFILENAME
-	echo "$P_DST_HOSTLOGIN: copy $P_SRCFILENAME to $F_REDIST_DSTFILE (md5=$F_REDIST_MD5_SRC)..."
 	if [ "$P_SRC_HOSTLOGIN" != "" ]; then
 		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE
 	else
 		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE
-	fi
-
-	# get destination md5
-	f_run_cmd $P_DST_HOSTLOGIN "md5sum $F_REDIST_DSTFILE | cut -d\" \" -f1"
-	local F_REDIST_MD5_DST=$RUN_CMD_RES
-
-	# check copy succeeded
-	if [ "$F_REDIST_MD5_SRC" != "$F_REDIST_MD5_DST" ]; then
-		echo "f_redist_copy_file: copy failed $P_SRCFILENAME to $F_REDIST_DSTFILE (md5=$F_REDIST_MD5_DST). Exiting."
-		exit 1
 	fi
 
 	return 0		
