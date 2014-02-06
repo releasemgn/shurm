@@ -120,7 +120,7 @@ function f_redist_getdiritems() {
 	local P_ENV_HOSTLOGIN=$1
 	local P_DIR=$2
 
-	f_run_cmd $P_ENV_HOSTLOGIN "if [ -d $P_DIR ]; then cd $P_DIR; find . -maxdepth 1 -type f -name '*.*' | sed 's/\.\///g' | sort | tr '\n' ' '; fi"
+	f_run_cmd $P_ENV_HOSTLOGIN "if [ -d $P_DIR ]; then cd $P_DIR; find . -maxdepth 1 -type f -name '*.*' | grep -v ".md5$" | sed 's/\.\///g' | sort | tr '\n' ' '; fi"
 	C_REDIST_DIRITEMS=$RUN_CMD_RES
 
 	C_REDIST_DIRITEMS_ISEMPTY=true
