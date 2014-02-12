@@ -40,9 +40,26 @@ function f_execute_checkparams() {
 	fi
 
 	if [ "$GETOPT_EXECUTEPENDING" = "" ]; then
-		S_RELEASE=`echo $APP_VERSION_SQL | cut -d "-" -f3`
+		if [[ "$APP_VERSION_SQL" =~ ^major-release- ]] || [[ "$APP_VERSION_SQL" =~ ^prod-patch- ]]; then
+			S_RELEASE=`echo $APP_VERSION_SQL | cut -d "-" -f3`
+
+		elif [[ "$APP_VERSION_SQL" =~ ^demo- ]]; then
+			S_DEMO=`echo $APP_VERSION_SQL | cut -d "-" -f2`
+			local F_RID=`echo $APP_VERSION_SQL | cut -d "-" -f3`
+
+			if [ "$S_DEMO" = "" ] || [ "$F_RID" = "" ]; then
+				echo getsql.sh: demo release invalid folder name format
+				exit 1
+			fi
+
+			S_RELEASE=$F_RID-demo-$S_DEMO
+		else
+			echo getsql.sh: invalid folder name format
+			exit 1
+		fi
+
 		if [ "$S_RELEASE" = "" ]; then
-			echo getsql.sh: invalid APP_VERSION_SQL parameter format
+			echo getsql.sh: invalid folder name format
 			exit 1
 		fi
 
