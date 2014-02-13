@@ -38,12 +38,15 @@ function f_buildall_maketags() {
 		P_TARGETS="$C_SOURCE_PROJECTLIST"
 	else
 		f_checkvalidlist "$C_SOURCE_PROJECTLIST" "$P_TARGETS"
+		f_getsubset "$C_SOURCE_PROJECTLIST" "$P_TARGETS"
+		P_TARGETS="$C_COMMON_SUBSET"
 	fi
 
 	# check requested
 	local F_REQUESTED="$P_TARGETS"
 	if [ "$MODULEPROJECTS" != "" ]; then
-		F_REQUESTED="$MODULEPROJECTS"
+		f_getsubset "$C_SOURCE_PROJECTLIST" "$MODULEPROJECTS"
+		F_REQUESTED="$C_COMMON_SUBSET"
 	fi
 
 	f_checkvalidlist "$P_TARGETS" "$F_REQUESTED"
