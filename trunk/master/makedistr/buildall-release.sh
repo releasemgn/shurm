@@ -64,6 +64,10 @@ function f_buildall_maketags() {
 		S_BUILDALL_USETAG=$GETOPT_TAG
 	fi
 
+	if [ "$S_BUILDALL_USETAG" = "" ]; then
+		S_BUILDALL_USETAG=$GETOPT_TAG
+	fi
+
 	# scan requested for tags
 	S_BUILDALL_PROJECTS_HEAD=
 	S_BUILDALL_PROJECTS_TAG=
