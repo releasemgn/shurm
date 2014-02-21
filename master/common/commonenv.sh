@@ -388,8 +388,8 @@ function f_env_getxmlserverinfo() {
 	f_env_getxmllineattr server "hotdeploydata"
 	C_ENV_SERVER_HOTDEPLOYDATA=$C_ENV_XMLVALUE
 
-	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "hotdeploy" ] && [ "$C_ENV_SERVER_HOTDEPLOYSERVER" = "custom" ] && [ "$C_ENV_SERVER_DEPLOYSCRIPT" = "default" ]; then
-		echo custom script is undefined for custom hotdeploy DC=$P_DC, DB=$P_SERVER. Exiting
+	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "hotdeploy" ] && [ "$C_ENV_SERVER_HOTDEPLOYSERVER" = "local" ] && [ "$C_ENV_SERVER_DEPLOYSCRIPT" = "default" ]; then
+		echo custom script is undefined for local hotdeploy DC=$P_DC, DB=$P_SERVER. Exiting
 		exit 1
 	fi
 
