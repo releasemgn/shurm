@@ -24,6 +24,7 @@ C_ENV_SERVER_ROOTPATH=
 C_ENV_SERVER_BINPATH=
 C_ENV_SERVER_DEPLOYTYPE=
 C_ENV_SERVER_DEPLOYPATH=
+C_ENV_SERVER_DEPLOYSCRIPT=
 C_ENV_SERVER_LINKFROMPATH=
 C_ENV_SERVER_LOGPATH=
 C_ENV_SERVER_WEBDOMAIN=
@@ -42,6 +43,7 @@ C_ENV_SERVER_ALIGNED=
 C_ENV_SERVER_DBSCHEMALIST=
 C_ENV_SERVER_HOTDEPLOYSERVER=
 C_ENV_SERVER_HOTDEPLOYPATH=
+C_ENV_SERVER_HOTDEPLOYDATA=
 
 C_ENV_STATUS=
 
@@ -302,6 +304,7 @@ function f_env_getxmlserverinfo() {
 	C_ENV_SERVER_BINPATH=
 	C_ENV_SERVER_DEPLOYTYPE=
 	C_ENV_SERVER_DEPLOYPATH=
+	C_ENV_SERVER_DEPLOYSCRIPT=
 	C_ENV_SERVER_LINKFROMPATH=
 	C_ENV_SERVER_LOGPATH=
 	C_ENV_SERVER_WEBDOMAIN=
@@ -319,6 +322,7 @@ function f_env_getxmlserverinfo() {
 	C_ENV_SERVER_DBSCHEMALIST=
 	C_ENV_SERVER_HOTDEPLOYSERVER=
 	C_ENV_SERVER_HOTDEPLOYPATH=
+	C_ENV_SERVER_HOTDEPLOYDATA=
 
 	f_env_getxmlline "module/datacenter[@name='$P_DC']/server" "$P_SERVER"
 	if [ -z "$C_ENV_XMLLINE" ]; then
@@ -335,12 +339,16 @@ function f_env_getxmlserverinfo() {
 
 	f_env_getxmllineattr server "deploytype"
 	C_ENV_SERVER_DEPLOYTYPE=$C_ENV_XMLVALUE
-
 	f_env_getxmllineattr server "deploypath"
 	C_ENV_SERVER_DEPLOYPATH=$C_ENV_XMLVALUE
+	f_env_getxmllineattr server "deployscript"
+	C_ENV_SERVER_DEPLOYSCRIPT=$C_ENV_XMLVALUE
 
 	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "" ]; then
 		C_ENV_SERVER_DEPLOYTYPE="default"
+	fi
+	if [ "$C_ENV_SERVER_DEPLOYSCRIPT" = "" ]; then
+		C_ENV_SERVER_DEPLOYSCRIPT="default"
 	fi
 
 	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "links-multidir" ] || [ "$C_ENV_SERVER_DEPLOYTYPE" = "links-sinledir" ]; then
@@ -377,6 +385,13 @@ function f_env_getxmlserverinfo() {
 	C_ENV_SERVER_HOTDEPLOYSERVER=$C_ENV_XMLVALUE
 	f_env_getxmllineattr server "hotdeploypath"
 	C_ENV_SERVER_HOTDEPLOYPATH=$C_ENV_XMLVALUE
+	f_env_getxmllineattr server "hotdeploydata"
+	C_ENV_SERVER_HOTDEPLOYDATA=$C_ENV_XMLVALUE
+
+	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "hotdeploy" ] && [ "$C_ENV_SERVER_HOTDEPLOYSERVER" = "custom" ] && [ "$C_ENV_SERVER_DEPLOYSCRIPT" = "default" ]; then
+		echo custom script is undefined for custom hotdeploy DC=$P_DC, DB=$P_SERVER. Exiting
+		exit 1
+	fi
 
 	f_env_getxmllineattr server "webdomain"
 	C_ENV_SERVER_WEBDOMAIN=$C_ENV_XMLVALUE
