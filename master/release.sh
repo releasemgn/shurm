@@ -56,6 +56,8 @@ function f_local_release_build() {
 }
 
 function f_local_release_getsql() {
+	local P_RELEASE=$1
+
 	echo "get database scripts..."
 
 	# get database scripts
