@@ -112,29 +112,33 @@ function f_local_release_deploy() {
 function f_execute_cmd_uat() {
 	local P_RELEASE=$1
 
+	local F_RELEASE=$P_RELEASE
+	if [ "$F_RELEASE" = "default" ]; then
+		F_RELEASE="
+
 	local F_ENV="uat"
 	if [ "$GETOPT_ENV" != "" ]; then
 		F_ENV=$GETOPT_ENV
 	fi
 
-	f_local_msg $F_ENV "start build release $P_RELEASE and deploy into environment $F_ENV..."
-
 	# check release exists
-	f_local_release_check_exists $P_RELEASE
+	f_local_release_check_exists $F_RELEASE
+
+	f_local_msg $F_ENV "start build release $F_RELEASE and deploy into $F_ENV environment..."
 
 	# build release and get distributive
-	f_local_release_build $P_RELEASE
+	f_local_release_build $F_RELEASE
 
 	# get database scripts
-	f_local_release_getsql $P_RELEASE
+	f_local_release_getsql $F_RELEASE
 
 	f_local_msg $F_ENV "apply scripts and stop environment to deploy release..."
 
 	# apply scripts
-	f_local_release_applydb $P_RELEASE $F_ENV
+	f_local_release_applydb $F_RELEASE $F_ENV
 
 	# deploy binaries and configuration files
-	f_local_release_deploy $P_RELEASE $F_ENV
+	f_local_release_deploy $F_RELEASE $F_ENV
 
 	f_local_msg $F_ENV "done."
 }
