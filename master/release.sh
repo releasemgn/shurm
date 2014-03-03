@@ -114,7 +114,7 @@ function f_execute_cmd_uat() {
 
 	local F_RELEASE=$P_RELEASE
 	if [ "$F_RELEASE" = "default" ]; then
-		F_RELEASE=$C_CONFIG_RELEASENUMBER
+		F_RELEASE=$C_CONFIG_VERSION_NEXT_FULL
 	fi
 
 	local F_ENV="uat"
