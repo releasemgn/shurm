@@ -7,13 +7,24 @@ S_SCRIPTDIR=`pwd`
 X_RELEASE=$1
 X_CMD=$2
 
+. ../etc/config.sh
+
+if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
+	echo C_CONFIG_PRODUCT_DEPLOYMENT_HOME is not defined. Exiting
+	exit 1
+fi
+
 function f_local_msg() {
 	local P_ENV=$1
 	local P_MSG=$2
 
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$P_ENV
 	echo "chatmsg: $P_MSG"
-	./sendchatmsg.sh "$P_MSG"
+	if [ "$GETOPT_SHOWONLY" != "yes" ]; then
+		./sendchatmsg.sh "[release.sh] $P_MSG"
+	else
+		echo "execute: ./sendchatmsg.sh \"[release.sh] $P_MSG\""
+	fi
 
 	cd $S_SCRIPTDIR
 }
@@ -130,10 +141,10 @@ function f_execute_cmd_uat() {
 
 function f_execute_all() {
 	# action by command
-	if [ "$P_CMD" = "uat" ]; then
+	if [ "$X_CMD" = "uat" ]; then
 		f_execute_cmd_uat $X_RELEASE
 	else
-		echo "unknown command=$P_CMD. Exiting"
+		echo "unknown command=$X_CMD. Exiting"
 		exit 1
 	fi
 }

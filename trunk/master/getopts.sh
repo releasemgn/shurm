@@ -20,10 +20,3 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			exit 1
 	esac
 done
-
-. ../etc/config.sh
-
-if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
-	echo C_CONFIG_PRODUCT_DEPLOYMENT_HOME is not defined. Exiting
-	exit 1
-fi
