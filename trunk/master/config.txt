@@ -3,6 +3,7 @@
 #
 C_CONFIG_ADM_TRACKER				tracker project to make svn commit under (e.g. "TASK")
 C_CONFIG_ALIGNEDLIST				list of aligned distributive sets with IDs assigned (e.g. "dc.k1=1 dc.k2=2")
+C_CONFIG_RELEASENUMBER				release number (e.g. 1.4.7)
 C_CONFIG_APPVERSION				default major version (e.g. "1.0-SNAPSHOT")
 C_CONFIG_APPVERSION_RELEASEFOLDER		release folder in svn (e.g. "R_1_2/prod-patch-1.1.4")
 C_CONFIG_APPVERSION_SERVICES			default major version for wars (e.g. "2.6")
