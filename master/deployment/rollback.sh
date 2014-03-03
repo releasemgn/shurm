@@ -89,6 +89,8 @@ function f_local_executenode_binary() {
 	local P_BINDIR="$6"
 	local P_LINKFROMPATH="$7"
 	local P_HOTUPLOADPATH="$8"
+	local P_HOTDEPLOYSCRIPT="$9"
+	local P_HOTDEPLOYDATA="${10}"
 
 	if [ "$GETOPT_DEPLOYBINARY" = "no" ]; then
 		return 1
@@ -133,6 +135,8 @@ function f_local_executenode_config() {
 	local P_ROOTDIR=$5
 	local P_BINDIR=$6
 	local P_HOTUPLOADPATH="$7"
+	local P_HOTDEPLOYSCRIPT="$8"
+	local P_HOTDEPLOYDATA="$9"
 
 	# execution configuration rollback
 	f_redist_getlocations $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR "config.backup"
@@ -158,16 +162,19 @@ function f_local_executenode() {
 	local P_BINDIR="$6"
 	local P_LINKFROMPATH="$7"
 	local P_HOTUPLOADPATH="$8"
+	local P_HOTDEPLOYSCRIPT="$9"
+	local P_HOTDEPLOYDATA="${10}"
 
 	local F_SERVER_DEPLOYLOG=$S_DEPLOY_TMPPATH/$P_SERVER.node$P_NODE.txt
 	echo "$P_HOSTLOGIN: start rollback, see log $F_SERVER_DEPLOYLOG ..."
 
 	local F_PROCESS
 
-	(	f_local_executenode_binary $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_LINKFROMPATH" "$P_HOTUPLOADPATH"
+	(	f_local_executenode_binary $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_LINKFROMPATH" "$P_HOTUPLOADPATH" "$P_HOTDEPLOYSCRIPT" "$P_HOTDEPLOYDATA"
 		if [ "$GETOPT_DEPLOYHOT" != "yes" ] && [ "$GETOPT_DEPLOYCONF" = "yes" ]; then
-			f_local_executenode_config $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_HOTUPLOADPATH"
+			f_local_executenode_config $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_HOTUPLOADPATH" "$P_HOTDEPLOYSCRIPT" "$P_HOTDEPLOYDATA"
 		fi
+
 	) > $F_SERVER_DEPLOYLOG &
 
 	F_PROCESS=$!
@@ -184,6 +191,8 @@ function f_local_execute_server() {
 	local F_SERVER_LINKFROM_DIR=$C_ENV_SERVER_LINKFROMPATH
 	local F_HOTDEPLOYSERVER=$C_ENV_SERVER_HOTDEPLOYSERVER
 	local F_HOTDEPLOYDIR=$C_ENV_SERVER_HOTDEPLOYPATH
+	local F_HOTDEPLOYSCRIPT=$C_ENV_SERVER_HOTDEPLOYSCRIPT
+	local F_HOTDEPLOYDATA=$C_ENV_SERVER_HOTDEPLOYDATA
 
 	# ignore manually deployed and not deployed
 	if [ "$F_SERVER_DEPLOYTYPE" = "manual" ] || [ "$F_SERVER_DEPLOYTYPE" = "none" ]; then
@@ -199,7 +208,7 @@ function f_local_execute_server() {
 		# cluster hot deploy - redist hotdeploy components to admin server only
 		F_CLUSTER_MODE=yes
 		NODE=admin
-		f_local_executenode $F_CLUSTER_MODE $P_SRVNAME $F_HOTDEPLOYSERVER $NODE $F_SERVER_ROOTDIR $F_SERVER_BINDIR "$F_SERVER_LINKFROM_DIR" $F_HOTDEPLOYDIR
+		f_local_executenode $F_CLUSTER_MODE $P_SRVNAME $F_HOTDEPLOYSERVER $NODE $F_SERVER_ROOTDIR $F_SERVER_BINDIR "$F_SERVER_LINKFROM_DIR" "$F_HOTDEPLOYDIR" "$F_HOTDEPLOYSCRIPT" "$F_HOTDEPLOYDATA"
 	else
 		if [ "$C_ENV_SERVER_HOSTLOGIN_LIST" = "" ]; then
 			return 1
@@ -215,7 +224,7 @@ function f_local_execute_server() {
 			echo execute generic server=$P_SRVNAME node=$NODE...
 
 			# deploy both binaries and configs to each node
-			f_local_executenode $F_CLUSTER_MODE $P_SRVNAME $hostlogin $NODE $F_SERVER_ROOTDIR $F_SERVER_BINDIR "$F_SERVER_LINKFROM_DIR" $F_HOTDEPLOYDIR
+			f_local_executenode $F_CLUSTER_MODE $P_SRVNAME $hostlogin $NODE $F_SERVER_ROOTDIR $F_SERVER_BINDIR "$F_SERVER_LINKFROM_DIR" "$F_HOTDEPLOYDIR" "$F_HOTDEPLOYSCRIPT" "$F_HOTDEPLOYDATA"
 			NODE=$(expr $NODE + 1)
 		done
 	fi
