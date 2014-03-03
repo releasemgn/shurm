@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<source>
+	<projectset type="core">
+
+       		<!-- core projects -->
+		<project name="myp" vcs="svnnew" version="branch" group="core" path="/myp/myp-spring-design" jira="MYPRODUCT">
+			<distitem name="myp-ws-impl" type="nexus" extension=".war" path="com/mycompany/myp"/>
+		</project>
+
+		<project name="myp-arm" vcs="svnnew" version="branch" group="core" path="/myp/myp-spring-design" jira="MYPRODUCT">
+			<distitem name="myp-arm-web" type="nexus" extension=".war" path="com/mycompany/myp"/>
+			<distitem name="myp-arm-ws-api-impl" type="nexus" extension=".war" path="com/mycompany/myp"/>
+		</project>
+
+		<project name="myp-tech-portal" vcs="git" version="branch" group="tp" path="/" jira="MYPRODUCT">
+			<distitem name="techportal-ws-impl" type="nexus" extension=".war" path="com/mycompany/myp"/>
+			<distitem name="techportal-web" type="nexus" extension=".war" path="com/mycompany/myp"/>
+		</project>
+
+	</projectset>
+
+	<projectset type="prebuilt">
+
+		<project name="thirdparty" version="branch" group="core">
+			<distitem name="ojdbc.jar" type="svn" path="releases/myp/thirdparty/ojdbc6-11.2.0.1.0.jar"/>
+		</project>
+
+	</projectset>
+
+</source>
