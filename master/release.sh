@@ -102,7 +102,7 @@ function f_local_release_deploy() {
 		exit 1
 	fi
 
-	./deployredist.sh $P_RELEASE
+	./deployredist.sh -nomsg $P_RELEASE
 	if [ "$?" != "0" ]; then
 		echo "deployredist.sh failed. Exiting"
 		exit 1
