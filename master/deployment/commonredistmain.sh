@@ -355,6 +355,7 @@ function f_redist_rollout_generic() {
 	local F_DEPLOY_ARCHIVE_LIST="$C_REDIST_DIRITEMS_ARCHIVE"
 	local F_DEPLOY_OBSOLETE_LIST="$C_REDIST_DIRITEMS_OBSOLETE"
 	local F_REDIST_DIRITEMS_ISPGUSTATIC=$C_REDIST_DIRITEMS_ISPGUSTATIC
+	local F_REDIST_DIRITEMS_VER=$C_REDIST_DIRITEMS_VER
 
 	if [ "$C_REDIST_DIRITEMS_ISEMPTY" = "true" ]; then
 		echo $P_ENV_HOSTLOGIN: nothing to roll out
@@ -367,7 +368,7 @@ function f_redist_rollout_generic() {
 	echo $P_ENV_HOSTLOGIN: ============================================ rollout app=$P_SERVER node=$P_NODE location=$P_LOCATION deploytype=$P_DEPLOYTYPE ...
 
 	# execute prepare
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; ./prepare.sh"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; ./prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_DIRITEMS_VER"
 
 	if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
 		# remove old
@@ -414,6 +415,8 @@ function f_redist_rollout_generic() {
 	if [ "$F_DEPLOY_ARCHIVE_LIST" != "" ]; then
 		f_redist_rollout_archives $P_SERVER $P_ENV_HOSTLOGIN $P_ROOTDIR $P_RELEASENAME $P_LOCATION "$F_DEPLOY_ARCHIVE_LIST"
 	fi
+
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
 
 	return 0
 }
@@ -498,6 +501,7 @@ function f_redist_rollback_generic() {
 	local F_DELETE_LINK_LIST=$C_REDIST_DIRITEMS_LINK
 	local F_DELETE_ARCHIVE_LIST=$C_REDIST_DIRITEMS_ARCHIVE
 	local F_REDIST_DIRITEMS_ISPGUSTATIC=$C_REDIST_DIRITEMS_ISPGUSTATIC
+	local F_REDIST_DIRITEMS_VER=$C_REDIST_DIRITEMS_VER
 
 	if [ "$C_REDIST_DIRITEMS_ISEMPTY" = "true" ]; then
 		echo $P_ENV_HOSTLOGIN: nothing to rollback
@@ -507,7 +511,7 @@ function f_redist_rollback_generic() {
 	echo $P_ENV_HOSTLOGIN: ============================================ rollback app=$P_SERVER node=$P_NODE location=$P_LOCATION deploytype=$P_DEPLOYTYPE ...
 
 	# execute prepare
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; ./prepare.sh"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; ./prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_DIRITEMS_VER"
 
 	if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
 		# remove old and new
@@ -565,6 +569,8 @@ function f_redist_rollback_generic() {
 	if [ "$F_DEPLOY_ARCHIVE_LIST" != "" ]; then
 		f_redist_rollback_archives $P_SERVER $P_ENV_HOSTLOGIN $P_ROOTDIR $P_RELEASENAME $P_LOCATION "$F_DELETE_ARCHIVE_LIST"
 	fi
+
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
 
 	return 0
 }

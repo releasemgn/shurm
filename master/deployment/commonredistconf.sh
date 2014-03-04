@@ -236,7 +236,7 @@ function f_redist_transfer_configset() {
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
 
 	local F_CONFIGTARFILE=$P_CONFCOMP.config.tar
-	local F_CONFIGTARMD5NAME=$F_CONFIGTARFILE.ver
+	local F_CONFIGTARMD5NAME=$P_CONFCOMP.ver
 
 	local F_TMPDIR=$S_COMMONREDISTCONF_RELADM_TMPDIR
 	if [ "$P_REDIST_DISTR_REMOTEHOST" != "" ]; then
