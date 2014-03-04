@@ -16,6 +16,9 @@ function f_redist_rollout_config() {
 		exit 1
 	fi
 
+	f_getpath_statelocation $P_SERVER $P_LOCATION "config"
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
+
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION "config"
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
 
@@ -56,6 +59,9 @@ function f_redist_rollback_config() {
 		echo f_redist_rollout_config: invalid call
 		exit 1
 	fi
+
+	f_getpath_statelocation $P_SERVER $P_LOCATION "config.backup"
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION "config.backup"
 	local F_DSTDIR_BACKUP=$C_COMMON_DIRPATH
