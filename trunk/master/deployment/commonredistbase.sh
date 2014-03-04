@@ -25,6 +25,7 @@ C_REDIST_DIRITEMS_LINK=
 C_REDIST_DIRITEMS_OBSOLETE=
 C_REDIST_DIRITEMS_ISEMPTY=
 C_REDIST_DIRITEMS_CONFIG=
+C_REDIST_DIRITEMS_VER=
 
 C_REDIST_DEPLOY_CONTENT=
 C_REDIST_DEPLOY_BACKUP_CONTENT=
@@ -56,27 +57,28 @@ function f_redist_execute() {
 
 # redist file
 function f_redist_copy_file() {
-	local P_SRCFILENAME=$1
-	local P_SRCDIR=$2
-	local P_DST_HOSTLOGIN=$3
-	local P_DSTDIR=$4
-	local P_DSTFILENAME=$5
-	local P_SRC_HOSTLOGIN=$6
+	local P_DISTITEM=$1
+	local P_SRCFILENAME=$2
+	local P_SRCDIR=$3
+	local P_DST_HOSTLOGIN=$4
+	local P_DSTDIR=$5
+	local P_DSTFILENAME=$6
+	local P_SRC_HOSTLOGIN=$7
 
-	if [ "$P_SRCFILENAME" = "" ] || [ "$P_SRCDIR" = "" ] || [ "$P_DST_HOSTLOGIN" = "" ] || [ "$P_DSTDIR" = "" ] || [ "$P_DSTFILENAME" = "" ]; then
+	if [ "$P_DISTITEM" = "" ] || [ "$P_SRCFILENAME" = "" ] || [ "$P_SRCDIR" = "" ] || [ "$P_DST_HOSTLOGIN" = "" ] || [ "$P_DSTDIR" = "" ] || [ "$P_DSTFILENAME" = "" ]; then
 		echo f_redist_copy_file: invalid call. Exiting
 		exit 1
 	fi
 
 	local F_REDIST_SRCFILE=$P_SRCDIR/$P_SRCFILENAME
 	local F_REDIST_DSTFILE=$P_DSTDIR/$P_DSTFILENAME
-	local L_MD5PATH=$F_REDIST_DSTFILE.md5
+	local L_MD5NAME=$P_DISTITEM.ver
 
 	# copy file
 	if [ "$P_SRC_HOSTLOGIN" != "" ]; then
-		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5PATH
+		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME
 	else
-		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5PATH
+		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME
 	fi
 
 	return 0		
@@ -120,7 +122,7 @@ function f_redist_getdiritems() {
 	local P_ENV_HOSTLOGIN=$1
 	local P_DIR=$2
 
-	f_run_cmd $P_ENV_HOSTLOGIN "if [ -d $P_DIR ]; then cd $P_DIR; find . -maxdepth 1 -type f -name '*.*' | grep -v ".md5$" | sed 's/\.\///g' | sort | tr '\n' ' '; fi"
+	f_run_cmd $P_ENV_HOSTLOGIN "if [ -d $P_DIR ]; then cd $P_DIR; find . -maxdepth 1 -type f -name '*.*' | sed 's/\.\///g' | sort | tr '\n' ' '; fi"
 	C_REDIST_DIRITEMS=$RUN_CMD_RES
 
 	C_REDIST_DIRITEMS_ISEMPTY=true
@@ -132,6 +134,7 @@ function f_redist_getdiritems() {
 	C_REDIST_DIRITEMS_LINK=
 	C_REDIST_DIRITEMS_OBSOLETE=
 	C_REDIST_DIRITEMS_CONFIG=
+	C_REDIST_DIRITEMS_VER=
 
 	if [ "$C_REDIST_DIRITEMS" = "" ]; then
 		return 0
@@ -139,7 +142,10 @@ function f_redist_getdiritems() {
 
 	local x
 	for x in $C_REDIST_DIRITEMS; do
-		if [ "$x" = "$S_REDIST_PGU_STATIC_FILENAME" ]; then
+		if [[ "$x" =~ .ver$ ]]; then
+			C_REDIST_DIRITEMS_VER="$C_REDIST_DIRITEMS_VER $x"
+
+		elif [ "$x" = "$S_REDIST_PGU_STATIC_FILENAME" ]; then
 			C_REDIST_DIRITEMS_ISPGUSTATIC=true
 			C_REDIST_DIRITEMS_ISEMPTY=false
 
@@ -180,6 +186,7 @@ function f_redist_getdiritems() {
 	C_REDIST_DIRITEMS_CONFIG=${C_REDIST_DIRITEMS_CONFIG# }
 	C_REDIST_DIRITEMS_BINARY=${C_REDIST_DIRITEMS_BINARY# }
 	C_REDIST_DIRITEMS_MASKEDBINARY=${C_REDIST_DIRITEMS_MASKEDBINARY# }
+	C_REDIST_DIRITEMS_VER=${C_REDIST_DIRITEMS_VER# }
 }
 
 function f_redist_getdeployfilename() {
@@ -330,7 +337,7 @@ function f_redist_transfer_file() {
 	f_redist_getdeployfilename $P_RELEASE $P_DEPLOYTYPE
 
 	if [ "$P_DEPLOYTYPE" != "static" ]; then
-		f_redist_copy_file "$C_SOURCE_FILE" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$C_DISTR_DEPLOYFINALNAME" $P_DIST_HOSTLOGIN
+		f_redist_copy_file $P_DISTITEM "$C_SOURCE_FILE" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$C_DISTR_DEPLOYFINALNAME" $P_DIST_HOSTLOGIN
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
@@ -343,7 +350,7 @@ function f_redist_transfer_file() {
 			F_REDIST_SAVEAS="archive.$C_DISTR_STATICPREFIX.$C_DISTR_WAR_CONTEXT.tar.gz"
 		fi
 			
-		f_redist_copy_file "$C_SOURCE_FILE_STATIC" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$F_REDIST_SAVEAS" $P_DIST_HOSTLOGIN
+		f_redist_copy_file $P_DISTITEM "$C_SOURCE_FILE_STATIC" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$F_REDIST_SAVEAS" $P_DIST_HOSTLOGIN
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
