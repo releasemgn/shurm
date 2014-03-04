@@ -32,7 +32,7 @@ S_DEPLOY_STATUS=
 S_DEPLOY_TMPPATH="/tmp/$HOSTNAME.$USER.rollout.p$$"
 S_DEPLOY_TMPPATH_TOTAL=$S_DEPLOY_TMPPATH/total.txt
 
-function f_local_executelocation_generic() {
+function f_local_executelocation_binary() {
 	local P_SERVER=$1
 	local P_HOSTLOGIN="$2"
 	local P_NODE=$3
@@ -52,7 +52,7 @@ function f_local_executelocation_generic() {
 	fi
 }
 
-function f_local_executenode_configlocation() {
+function f_local_executelocation_config() {
 	local P_SERVER=$1
 	local P_HOSTLOGIN=$2
 	local P_NODE=$3
@@ -117,7 +117,7 @@ function f_local_executenode_binary() {
 	local locationdir
 	for locationdir in $F_LOCATIONS; do
 		echo execute binary locationdir=$locationdir...
-		f_local_executelocation_generic $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" $locationdir "$P_LINKFROMPATH" "$P_HOTUPLOADPATH"
+		f_local_executelocation_binary $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" $locationdir "$P_LINKFROMPATH" "$P_HOTUPLOADPATH"
 	done
 
 	if [ "$GETOPT_DEPLOYHOT" = "yes" ] && [ "$S_DEPLOY_STATUS" = "yes" ]; then
@@ -148,7 +148,7 @@ function f_local_executenode_config() {
 		# execute by location
 		local locationdir
 		for locationdir in $F_LOCATIONS; do
-			f_local_executenode_configlocation $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $locationdir
+			f_local_executelocation_config $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $locationdir
 		done
 	fi
 	
