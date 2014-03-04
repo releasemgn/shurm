@@ -152,7 +152,8 @@ function f_upload_file() {
 		exit 1
 	fi
 
-	f_run_cmdcheck $P_HOSTLOGIN "echo $P_REMOTENAME:$F_REDIST_MD5_DST > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_REMOTENAME >> ~/upload.log"
+	local F_DSTBASENAME=`basename $P_REMOTENAME`
+	f_run_cmdcheck $P_HOSTLOGIN "echo $F_DSTBASENAME:$F_REDIST_MD5_DST > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_REMOTENAME >> ~/upload.log"
 	return 0
 }
 
