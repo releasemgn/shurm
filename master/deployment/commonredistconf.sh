@@ -27,6 +27,7 @@ function f_redist_rollout_config() {
 
 	f_redist_getlocationinfo $P_SERVER $P_ENV_HOSTLOGIN $P_RELEASENAME $P_LOCATION "config"
 	local F_REDIST_CONFIG_TARS="$C_REDIST_DEPLOY_CONTENT"
+	local F_REDIST_CONFIG_VER="$C_REDIST_DEPLOY_CONTENT_VER"
 
 	if [ "$F_REDIST_CONFIG_TARS" = "" ]; then
 		echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_DEPLOY is empty. Skipped"
@@ -37,12 +38,14 @@ function f_redist_rollout_config() {
 
 	# remove old
 	echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_DEPLOY/prepare.sh before deploy ...
-	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_DEPLOY/prepare.sh"
+	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_DEPLOY/prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_CONFIG_VER"
 
 	# deploy new
 	echo $P_ENV_HOSTLOGIN: deploy new from $F_DSTDIR_DEPLOY to $F_RUNTIMEDIR ...
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; F_CSET=\$(find $F_DSTDIR_DEPLOY -maxdepth 1 -name \"*.config.tar\"); for tf in \$F_CSET; do tar xmf \$tf -o --owner=$F_LOGIN > /dev/null; done"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf \$tf -o --owner=$F_LOGIN > /dev/null; done"
+
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
 
 	return 0
 }
@@ -71,6 +74,7 @@ function f_redist_rollback_config() {
 
 	f_redist_getlocationinfo $P_SERVER $P_ENV_HOSTLOGIN $P_RELEASENAME $P_LOCATION "config"
 	local F_REDIST_CONFIG_TARS="$C_REDIST_DEPLOY_BACKUP_CONTENT"
+	local F_REDIST_CONFIG_VER="$C_REDIST_DEPLOY_BACKUP_CONTENT_VER"
 
 	if [ "$F_REDIST_CONFIG_TARS" = "" ]; then
 		echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_BACKUP is empty. Skipped"
@@ -81,12 +85,16 @@ function f_redist_rollback_config() {
 
 	# remove current
 	echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_BACKUP/prepare.sh before rollback ...
-	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_BACKUP/prepare.sh"
+	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_BACKUP/prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_CONFIG_VER"
 
 	# restore from backup
 	echo $P_ENV_HOSTLOGIN: restore from backup $F_DSTDIR_BACKUP to $F_RUNTIMEDIR ...
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; F_CSET=\$(find $F_DSTDIR_BACKUP -maxdepth 1 -name \"*.config.tar\"); for tf in \$F_CSET; do tar xmf \$tf -o --owner=$F_LOGIN > /dev/null; done"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf \$tf -o --owner=$F_LOGIN > /dev/null; done"
+
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
+
+	return 0
 }
 
 function f_redist_fillconfpreparescript_content() {
