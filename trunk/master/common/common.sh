@@ -254,6 +254,16 @@ function f_getpath_runtimelocation() {
 	C_COMMON_DIRPATH=$P_SERVERROOTPATH/$P_LOCATION
 }
 
+function f_getpath_statelocation() {
+	local P_SERVER=$1
+	local P_LOCATION=$2
+	local P_REDISTTYPE=$3
+
+	f_getpath_checkrelativedir $P_LOCATION
+	f_getpath_redistroot $P_SERVER "state" $P_REDISTTYPE
+	C_COMMON_DIRPATH=$C_COMMON_DIRPATH/$P_LOCATION
+}
+
 function f_getpath_hotdeployroot() {
 	local P_SERVER=$1
 	local P_SERVERROOTPATH=$2
