@@ -330,6 +330,9 @@ function f_redist_rollout_generic() {
 		F_REDISTTYPE_BACKUP="hotdeploy.backup"
 	fi
 
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
+
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
 
@@ -470,6 +473,9 @@ function f_redist_rollback_generic() {
 		F_REDISTTYPE="hotdeploy"
 		F_REDISTTYPE_BACKUP="hotdeploy.backup"
 	fi
+
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
