@@ -43,7 +43,7 @@ function f_redist_rollout_config() {
 	# deploy new
 	echo $P_ENV_HOSTLOGIN: deploy new from $F_DSTDIR_DEPLOY to $F_RUNTIMEDIR ...
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf \$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_DEPLOY/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
 
@@ -90,7 +90,7 @@ function f_redist_rollback_config() {
 	# restore from backup
 	echo $P_ENV_HOSTLOGIN: restore from backup $F_DSTDIR_BACKUP to $F_RUNTIMEDIR ...
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf \$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
+	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_BACKUP/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
 
