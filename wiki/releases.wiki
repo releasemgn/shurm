@@ -18,7 +18,7 @@ Page is intended to hold information about URM stable releases and new features.
   * Latest available stable release - [https://code.google.com/p/shurm/source/browse/releases/1.20 1.20]
   * Change notes will be available only since version 1.20
 
-= TODO =
+= Development TODO =
 
   * skip redundant redeploy by md5
   * implement custom deploy scripts for hotdeploy
