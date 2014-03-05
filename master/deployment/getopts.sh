@@ -111,6 +111,14 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			export GETOPT_ROOTUSER=yes
 			shift 1
 			;;
+		'-force')
+			export GETOPT_FORCE=yes
+			shift 1
+			;;
+		'-noforce')
+			export GETOPT_FORCE=no
+			shift 1
+			;;
 		'-releasedir')
 			export GETOPT_RELEASEDIR=$2
 			shift 2

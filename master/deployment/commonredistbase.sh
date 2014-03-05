@@ -62,12 +62,13 @@ function f_redist_execute() {
 # redist file
 function f_redist_copy_file() {
 	local P_DISTITEM=$1
-	local P_SRCFILENAME=$2
-	local P_SRCDIR=$3
-	local P_DST_HOSTLOGIN=$4
-	local P_DSTDIR=$5
-	local P_DSTFILENAME=$6
-	local P_SRC_HOSTLOGIN=$7
+	local P_STATEINFO="$2"
+	local P_SRCFILENAME=$3
+	local P_SRCDIR=$4
+	local P_DST_HOSTLOGIN=$5
+	local P_DSTDIR=$6
+	local P_DSTFILENAME=$7
+	local P_SRC_HOSTLOGIN=$8
 
 	if [ "$P_DISTITEM" = "" ] || [ "$P_SRCFILENAME" = "" ] || [ "$P_SRCDIR" = "" ] || [ "$P_DST_HOSTLOGIN" = "" ] || [ "$P_DSTDIR" = "" ] || [ "$P_DSTFILENAME" = "" ]; then
 		echo f_redist_copy_file: invalid call. Exiting
@@ -80,9 +81,9 @@ function f_redist_copy_file() {
 
 	# copy file
 	if [ "$P_SRC_HOSTLOGIN" != "" ]; then
-		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME
+		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME "$P_STATEINFO"
 	else
-		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME
+		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME "$P_STATEINFO"
 	fi
 
 	return 0		
@@ -311,9 +312,10 @@ function f_redist_transfer_file() {
 	local P_RELEASE=$2
 	local P_ENV_HOSTLOGIN=$3
 	local P_DISTITEM=$4
-	local P_SRCDIR=$5
-	local P_DSTDIR=$6
-	local P_DIST_HOSTLOGIN=$7
+	local P_STATEINFO="$5"
+	local P_SRCDIR=$6
+	local P_DSTDIR=$7
+	local P_DIST_HOSTLOGIN=$8
 
 	if [ "$P_RELEASE" = "" ] || [ "$P_ENV_HOSTLOGIN" = "" ] || [ "$P_DISTITEM" = "" ]; then
 		echo f_redist_transfer_remotefile: invalid call
@@ -345,7 +347,7 @@ function f_redist_transfer_file() {
 	f_redist_getdeployfilename $P_RELEASE $P_DEPLOYTYPE
 
 	if [ "$P_DEPLOYTYPE" != "static" ]; then
-		f_redist_copy_file $P_DISTITEM "$C_SOURCE_FILE" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$C_DISTR_DEPLOYFINALNAME" $P_DIST_HOSTLOGIN
+		f_redist_copy_file $P_DISTITEM "$P_STATEINFO" "$C_SOURCE_FILE" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$C_DISTR_DEPLOYFINALNAME" $P_DIST_HOSTLOGIN
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
@@ -358,7 +360,7 @@ function f_redist_transfer_file() {
 			F_REDIST_SAVEAS="archive.$C_DISTR_STATICPREFIX.$C_DISTR_WAR_CONTEXT.tar.gz"
 		fi
 			
-		f_redist_copy_file $P_DISTITEM "$C_SOURCE_FILE_STATIC" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$F_REDIST_SAVEAS" $P_DIST_HOSTLOGIN
+		f_redist_copy_file $P_DISTITEM "$P_STATEINFO" "$C_SOURCE_FILE_STATIC" $F_SRCDIR $P_ENV_HOSTLOGIN $P_DSTDIR "$F_REDIST_SAVEAS" $P_DIST_HOSTLOGIN
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
