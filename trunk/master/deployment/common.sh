@@ -114,6 +114,7 @@ function f_upload_file() {
 	local P_LOCALFILE=$2
 	local P_REMOTENAME=$3
 	local P_MD5NAME=$4
+	local P_STATEINFO="$5"
 
 	if [ ! -f "$P_LOCALFILE" ]; then
 		echo "f_upload_file: file $P_LOCALFILE is missing, skipped."
@@ -126,6 +127,15 @@ function f_upload_file() {
 	local F_REDIST_MD5_SRC=`if [ -f "$F_MD5SRCPATH" ]; then cat $F_MD5SRCPATH; else ( md5sum $P_LOCALFILE | cut -d " " -f1 ); fi`
 
 	echo "$P_HOSTLOGIN: copy $P_LOCALFILE to $P_REMOTENAME (src md5=$F_REDIST_MD5_SRC)..."
+
+	# check duplicate
+	local F_NEWSTATEINFO="$P_REMOTENAME:$F_REDIST_MD5_SRC"
+	if [ "$GETOPT_FORCE" != "yes" ]; then
+		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
+			echo "f_upload_file: $P_REMOTENAME - no changes. Skipped."
+			return 0
+		fi
+	fi
 
 	local F_DSTDIRNAME=`dirname $P_REMOTENAME`
 	local F_MD5DSTPATH=$F_DSTDIRNAME/$P_MD5NAME
@@ -152,7 +162,7 @@ function f_upload_file() {
 		exit 1
 	fi
 
-	f_run_cmdcheck $P_HOSTLOGIN "echo $P_REMOTENAME:$F_REDIST_MD5_DST > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_REMOTENAME >> ~/upload.log"
+	f_run_cmdcheck $P_HOSTLOGIN "echo $F_NEWSTATEINFO > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_REMOTENAME >> ~/upload.log"
 	return 0
 }
 
@@ -163,6 +173,7 @@ function f_upload_remotefile() {
 	local P_SRCFILE=$3
 	local P_DSTFILE=$4
 	local P_MD5NAME=$5
+	local P_STATEINFO="$6"
 
 	# calculate md5
 	f_run_cmd $P_SRC_HOSTLOGIN "if [ ! -f $P_SRCFILE ]; then echo true; fi"
@@ -176,6 +187,15 @@ function f_upload_remotefile() {
 	local F_MD5SRCPATH=$F_SRCDIRNAME/$P_MD5NAME
 	f_run_cmd $P_SRC_HOSTLOGIN "if [ -f "$F_MD5SRCPATH" ]; then cat $F_MD5SRCPATH; else ( md5sum $P_SRCFILE | cut -d\" \" -f1 ); fi"
 	local F_REDIST_MD5_SRC=$RUN_CMD_RES
+
+	# check duplicate
+	local F_NEWSTATEINFO="$P_DSTFILE:$F_REDIST_MD5_SRC"
+	if [ "$GETOPT_FORCE" != "yes" ]; then
+		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
+			echo "f_upload_remotefile: $P_DSTFILE - no changes. Skipped."
+			return 0
+		fi
+	fi
 
 	echo "$P_DST_HOSTLOGIN: copy $P_SRCFILE to $P_DSTFILE (src md5=$F_REDIST_MD5_SRC)..."
 
@@ -209,7 +229,7 @@ function f_upload_remotefile() {
 		exit 1
 	fi
 
-	f_run_cmdcheck $P_DST_HOSTLOGIN "echo $P_DSTFILE:$F_REDIST_MD5_DST > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_DSTFILE >> ~/upload.log"
+	f_run_cmdcheck $P_DST_HOSTLOGIN "echo $F_NEWSTATEINFO > $F_MD5DSTPATH; echo `date`: $USER - uploaded $P_DSTFILE >> ~/upload.log"
 	return 0
 }
 
