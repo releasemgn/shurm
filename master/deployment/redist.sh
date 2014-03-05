@@ -186,7 +186,7 @@ function f_local_executelocation() {
 	fi
 
 	f_redist_getdirtype $P_CLUSTER_MODE $P_NODE $F_LOC_DEPLOYTYPE "deploy"
-	if [ "$S_REDIST_DIRTYPE" = "none" ]; then
+	if [ "$C_REDIST_DIRTYPE" = "none" ]; then
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
 			echo ignore deploy binary location=$P_LOCATION clustermode=$P_CLUSTER_MODE node=$P_NODE deploytype=$F_LOC_DEPLOYTYPE
 		fi
@@ -205,8 +205,8 @@ function f_local_executelocation() {
 		return 1
 	fi
 
-	echo redist location=$F_LOCATIONFINAL deploytype=$F_LOC_DEPLOYTYPE components=$F_REDIST_COMPONENT_LIST dirtype=$S_REDIST_DIRTYPE ...
-	f_redist_createlocation $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR $P_ROOTDIR $F_LOCATIONFINAL $S_REDIST_DIRTYPE
+	echo redist location=$F_LOCATIONFINAL deploytype=$F_LOC_DEPLOYTYPE components=$F_REDIST_COMPONENT_LIST dirtype=$C_REDIST_DIRTYPE ...
+	f_redist_createlocation $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR $P_ROOTDIR $F_LOCATIONFINAL $C_REDIST_DIRTYPE
 
 	if [ "$F_REDIST_DIST_ITEMS" != "" ]; then
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
@@ -358,14 +358,14 @@ function f_local_executenode_config() {
 		fi
 
 		f_redist_getdirtype $P_CLUSTER_MODE $P_NODE $C_ENV_SERVER_COMP_DEPLOYTYPE "config"
-		if [ "$S_REDIST_DIRTYPE" != "none" ]; then
+		if [ "$C_REDIST_DIRTYPE" != "none" ]; then
 			# create location if new one
 			if [[ ! " $F_LOCATIONS " =~ " $F_CONFPATH " ]]; then
-				f_redist_createlocation $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR $P_ROOTDIR $F_CONFPATH $S_REDIST_DIRTYPE
+				f_redist_createlocation $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR $P_ROOTDIR $F_CONFPATH $C_REDIST_DIRTYPE
 				F_LOCATIONS="$F_LOCATIONS $F_CONFPATH"
 			fi
 
-			f_local_executeconfcomp $P_CLUSTER_MODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $F_CONFPATH $confcomp $S_REDIST_DIRTYPE
+			f_local_executeconfcomp $P_CLUSTER_MODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $F_CONFPATH $confcomp $C_REDIST_DIRTYPE
 		fi
 	done
 }
