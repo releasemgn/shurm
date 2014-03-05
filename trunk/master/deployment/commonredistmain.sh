@@ -27,10 +27,15 @@ function f_redist_savebackup() {
 
 	f_distr_readitem $P_DISTITEM
 
+	local F_REDISTTYPE="deploy"
 	local F_REDISTTYPE_BACKUP="deploy.backup"
 	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
+		F_REDISTTYPE="hotdeploy"
 		F_REDISTTYPE_BACKUP="hotdeploy.backup"
 	fi
+
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_BACKUP
 	local F_DSTDIR_BACKUP=$C_COMMON_DIRPATH
@@ -39,6 +44,7 @@ function f_redist_savebackup() {
 	local F_RUNTIMEDIR=$C_COMMON_DIRPATH
 
 	# backup binary file - default or replaced link
+	local F_BACKUPFILE
 	if [[ ! "$C_DISTR_TYPE" =~ ^archive ]] && [ "$C_DISTR_DEPLOYBASENAME" != "" ]; then
 		if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "hotdeploy" ] || [ "$P_DEPLOYTYPE" = "links-singledir" ]; then
 			f_find_file $F_RUNTIMEDIR $C_DISTR_DEPLOYBASENAME $C_DISTR_EXT $P_DST_HOSTLOGIN
@@ -51,7 +57,8 @@ function f_redist_savebackup() {
 			local BACKUP_SRCBASE=`basename $F_REDIST_BFILE`
 
 			f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cp -p $F_RUNTIMEDIR/$BACKUP_SRCBASE $F_DSTDIR_BACKUP"
-			echo $P_DST_HOSTLOGIN: $C_DISTR_TYPE backup created - $F_DSTDIR_BACKUP/$BACKUP_SRCBASE
+			F_BACKUPFILE=$F_DSTDIR_BACKUP/$BACKUP_SRCBASE
+			echo $P_DST_HOSTLOGIN: $C_DISTR_TYPE backup created - $F_BACKUPFILE
 
 		# backup binary file - link only
 		elif [ "$P_DEPLOYTYPE" = "links-multidir" ]; then
@@ -84,12 +91,12 @@ function f_redist_savebackup() {
 
 			f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cd $F_ARCHIVE_DIR; tar zcf $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME $F_ARCHIVE_NAME; if [ \$? -ne 0 ]; then echo failed; fi"
 
-			echo $P_DST_HOSTLOGIN: static backup of $F_ARCHIVE_DIR/$F_ARCHIVE_NAME created in $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
+			F_BACKUPFILE=$F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
+			echo $P_DST_HOSTLOGIN: static backup of $F_ARCHIVE_DIR/$F_ARCHIVE_NAME created in $F_BACKUPFILE
 		fi
-	fi
 
-	# backup archive - by content
-	if [[ "$C_DISTR_TYPE" =~ ^archive ]]; then
+	elif [[ "$C_DISTR_TYPE" =~ ^archive ]]; then
+		# backup archive - by content
 		local F_ARCHIVE_DIR
 		local F_ARCHIVE_SAVENAME
 		if [ "$C_DISTR_TYPE" = "archive.direct" ]; then
@@ -109,8 +116,12 @@ function f_redist_savebackup() {
 
 		f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cd $F_ARCHIVE_DIR; tar zcf $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME *; if [ \$? -ne 0 ]; then echo failed; fi"
 
-		echo $P_DST_HOSTLOGIN: archive backup of $F_ARCHIVE_DIR created in $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
+		F_BACKUPFILE=$F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
+		echo $P_DST_HOSTLOGIN: archive backup of $F_ARCHIVE_DIR created in $F_BACKUPFILE
 	fi
+
+	local F_STATEFILE=$F_DSTDIR_STATE/$P_DISTITEM.ver
+	f_run_cmdcheck $P_DST_HOSTLOGIN "if [ -f $F_STATEFILE ]; then cp $F_STATEFILE $F_DSTDIR_BACKUP; fi"
 }
 
 function f_redist_prepare_deleteobsolete() {
@@ -416,7 +427,9 @@ function f_redist_rollout_generic() {
 		f_redist_rollout_archives $P_SERVER $P_ENV_HOSTLOGIN $P_ROOTDIR $P_RELEASENAME $P_LOCATION "$F_DEPLOY_ARCHIVE_LIST"
 	fi
 
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
+	if [ "$F_REDIST_DIRITEMS_VER" != "" ]; then
+		f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
+	fi
 
 	return 0
 }
@@ -570,7 +583,9 @@ function f_redist_rollback_generic() {
 		f_redist_rollback_archives $P_SERVER $P_ENV_HOSTLOGIN $P_ROOTDIR $P_RELEASENAME $P_LOCATION "$F_DELETE_ARCHIVE_LIST"
 	fi
 
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
+	if [ "$F_REDIST_DIRITEMS_VER" != "" ]; then
+		f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_DIRITEMS_VER"
+	fi
 
 	return 0
 }

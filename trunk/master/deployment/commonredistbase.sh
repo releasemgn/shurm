@@ -43,7 +43,7 @@ S_REDIST_ARCHIVE_TYPE_PGUSTATIC="pgustatic"
 
 C_REDIST_UPDATED_ITEMS=
 
-S_REDIST_DIRTYPE=
+C_REDIST_DIRTYPE=
 
 function f_redist_execute() {
 	local P_EXEC_HOSTLOGIN=$1
@@ -514,23 +514,23 @@ function f_redist_getdirtype() {
 
 	# deploy to admin node only hotdeploy and in cluster mode
 	if ( [ "$P_CLUSTER_MODE" != "yes" ] || [ "$P_DEPLOYTYPE" != "hotdeploy" ] ) && [ "$P_NODE" = "admin" ]; then
-		S_REDIST_DIRTYPE=none
+		C_REDIST_DIRTYPE=none
 		return 1
 	fi
 
 	# in cluster mode deploy hotdeploy to admin node only, not to other nodes
 	if [ "$P_CLUSTER_MODE" = "yes" ] && [ "$P_DEPLOYTYPE" = "hotdeploy" ] && [ "$P_NODE" != "admin" ]; then
-		S_REDIST_DIRTYPE=none
+		C_REDIST_DIRTYPE=none
 		return 1
 	fi
 
 	# hotdeploy case
 	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		S_REDIST_DIRTYPE=hotdeploy
+		C_REDIST_DIRTYPE=hotdeploy
 		return 0
 	fi
 		
 	# other case
-	S_REDIST_DIRTYPE=$P_COMPTYPE
+	C_REDIST_DIRTYPE=$P_COMPTYPE
 	return 0
 }

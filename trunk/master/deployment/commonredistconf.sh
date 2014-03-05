@@ -45,7 +45,9 @@ function f_redist_rollout_config() {
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_DEPLOY/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
+	if [ "$F_REDIST_CONFIG_VER" != "" ]; then
+		f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_DEPLOY; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
+	fi
 
 	return 0
 }
@@ -92,7 +94,9 @@ function f_redist_rollback_config() {
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_BACKUP/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
-	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
+	if [ "$F_REDIST_CONFIG_VER" != "" ]; then
+		f_redist_execute $P_ENV_HOSTLOGIN "cd $F_DSTDIR_BACKUP; cp -t $F_DSTDIR_STATE $F_REDIST_CONFIG_VER"
+	fi
 
 	return 0
 }
@@ -186,7 +190,16 @@ function f_redist_fillconfpreparescript_andbackup() {
 		return 1
 	fi		
 
-	local F_REDISTTYPE_BACKUP=$P_DIRTYPE.backup
+	local F_REDISTTYPE="deploy"
+	local F_REDISTTYPE_BACKUP="deploy.backup"
+	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
+		F_REDISTTYPE="hotdeploy"
+		F_REDISTTYPE_BACKUP="hotdeploy.backup"
+	fi
+
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
+
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_BACKUP
 	local F_DSTDIR_BACKUP=$C_COMMON_DIRPATH
 
@@ -212,6 +225,9 @@ function f_redist_fillconfpreparescript_andbackup() {
 	fi
 
 	echo $P_ENV_HOSTLOGIN: backup created - $F_DSTDIR_BACKUP/$F_CONFIGTARFILE
+
+	local F_STATEFILE=$F_DSTDIR_STATE/$P_CONFCOMP.ver
+	f_run_cmdcheck $P_ENV_HOSTLOGIN "if [ -f $F_STATEFILE ]; then cp $F_STATEFILE $F_DSTDIR_BACKUP; fi"
 }
 
 function f_redist_transfer_configset() {
