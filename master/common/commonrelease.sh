@@ -162,6 +162,21 @@ function f_release_getfullproddistr() {
 	C_RELEASE_DISTRID=$F_NAME
 }
 
+function f_release_resolverelease() {
+	P_RELEASE=$1
+
+	C_RELEASE_DISTRID=
+	if [ "$P_RELEASE" = "prod" ]; then
+		f_release_getfullproddistr
+	elif [ "$P_RELEASE" = "last" ]; then
+		C_RELEASE_DISTRID=$C_CONFIG_VERSION_LAST_FULL
+	elif [ "$P_RELEASE" = "next" ]; then
+		C_RELEASE_DISTRID=$C_CONFIG_VERSION_NEXT_FULL
+	else
+		C_RELEASE_DISTRID=$P_RELEASE
+	fi
+}
+
 function f_release_getdistrdir() {
 	local P_DISTRPATH=$1
 	local P_RELEASENAME=$2
