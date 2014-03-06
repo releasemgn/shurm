@@ -123,6 +123,9 @@ function f_local_execute_db() {
 }
 
 function f_local_execute_all() {
+	f_release_resolverelease "$RELEASE"
+	RELEASE=$C_RELEASE_DISTRID
+
 	# execute in database list
 	f_env_getxmlserverlist_bytype $DC "database"
 	local F_DBLIST="$C_ENV_XMLVALUE"

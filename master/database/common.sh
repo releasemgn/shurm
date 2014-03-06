@@ -555,3 +555,4 @@ function f_getalldbschemalist() {
 . $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/common/common.sh
 . $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/common/commonenv.sh
 . $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/common/commondistr.sh
+. $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/common/commonrelease.sh
