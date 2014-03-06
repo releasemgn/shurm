@@ -244,7 +244,7 @@ function f_redist_transfer_fileset() {
 	local item
 	local F_STATEINFO
 	for item in $P_DIST_ITEMS; do
-		F_STATEINFO=`echo "$F_STATELIST" | grep "^$item.ver: | cut -d ":" -f2,3"
+		F_STATEINFO=`echo "$F_STATELIST" | grep "^$item.ver: | cut -d ":" -f2,3"`
 		f_redist_transfer_file $P_DEPLOYTYPE $F_RELEASE $P_DST_HOSTLOGIN $item "$F_STATEINFO" $P_REDIST_SRCPATH $F_DSTDIR_DEPLOY $P_REDIST_DISTR_REMOTEHOST
 		if [ "$?" -eq 0 ]; then
 			f_redist_savebackup $P_SERVER $P_DEPLOYTYPE $P_DST_HOSTLOGIN $P_ROOTDIR $item $P_RELEASENAME $P_LOCATION $P_LINKFROM_DIR
@@ -291,7 +291,7 @@ function f_redist_transfer_staticset() {
 	local item
 	local F_STATEINFO
 	for item in $P_DIST_ITEMS; do
-		F_STATEINFO=`echo "$F_STATELIST" | grep "^$item.ver: | cut -d ":" -f2,3"
+		F_STATEINFO=`echo "$F_STATELIST" | grep "^$item.ver: | cut -d ":" -f2,3"`
 		f_redist_transfer_file static $F_RELEASE $P_DST_HOSTLOGIN $item "$F_STATEINFO" $P_REDIST_SRCDIR $P_REDIST_SRCPATH $F_DSTDIR_DEPLOY $P_REDIST_DISTR_REMOTEHOST
 		if [ "$?" -eq 0 ]; then
 			f_redist_savebackup $P_SERVER static $P_DST_HOSTLOGIN $P_ROOTDIR $item $P_RELEASENAME $P_LOCATION
