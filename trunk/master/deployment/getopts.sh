@@ -119,6 +119,10 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			export GETOPT_FORCE=no
 			shift 1
 			;;
+		'-ignoreversion')
+			export GETOPT_IGNOREVERSION=yes
+			shift 1
+			;;
 		'-releasedir')
 			export GETOPT_RELEASEDIR=$2
 			shift 2
