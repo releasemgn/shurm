@@ -306,10 +306,8 @@ function f_local_executedc() {
 # execute
 function f_local_execute_all() {
 	# check specific version
-	if [ "$SRCVERSIONDIR" = "prod" ]; then
-		f_release_getfullproddistr
-		SRCVERSIONDIR=$C_RELEASE_DISTRID
-	fi
+	f_release_resolverelease "$SRCVERSIONDIR"
+	SRCVERSIONDIR=$C_RELEASE_DISTRID
 
 	C_DEPLOY_EXECUTE_ECHO_ONLY=true
 	C_REDIST_EXECUTE_ECHO_ONLY=true
