@@ -133,6 +133,14 @@ function f_upload_file() {
 			echo "$P_HOSTLOGIN: $P_REMOTENAME - no changes. Skipped."
 			return 0
 		fi
+
+		if [ "$GETOPT_IGNOREVERSION" = "yes" ]; then
+			local F_STATENOVER=${P_STATEINFO#*:}
+			if [ "$F_REDIST_MD5_SRC" = "$F_STATENOVER" ]; then
+				echo "$P_HOSTLOGIN: $P_REMOTENAME - no CRC changes. Skipped."
+				return 0
+			fi
+		fi
 	fi
 
 	echo "$P_HOSTLOGIN: copy $P_LOCALFILE to $P_REMOTENAME (src md5=$F_REDIST_MD5_SRC)..."
@@ -194,6 +202,14 @@ function f_upload_remotefile() {
 		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
 			echo "f_upload_remotefile: $P_DSTFILE - no changes. Skipped."
 			return 0
+		fi
+
+		if [ "$GETOPT_IGNOREVERSION" = "yes" ]; then
+			local F_STATENOVER=${P_STATEINFO#*:}
+			if [ "$F_REDIST_MD5_SRC" = "$F_STATENOVER" ]; then
+				echo "$P_HOSTLOGIN: $P_REMOTENAME - no CRC changes. Skipped."
+				return 0
+			fi
 		fi
 	fi
 
