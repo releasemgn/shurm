@@ -606,17 +606,13 @@ function f_local_executedc() {
 }
 
 function f_local_execute_all() {
+	f_release_resolverelease "$P_SRCVERSIONDIR"
+	P_SRCVERSIONDIR=$C_RELEASE_DISTRID
+
 	echo redist.sh: execute dc=$DC, releasedir=$P_SRCVERSIONDIR, servers=$SRVNAME_LIST...
 
 	rm -rf $S_REDIST_TMP
 	mkdir -p $S_REDIST_TMP
-
-	# check specific version
-	if [ "$P_SRCVERSIONDIR" = "prod" ]; then
-		f_release_getfullproddistr
-		P_SRCVERSIONDIR=$C_RELEASE_DISTRID
-		echo redist.sh: using prod version=$P_SRCVERSIONDIR
-	fi
 
 	# resdist all std binaries (except for windows-based)
 	echo redist.sh: copy distribution package to environment staging area...

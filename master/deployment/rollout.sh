@@ -277,11 +277,10 @@ function f_local_executedc() {
 
 function f_local_execute_all() {
 	# check specific version
-	if [ "$P_SRCVERSIONDIR" = "prod" ]; then
-		f_release_getfullproddistr
-		P_SRCVERSIONDIR=$C_RELEASE_DISTRID
-		echo rollout.sh: use prod version=$P_SRCVERSIONDIR
-	fi
+	f_release_resolverelease "$P_SRCVERSIONDIR"
+	P_SRCVERSIONDIR=$C_RELEASE_DISTRID
+
+	echo rollout release=$P_SRCVERSIONDIR SRVNAME_LIST=$SRVNAME_LIST...
 
 	# rollout all std binaries (except for windows-based)
 	C_DEPLOY_EXECUTE_ECHO_ONLY=true

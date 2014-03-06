@@ -107,11 +107,8 @@ function f_local_executedc() {
 
 function f_local_execute_all() {
 	# check specific version
-	if [ "$SRCVERSIONDIR" = "prod" ]; then
-		f_release_getfullproddistr
-		SRCVERSIONDIR=$C_RELEASE_DISTRID
-		echo getredistinfo.sh: use prod version=$SRCVERSIONDIR
-	fi
+	f_release_resolverelease "$SRCVERSIONDIR"
+	SRCVERSIONDIR=$C_RELEASE_DISTRID
 
 	# resdist all std binaries (except for windows-based)
 	echo getredistinfo.sh: check distribution package in staging area...
