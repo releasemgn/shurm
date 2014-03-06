@@ -126,16 +126,16 @@ function f_upload_file() {
 	local F_MD5SRCPATH=$F_SRCDIRNAME/$P_MD5NAME
 	local F_REDIST_MD5_SRC=`if [ -f "$F_MD5SRCPATH" ]; then cat $F_MD5SRCPATH; else ( md5sum $P_LOCALFILE | cut -d " " -f1 ); fi`
 
-	echo "$P_HOSTLOGIN: copy $P_LOCALFILE to $P_REMOTENAME (src md5=$F_REDIST_MD5_SRC)..."
-
 	# check duplicate
 	local F_NEWSTATEINFO="$P_REMOTENAME:$F_REDIST_MD5_SRC"
 	if [ "$GETOPT_FORCE" != "yes" ]; then
 		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
-			echo "f_upload_file: $P_REMOTENAME - no changes. Skipped."
+			echo "$P_HOSTLOGIN: $P_REMOTENAME - no changes. Skipped."
 			return 0
 		fi
 	fi
+
+	echo "$P_HOSTLOGIN: copy $P_LOCALFILE to $P_REMOTENAME (src md5=$F_REDIST_MD5_SRC)..."
 
 	local F_DSTDIRNAME=`dirname $P_REMOTENAME`
 	local F_MD5DSTPATH=$F_DSTDIRNAME/$P_MD5NAME
