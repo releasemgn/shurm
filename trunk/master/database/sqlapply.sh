@@ -219,9 +219,11 @@ function f_local_execute_db() {
 }
 
 function f_local_execute_all() {
-	local OUTDIR_POSTFIX=`date "+%Y.%m.%d-%0k.%0M.%0S"`
+	f_release_resolverelease "$RELEASEDIR"
+	RELEASEDIR=$C_RELEASE_DISTRID
 
 	# execute
+	local OUTDIR_POSTFIX=`date "+%Y.%m.%d-%0k.%0M.%0S"`
 	local F_RELEASEDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR
 	if [ ! -d "$F_RELEASEDIR" ]; then
 		echo sqlapply.sh: unknown release directory - $F_RELEASEDIR. Exiting

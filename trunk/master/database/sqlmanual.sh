@@ -46,6 +46,9 @@ function f_execute_db() {
 }
 
 function f_execute_all() {
+	f_release_resolverelease "$RELEASEDIR"
+	RELEASEDIR=$C_RELEASE_DISTRID
+
 	# release dir
 	local F_RELEASEDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR
 	if [ ! -d "$F_RELEASEDIR" ]; then

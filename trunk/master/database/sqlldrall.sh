@@ -38,6 +38,8 @@ if [ "$SQLDIRECTORY" = "" ] || [ ! -d "$SQLDIRECTORY" ]; then
 	exit 1
 fi
 
+. ./common.sh
+
 # execute
 
 S_TNSNAME=
@@ -74,6 +76,9 @@ function f_local_getenvinfo() {
 }
 
 function f_local_execute_all() {
+	f_release_resolverelease "$RELEASE"
+	RELEASE=$C_RELEASE_DISTRID
+
 	f_local_getenvinfo
 	for script in $( find $SQLDIRECTORY/dataload -name "*.ctl" | sort ); do
 		f_local_tnsldr_sh $script

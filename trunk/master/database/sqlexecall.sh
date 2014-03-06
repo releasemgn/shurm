@@ -255,6 +255,9 @@ function f_local_applyall() {
 }
 
 function f_local_executeall() {
+	f_release_resolverelease "$RELEASE"
+	RELEASE=$C_RELEASE_DISTRID
+
 	if [ "$EXECUTE_LIST" != "" ]; then
 		f_sqlidx_getegrepexecmask "$EXECUTE_LIST" $ALIGNEDID
 		S_SQLEXECLISTMASK="$S_SQL_LISTMASK"
