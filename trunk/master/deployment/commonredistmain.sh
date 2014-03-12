@@ -262,7 +262,7 @@ function f_redist_transfer_staticset() {
 		exit 1
 	fi
 
-	f_getredisttypes_bydeploytype "deploy"
+	f_getredisttypes_bydeploytype "default"
 	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
 	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
@@ -306,7 +306,7 @@ function f_redist_rollout_archives() {
 		return 0
 	fi
 
-	f_getredisttypes_bydeploytype "deploy"
+	f_getredisttypes_bydeploytype "default"
 	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_DEPLOY
