@@ -190,12 +190,9 @@ function f_redist_fillconfpreparescript_andbackup() {
 		return 1
 	fi		
 
-	local F_REDISTTYPE="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH

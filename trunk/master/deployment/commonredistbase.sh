@@ -269,24 +269,9 @@ function f_redist_getlocationinfo() {
 	local P_LOCATION=$4
 	local P_CONTENTTYPE=$5
 
-	local F_ROLLOUT_REDISTTYPE
-	local F_ROLLBACK_REDISTTYPE
-	if [ "$P_CONTENTTYPE" = "deploy" ]; then
-		F_ROLLOUT_REDISTTYPE="deploy"
-		F_ROLLBACK_REDISTTYPE="deploy.backup"
-
-	elif [ "$P_CONTENTTYPE" = "config" ]; then
-		F_ROLLOUT_REDISTTYPE="config"
-		F_ROLLBACK_REDISTTYPE="config.backup"
-
-	elif [ "$P_CONTENTTYPE" = "hotdeploy" ]; then
-		F_ROLLOUT_REDISTTYPE="hotdeploy"
-		F_ROLLBACK_REDISTTYPE="hotdeploy.backup"
-
-	else
-		echo f_redist_getlocationinfo: invalid content type=$P_CONTENTTYPE. Exiting
-		exit 1
-	fi
+	f_getredisttypes_bycontent $P_CONTENTTYPE
+	local F_ROLLOUT_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_ROLLBACK_REDISTTYPE=$C_ROLLBACK_REDISTTYPE
 
 	# get content
 	f_redist_getitems $P_SERVER $P_ENV_HOSTLOGIN $P_RELEASENAME $P_LOCATION $F_ROLLOUT_REDISTTYPE
@@ -416,24 +401,9 @@ function f_redist_createlocation() {
 	local P_LOCATION=$5
 	local P_CONTENTTYPE=$6
 
-	local F_ROLLOUT_REDISTTYPE
-	local F_ROLLBACK_REDISTTYPE
-	if [ "$P_CONTENTTYPE" = "deploy" ]; then
-		F_ROLLOUT_REDISTTYPE="deploy"
-		F_ROLLBACK_REDISTTYPE="deploy.backup"
-
-	elif [ "$P_CONTENTTYPE" = "config" ]; then
-		F_ROLLOUT_REDISTTYPE="config"
-		F_ROLLBACK_REDISTTYPE="config.backup"
-
-	elif [ "$P_CONTENTTYPE" = "hotdeploy" ]; then
-		F_ROLLOUT_REDISTTYPE="hotdeploy"
-		F_ROLLBACK_REDISTTYPE="hotdeploy.backup"
-
-	else
-		echo f_redist_createlocation: invalid content type=$P_CONTENTTYPE. Exiting
-		exit 1
-	fi
+	f_getredisttypes_bycontent $P_CONTENTTYPE
+	local F_ROLLOUT_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_ROLLBACK_REDISTTYPE=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_ROLLOUT_REDISTTYPE
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
