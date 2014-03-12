@@ -259,7 +259,7 @@ function f_getredisttypes_bycontent() {
 function f_getredisttypes_bydeploytype() {
 	local P_DEPLOYTYPE=$1
 
-	if [ "$P_DEPLOYTYPE" = "deploy" ] || [ "$P_DEPLOYTYPE" = "" ]; then
+	if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "" ]; then
 		C_ROLLOUT_REDISTTYPE="deploy"
 		C_ROLLBACK_REDISTTYPE="deploy.backup"
 
