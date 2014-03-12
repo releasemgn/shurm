@@ -2,6 +2,12 @@
 
 cd `dirname $0`
 
+GETOPT_FORCE=no
+if [ "$1" = "-force" ]; then
+	GETOPT_FORCE=yes
+	shift 1
+fi
+
 P_RELEASE=$1
 P_TAG=$2
 
@@ -31,6 +37,40 @@ function f_prepare_master() {
 	find $P_PATH -type f -name "*.sh" -exec chmod 744 \{} \;
 }
 
+function f_execute_dropold() {
+	local P_SVNRELPATH=$1
+	local P_SVNTAGPATH=$2
+	local P_DISTRPATH=$3
+
+	echo drop old release ...
+
+	# drop release
+	svn delete -m "drop old release version" $P_MASTERAUTH $P_SVNRELPATH
+	F_CHECK=$?
+	if [ "$F_CHECK" != "0" ]; then
+		echo "release.sh: unable to delete $P_SVNRELPATH. Exiting"
+		exit 1
+	fi
+
+	# drop tag if to be set
+	if [ "$P_TAG" = "" ]; then
+		local F_CHECK=`svn info $P_MASTERAUTH $P_SVNTAGPATH 2>&1 | grep "Not a valid URL"`
+
+		if [ "$F_CHECK" = "" ]; then
+			# drop tag
+			svn delete -m "drop old release version" $P_MASTERAUTH $P_SVNTAGPATH
+			F_CHECK=$?
+			if [ "$F_CHECK" != "0" ]; then
+				echo "release.sh: unable to delete $P_SVNTAGPATH. Exiting"
+				exit 1
+			fi
+		fi
+	fi
+
+	# delete release folder downloaded
+	rm -rf $P_DISTRPATH
+}
+
 function f_execute_all() {
 	local F_SAVEDIR=`pwd`
 	local F_MASTER_REPOSITORY=`svn info . | grep URL | sed "s/URL:[ ]//;s/\/trunk$//"`
@@ -43,18 +83,26 @@ function f_execute_all() {
 		F_TAG=$P_TAG
 	fi
 
+	local F_SVNRELPATH=$F_MASTER_REPOSITORY/releases/$P_RELEASE
+	local F_TAGPATH=$F_MASTER_REPOSITORY/tags/$F_TAG
+	local F_RELEASEPATH=`dirname $F_SAVEDIR`/releases/$P_RELEASE
+
 	# check release
 	echo check release $P_RELEASE exists ...
-	local F_SVNRELPATH=$F_MASTER_REPOSITORY/releases/$P_RELEASE
 	local F_CHECK=`svn info $P_MASTERAUTH $F_SVNRELPATH 2>&1 | grep "Not a valid URL"`
 	if [ "$F_CHECK" = "" ]; then
-		echo "release.sh: release $P_RELEASE already exists. Exiting"
-		exit 1
+		# check drop old
+		if [ "$GETOPT_FORCE" = "no" ]; then
+			echo "release.sh: release $P_RELEASE already exists. Exiting"
+			exit 1
+		fi
+
+		# drop
+		f_execute_dropold $F_SVNRELPATH $F_TAGPATH $F_RELEASEPATH
 	fi
 
 	# check tag exists
 	echo check tag $F_TAG exists ...
-	local F_TAGPATH=$F_MASTER_REPOSITORY/tags/$F_TAG
 	F_CHECK=`svn info $P_MASTERAUTH $F_TAGPATH 2>&1 | grep "Not a valid URL"`
 
 	if [ "$P_TAG" = "" ]; then
@@ -109,7 +157,6 @@ function f_execute_all() {
 	echo prepare master codebase ...
 	f_prepare_master $F_TMPDIRNAME/master
 
-	local F_RELEASEPATH=`dirname $F_SAVEDIR`/releases/$P_RELEASE
 	rm -rf $F_RELEASEPATH
 	mkdir -p $F_RELEASEPATH
 
