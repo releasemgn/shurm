@@ -233,6 +233,46 @@ function f_getpath_redistroot() {
 	fi
 }
 
+C_ROLLOUT_REDISTTYPE=
+C_ROLLBACK_REDISTTYPE=
+function f_getredisttypes_bycontent() {
+	local P_CONTENTTYPE=$1
+
+	if [ "$P_CONTENTTYPE" = "deploy" ]; then
+		C_ROLLOUT_REDISTTYPE="deploy"
+		C_ROLLBACK_REDISTTYPE="deploy.backup"
+
+	elif [ "$P_CONTENTTYPE" = "config" ]; then
+		C_ROLLOUT_REDISTTYPE="config"
+		C_ROLLBACK_REDISTTYPE="config.backup"
+
+	elif [ "$P_CONTENTTYPE" = "hotdeploy" ]; then
+		C_ROLLOUT_REDISTTYPE="hotdeploy"
+		C_ROLLBACK_REDISTTYPE="hotdeploy.backup"
+
+	else
+		echo f_getredisttypes_bycontent: invalid content type=$P_CONTENTTYPE. Exiting
+		exit 1
+	fi
+}
+
+function f_getredisttypes_bydeploytype() {
+	local P_DEPLOYTYPE=$1
+
+	if [ "$P_DEPLOYTYPE" = "deploy" ] || [ "$P_DEPLOYTYPE" = "" ]; then
+		C_ROLLOUT_REDISTTYPE="deploy"
+		C_ROLLBACK_REDISTTYPE="deploy.backup"
+
+	elif [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
+		C_ROLLOUT_REDISTTYPE="hotdeploy"
+		C_ROLLBACK_REDISTTYPE="hotdeploy.backup"
+
+	else
+		echo f_getredisttypes_bydeploytype: invalid deploy type=$P_DEPLOYTYPE. Exiting
+		exit 1
+	fi
+}
+
 function f_getpath_redistlocation() {
 	local P_SERVER=$1
 	local P_RELEASENAME=$2
