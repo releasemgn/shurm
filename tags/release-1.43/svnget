@@ -1,0 +1,127 @@
+#!/bin/bash
+
+P_XNAME=$1
+
+if [ "$P_XNAME" = "" ]; then
+	echo invalid call: P_XNAME is empty. Exiting
+	exit 1
+fi
+
+function f_execute_dir() {
+	local P_FDIR=$1
+
+	if [ -d "$P_FDIR" ] && [ ! -d "$P_FDIR/.svn" ]; then
+		echo directory exists but not checked out from svn. Exiting.
+		exit 1
+	fi
+
+	if [ -d "$P_FDIR/.svn" ]; then
+		echo cleanup ...
+
+		local F_EXTS="sh txt ctl xml conf properties"
+		for ext in $F_EXTS; do
+			find $P_FDIR -name "*.$ext" -type f -delete
+		done
+	fi
+
+	echo check out from svn ...
+	svn update $P_FDIR
+
+	if [ ! -d "$P_FDIR" ]; then
+		echo directory $P_FDIR is not found. Exiting
+		exit 1
+	fi
+
+	for fn in $(find $P_FDIR -name "*.sh" -o -name "*.xml" -o -name "*.txt" -o -name "*.properties" -o -name "*.conf" ); do
+		if [ -f $fn ]; then
+	        	cat $fn | sed 's/\r//g' > fntmp
+		        mv fntmp $fn
+		fi
+	done
+
+	# define access if controlled
+	if [ -f "$P_FDIR/access.sh" ]; then
+		echo execute $P_FDIR/access.sh...
+		chmod 744 $P_FDIR/access.sh
+		$P_FDIR/access.sh
+	else
+		F_FILES=`find $P_FDIR -name "*.sh"`
+		if [ "$F_FILES" != "" ]; then
+			chmod 744 $F_FILES
+		fi
+	fi
+}
+
+function f_execute_file() {
+	local P_FILE=$1
+
+	local F_DIR=`dirname $P_FILE`
+	if [ ! -d "$F_DIR/.svn" ]; then
+		echo directory $F_DIR should be checked out from svn. Exiting.
+		exit 1
+	fi
+
+	echo check out from svn ...
+	rm -rf $P_FILE
+	svn update $P_FILE
+
+	if [ ! -f "$P_FILE" ]; then
+		echo file $P_FILE is not found. Exiting
+		exit 1
+	fi
+
+	local F_EXTS="sh txt ctl xml conf properties"
+	for ext in $F_EXTS; do
+		if [[ "$P_FILE" =~ ".$ext$" ]]; then
+	        	cat $P_FILE | sed 's/\r//g' > fntmp
+		        mv fntmp $P_FILE
+		fi
+	done
+			
+	# define access if controlled
+	if [[ "$P_FILE" =~ ".sh$" ]]; then
+		chmod 544 $P_FILE
+	fi
+}
+
+function f_execute_unknown() {
+	local P_NAME=$1
+
+	local F_DIR=`dirname $P_NAME`
+	if [ ! -d "$F_DIR/.svn" ]; then
+		echo directory $F_DIR should be checked out from svn. Exiting.
+		exit 1
+	fi
+
+	echo check out from svn ...
+	rm -rf $P_NAME
+	svn update $P_NAME
+	if [ "$?" != "0" ]; then
+		echo unable to checkout $P_NAME from svn. Exiting
+		exit 1
+	fi
+
+	if [ -d "$P_NAME" ]; then
+		f_execute_dir $P_NAME
+	else if [ -f "$P_NAME" ]; then
+		f_execute_file $P_NAME
+	else
+		echo unexpected - unknown $P_NAME. Exiting
+		exit 1
+	fi
+}
+
+function f_execute_all() {
+	echo "svnget: process $P_XNAME ..."
+	if [ -d "$P_XNAME" ]; then
+		f_execute_dir $P_XNAME
+	else if [ -f "$P_XNAME" ]; then
+		f_execute_file $P_XNAME
+	else
+		f_execute_unknown $P_XNAME
+	fi
+}
+
+f_execute_all
+
+echo "svnget: successfully done"
