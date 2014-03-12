@@ -92,7 +92,7 @@ function f_execute_all() {
 	local F_TAGPATH=$F_MASTER_REPOSITORY/tags/$F_TAG
 	local F_RELEASEPATH=`dirname $F_SAVEDIR`/releases/$P_RELEASE
 
-	if [ "$GETOPT_FORCE" = "no" ]; then
+	if [ "$GETOPT_FORCE" = "yes" ]; then
 		# drop
 		f_execute_dropold $F_SVNRELPATH $F_TAGPATH $F_RELEASEPATH
 	fi
