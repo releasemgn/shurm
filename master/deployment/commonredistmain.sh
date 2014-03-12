@@ -27,12 +27,9 @@ function f_redist_savebackup() {
 
 	f_distr_readitem $P_DISTITEM
 
-	local F_REDISTTYPE="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
@@ -143,12 +140,9 @@ function f_redist_prepare_deleteobsolete() {
 		exit 1
 	fi
 
-	local F_REDISTTYPE_DEPLOY="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE_DEPLOY="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_DEPLOY
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
@@ -218,12 +212,9 @@ function f_redist_transfer_fileset() {
 		exit 1
 	fi
 
-	local F_REDISTTYPE_DEPLOY="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE_DEPLOY="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE_DEPLOY
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
@@ -271,13 +262,17 @@ function f_redist_transfer_staticset() {
 		exit 1
 	fi
 
-	f_getpath_statelocation $P_SERVER $P_LOCATION "deploy"
+	f_getredisttypes_bydeploytype "deploy"
+	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
+
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE_DEPLOY
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
 
-	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION "deploy"
+	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_DEPLOY
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
 
-	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION "deploy.backup"
+	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_BACKUP
 	local F_DSTDIR_BACKUP=$C_COMMON_DIRPATH
 
 	# ensure redist created
@@ -311,7 +306,10 @@ function f_redist_rollout_archives() {
 		return 0
 	fi
 
-	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION "deploy"
+	f_getredisttypes_bydeploytype "deploy"
+	local F_REDISTTYPE_DEPLOY=$C_ROLLOUT_REDISTTYPE
+
+	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_REDISTTYPE_DEPLOY
 	local F_DSTDIR=$C_COMMON_DIRPATH
 
 	f_getpath_runtimelocation $P_SERVER $P_ROOTDIR $P_LOCATION
@@ -348,12 +346,9 @@ function f_redist_rollout_generic() {
 		exit 1
 	fi
 
-	local F_REDISTTYPE="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
@@ -497,12 +492,9 @@ function f_redist_rollback_generic() {
 		exit 1
 	fi
 
-	local F_REDISTTYPE="deploy"
-	local F_REDISTTYPE_BACKUP="deploy.backup"
-	if [ "$P_DEPLOYTYPE" = "hotdeploy" ]; then
-		F_REDISTTYPE="hotdeploy"
-		F_REDISTTYPE_BACKUP="hotdeploy.backup"
-	fi
+	f_getredisttypes_bydeploytype $P_DEPLOYTYPE
+	local F_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
+	local F_REDISTTYPE_BACKUP=$C_ROLLBACK_REDISTTYPE
 
 	f_getpath_statelocation $P_SERVER $P_LOCATION $F_REDISTTYPE
 	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
