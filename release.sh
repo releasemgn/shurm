@@ -69,6 +69,7 @@ function f_execute_dropold() {
 
 	# delete release folder downloaded
 	rm -rf $P_DISTRPATH
+	svn update $P_MASTERAUTH $P_DISTRPATH
 }
 
 function f_execute_all() {
