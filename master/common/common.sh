@@ -259,7 +259,7 @@ function f_getredisttypes_bycontent() {
 function f_getredisttypes_bydeploytype() {
 	local P_DEPLOYTYPE=$1
 
-	if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "" ]; then
+	if [ "$P_DEPLOYTYPE" = "default" ] || [ "$P_DEPLOYTYPE" = "" ] || [ "$P_DEPLOYTYPE" = "links-multidir" ] || [ "$P_DEPLOYTYPE" = "links-sinledir" ]; then
 		C_ROLLOUT_REDISTTYPE="deploy"
 		C_ROLLBACK_REDISTTYPE="deploy.backup"
 
