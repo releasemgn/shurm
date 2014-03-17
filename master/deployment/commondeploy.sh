@@ -169,9 +169,10 @@ function f_deploy_upload_server() {
 	local P_NODE=$4
 	local P_ROOTDIR=$5
 	local P_BINPATH=$6
-	local P_HOTUPLOADPATH=$7
-	local P_SRCVERSIONDIR=$8
-	local P_HOTDEPLOYDATA=$9
+	local P_SRCVERSIONDIR=$7
+	local P_HOTUPLOADPATH="$8"
+	local P_HOTDEPLOYSCRIPT="$9"
+	local P_HOTDEPLOYDATA="${10}"
 
 	if [ "$C_ENV_ID" = "" ] || [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_HOSTLOGIN" = "" ] || [ "$P_NODE" = "" ]; then
 		echo "f_deploy_upload_server: invalid parameters. Exiting"
@@ -189,7 +190,11 @@ function f_deploy_upload_server() {
 	local F_RUNTIMEUPLOADDIR=$C_COMMON_DIRPATH
 
 	# proceed with upload
-	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $F_RUNTIMEBINDIR; ./server.upload.sh $F_RUNTIMEUPLOADDIR $P_SRCVERSIONDIR $C_ENV_ID $P_DC $P_PROGRAMNAME $P_NODE $P_HOTDEPLOYDATA"
+	local F_SCRIPTNAME="server.upload.sh"
+	if [ "$P_HOTDEPLOYSCRIPT" != "" ]; then
+		F_SCRIPTNAME=$P_HOTDEPLOYSCRIPT
+	fi
+	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $F_RUNTIMEBINDIR; ./$F_SCRIPTNAME $F_RUNTIMEUPLOADDIR $P_SRCVERSIONDIR $C_ENV_ID $P_DC $P_PROGRAMNAME $P_NODE $P_HOTDEPLOYDATA"
 	return 0
 }
 
