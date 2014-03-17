@@ -121,7 +121,7 @@ function f_local_executenode_binary() {
 	done
 
 	if [ "$GETOPT_DEPLOYHOT" = "yes" ] && [ "$S_DEPLOY_STATUS" = "yes" ]; then
-		f_deploy_upload_server $DC $P_SERVER $P_HOSTLOGIN $P_ROOTDIR $P_BINDIR "$P_HOTUPLOADPATH" "$P_SRCVERSIONDIR"
+		f_deploy_upload_server $DC $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $P_BINDIR "$P_HOTUPLOADPATH" "$P_SRCVERSIONDIR" "$P_HOTDEPLOYDATA"
 	fi
 
 	return 0
