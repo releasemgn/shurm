@@ -18,15 +18,22 @@ function f_run_cmd() {
 	fi
 
 	RUN_CMD_RES=
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		RUN_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
+		RUN_CMD_RES=`$P_CMD 2>&1`
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
 	else
-		RUN_CMD_RES=`ssh -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
-		if [ $? -ne 0 ]; then
-			return 1
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			RUN_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			RUN_CMD_RES=`ssh -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
 		fi
 	fi
 	return 0
