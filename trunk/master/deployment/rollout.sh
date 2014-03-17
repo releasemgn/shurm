@@ -121,7 +121,7 @@ function f_local_executenode_binary() {
 	done
 
 	if [ "$GETOPT_DEPLOYHOT" = "yes" ] && [ "$S_DEPLOY_STATUS" = "yes" ]; then
-		f_deploy_upload_server $DC $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $P_BINDIR "$P_HOTUPLOADPATH" "$P_SRCVERSIONDIR" "$P_HOTDEPLOYDATA"
+		f_deploy_upload_server $DC $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $P_BINDIR "$P_SRCVERSIONDIR" "$P_HOTUPLOADPATH" "$P_HOTDEPLOYSCRIPT" "$P_HOTDEPLOYDATA"
 	fi
 
 	return 0
@@ -134,9 +134,6 @@ function f_local_executenode_config() {
 	local P_NODE=$4
 	local P_ROOTDIR=$5
 	local P_BINDIR=$6
-	local P_HOTUPLOADPATH="$7"
-	local P_HOTDEPLOYSCRIPT="$8"
-	local P_HOTDEPLOYDATA="$9"
 
 	# execution configuration rollout
 	f_redist_getlocations $P_SERVER $P_HOSTLOGIN $P_SRCVERSIONDIR "config"
@@ -174,7 +171,7 @@ function f_local_executenode() {
 
 	(	f_local_executenode_binary $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_LINKFROMPATH" "$P_HOTUPLOADPATH" "$P_HOTDEPLOYSCRIPT" "$P_HOTDEPLOYDATA"
 		if [ "$GETOPT_DEPLOYHOT" != "yes" ] && [ "$GETOPT_DEPLOYCONF" = "yes" ]; then
-			f_local_executenode_config $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR" "$P_HOTUPLOADPATH" "$P_HOTDEPLOYSCRIPT" "$P_HOTDEPLOYDATA"
+			f_local_executenode_config $P_CLUSTERMODE $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR "$P_BINDIR"
 		fi
 	) > $F_SERVER_DEPLOYLOG &
 
