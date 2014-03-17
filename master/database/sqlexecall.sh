@@ -245,6 +245,7 @@ function f_local_applyall() {
 
 	# apply scripts
 	for fdir in $S_FOLDERLIST; do
+		echo execute scripts - `base$fdir ...
 		f_local_apply $fdir
 	done
 
