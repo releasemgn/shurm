@@ -254,7 +254,8 @@ function f_local_executeconfcomp() {
 		F_REDIST_FULLSRCDIR=$S_REDIST_RELEASE_GENERATED/$DC/$P_SERVER/$P_HOSTLOGIN/$P_CONFCOMP
 	else
 		# source directory information
-		local F_HOST=`echo $P_HOSTLOGIN | cut -d "@" -f2`
+		local F_HOST=${P_HOSTLOGIN#*@}
+
 		f_release_getconfcomppath $DC $P_SERVER $F_HOST $P_CONFCOMP $C_DISTR_CONF_LAYER
 		F_REDIST_FULLSRCDIR=$S_REDIST_SRCDIR/config/$C_ENV_ID/$C_RELEASE_CONFCOMPPATH
 		F_REDIST_SRCHOST=$S_REDIST_DISTR_REMOTEHOST
