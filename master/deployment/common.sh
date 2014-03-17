@@ -100,7 +100,7 @@ function f_find_file() {
 	local P_XEXTENTION=$3
 	local P_XHOSTLOGIN=$4
 
-	if [ "$P_XHOSTLOGIN" = "" ]; then
+	if [ "$P_XHOSTLOGIN" = "" ] || [ "$P_XHOSTLOGIN" = "local" ]; then
 		C_COMMON_FINDFILE_NAME=`if [ -d "$P_SRCDIR" ]; then cd $P_SRCDIR; find . -maxdepth 1 -type f -name "*$P_XEXTENTION" | egrep "./$P_XBASENAME$P_XEXTENTION|./.*[0-9]-$P_XBASENAME$P_XEXTENTION|./$P_XBASENAME-[0-9].*$P_XEXTENTION"; fi`
 	else
 		f_run_cmd $P_XHOSTLOGIN "if [ -d "$P_SRCDIR" ]; then cd $P_SRCDIR; find . -maxdepth 1 -type f -name \"*$P_XEXTENTION\" | egrep \"./$P_XBASENAME$P_XEXTENTION|./.*[0-9]-$P_XBASENAME$P_XEXTENTION|./$P_XBASENAME-[0-9].*$P_XEXTENTION\"; fi"
@@ -155,15 +155,20 @@ function f_upload_file() {
 	local F_DSTDIRNAME=`dirname $P_REMOTENAME`
 	local F_MD5DSTPATH=$F_DSTDIRNAME/$P_MD5NAME
 	f_run_cmd $P_HOSTLOGIN "rm -rf $F_MD5DSTPATH"
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
-		if [ $? -ne 0 ]; then
-			return 1
-		fi
+
+	if [ "$P_HOSTLOGIN" = "local" ]; then
+		cp $P_LOCALFILE $P_REMOTENAME
 	else
-		scp -q -B -p $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
-		if [ $? -ne 0 ]; then
-			return 1
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			scp -q -B -p $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
 		fi
 	fi
 
@@ -224,21 +229,37 @@ function f_upload_remotefile() {
 
 	local F_DSTDIRNAME=`dirname $P_DSTFILE`
 	local F_MD5DSTPATH=$F_DSTDIRNAME/$P_MD5NAME
-	local F_LOCALNAME=$HOSTNAME.$USER.redist.p$$.tmp-scpfile
 	f_run_cmd $P_DST_HOSTLOGIN "rm -rf $F_MD5DSTPATH"
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
-		rm -rf $F_LOCALNAME
-		if [ $? -ne 0 ]; then
-			return 1
+
+	if [ "$P_DST_HOSTLOGIN" = "local" ]; then
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $P_DSTFILE
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $P_DSTFILE
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
 		fi
 	else
-		scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
-		scp -q -B -p $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
-		rm -rf $F_LOCALNAME
-		if [ $? -ne 0 ]; then
-			return 1
+		local F_LOCALNAME=$HOSTNAME.$USER.redist.p$$.tmp-scpfile
+
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
+			rm -rf $F_LOCALNAME
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
+			scp -q -B -p $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
+			rm -rf $F_LOCALNAME
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
 		fi
 	fi
 
@@ -262,12 +283,17 @@ function f_upload_script() {
 	local P_SCRIPT=$2
 	local P_SCRIPTNAME=$3
 
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
-		ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
+	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
+		cp $P_SCRIPT $P_SCRIPTNAME
+		chmod 700 $P_SCRIPTNAME
 	else
-		scp -q -B -p $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
-		ssh -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
+			ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
+		else
+			scp -q -B -p $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
+			ssh -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
+		fi
 	fi
 }
 
