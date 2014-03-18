@@ -14,7 +14,7 @@ Release 1.44 notes.
   * new server-level property "deployscript" - can be used to change  hotdeploy script name from server.upload.sh to user-defined
   * server-level property "hotdeployserver" - new predefined value "local" to use local host as a server for hotdeploy
    * redist directory should exist on local server
-   * upload script should be in custom script folder of URM installation
+   * upload script should be in $PRODUCT_DEPLOYMENT_HOME/custom script folder of URM installation
 
 == Skip redundant redeploy by md5 ==
 
