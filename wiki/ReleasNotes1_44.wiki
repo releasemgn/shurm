@@ -27,3 +27,7 @@ Release 1.44 notes.
 
   * new predefined release label "last" - points to $C_CONFIG_VERSION_LAST_FULL value defined in product config.sh script
   * new predefined release label "next" - points to $C_CONFIG_VERSION_NEXT_FULL value defined in product config.sh script
+
+= Bugfixes =
+
+  * ./codebase-setversion.sh is fixed and available for both git and svn
