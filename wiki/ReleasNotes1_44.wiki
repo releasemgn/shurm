@@ -1,0 +1,24 @@
+#summary URM Releases
+[home] -> [releases] -> [ReleasNotes1_44]
+
+Release 1.44 notes.
+
+<wiki:toc max_depth="2" />
+----
+
+= Changes =
+
+== Skip redundant redeploy by md5 ==
+
+  * server redist directory now has state subdirectory, containing ".ver" files, holding information about redist path of deployed item and its md5sum data
+  * every ordinary redist operation skips deployment items which produce the same ".ver" content (i.e. deploy path, file name, version and md5sum)
+  * ./redist.sh -ignoreversion will ignore file version in redundancy check
+  * ./redist.sh -force turns off redundancy check at all
+
+== Implement custom deploy scripts for hotdeploy ==
+
+  * 
+
+
+    
+    add predefined release labels - last, next 
