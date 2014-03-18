@@ -183,17 +183,27 @@ function f_deploy_upload_server() {
 		exit 1
 	fi
 
-	f_getpath_runtimelocation $P_PROGRAMNAME $P_ROOTDIR $P_BINPATH
-	local F_RUNTIMEBINDIR=$C_COMMON_DIRPATH
+	local F_SCRIPTNAME="server.upload.sh"
+	if [ "$P_HOTDEPLOYSCRIPT" != "" ]; then
+		F_SCRIPTNAME=$P_HOTDEPLOYSCRIPT
+	fi
+
+	local F_RUNTIMEBINDIR
+	if [ "$P_HOSTLOGIN" = "local" ]; then
+		F_RUNTIMEBINDIR=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/custom
+		if [ ! -f $F_RUNTIMEBINDIR/$F_SCRIPTNAME ]; then
+			echo "f_deploy_upload_server: missing custom script $F_RUNTIMEBINDIR/$F_SCRIPTNAME. Exiting"
+			exit 1
+		fi
+	else
+		f_getpath_runtimelocation $P_PROGRAMNAME $P_ROOTDIR $P_BINPATH
+		F_RUNTIMEBINDIR=$C_COMMON_DIRPATH
+	fi
 
 	f_getpath_runtimelocation $P_PROGRAMNAME $P_ROOTDIR $P_HOTUPLOADPATH
 	local F_RUNTIMEUPLOADDIR=$C_COMMON_DIRPATH
 
 	# proceed with upload
-	local F_SCRIPTNAME="server.upload.sh"
-	if [ "$P_HOTDEPLOYSCRIPT" != "" ]; then
-		F_SCRIPTNAME=$P_HOTDEPLOYSCRIPT
-	fi
 	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $F_RUNTIMEBINDIR; ./$F_SCRIPTNAME $F_RUNTIMEUPLOADDIR $P_SRCVERSIONDIR $C_ENV_ID $P_DC $P_PROGRAMNAME $P_NODE $P_HOTDEPLOYDATA"
 	return 0
 }
