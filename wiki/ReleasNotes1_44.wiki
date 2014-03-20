@@ -8,11 +8,11 @@ Release 1.44 notes.
 
 = Change List =
 
-|| *Change* || *Documentation updated* ||
-|| Implement custom deploy scripts for hotdeploy || ||
-|| Skip redundant redeploy by md5 || ||
-|| Add predefined release labels - last, next || ||
-|| Add predefined release labels - last, next || ||
+|| ID || *Change* || *Documentation updated* ||
+|| 1 || Introduce top-level scripts || ||
+|| 2 || Implement custom deploy scripts for hotdeploy || ||
+|| 3 || Skip redundant redeploy by md5 || ||
+|| 4 || Add predefined release labels - last, next || ||
 
 = Common Changes =
 
