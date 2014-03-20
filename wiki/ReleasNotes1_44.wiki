@@ -6,7 +6,22 @@ Release 1.44 notes.
 <wiki:toc max_depth="2" />
 ----
 
-= Changes =
+= Change List =
+
+|| *Change* || *Documentation updated* ||
+|| Implement custom deploy scripts for hotdeploy || ||
+|| Skip redundant redeploy by md5 || ||
+|| Add predefined release labels - last, next || ||
+|| Add predefined release labels - last, next || ||
+
+= Common Changes =
+
+== Introduce top-level scripts ==
+
+  * master directory now contains top-level scripts to be used for execute different UMR functions - build, deployment etc
+  * release.sh script added - to build, get configuration and DB changes and deploy all into uat environment using one command
+
+= Deployment Changes =
 
 == Implement custom deploy scripts for hotdeploy ==
 
