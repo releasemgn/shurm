@@ -46,12 +46,13 @@ function f_common_watchcmd() {
 	sleep 5
 
 	local K=0
+	local F_PSVALUE_STARTED
 	while [ "$K" -lt $P_TIMEOUT ]; do
 		sleep 1
 		K=$(expr $K + 1)
 
 		# check process exists
-		local F_PSVALUE_STARTED=`pgrep -f "MARKER=$P_MARKER"`
+		F_PSVALUE_STARTED=`pgrep -f "MARKER=$P_MARKER"`
 		if [ "$F_PSVALUE_STARTED" = "" ]; then
 			return 0
 		fi
