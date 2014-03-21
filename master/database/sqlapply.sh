@@ -177,6 +177,9 @@ function f_local_execute_db() {
 	local F_RELEASEVERSION=`echo $RELEASEDIR | cut -d "-" -f1`
 	echo "apply release=$F_RELEASEVERSION to db=$P_DB: common, alignedlist=$F_USEALIGNEDDIRLIST ..."
 
+	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
+	f_check_db_connect $F_TNSNAME $C_CONFIG_SCHEMAADMIN
+
 	# create initial status file
 	local F_STATUSFILE=$P_RUNDIR/status.before.$F_TNSNAME.$P_OUTDIR_POSTFIX.txt
 	f_admindb_get_scriptstatusall $F_RELEASEVERSION $F_TNSNAME $F_STATUSFILE
