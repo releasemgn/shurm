@@ -16,7 +16,7 @@ fi
 
 function f_local_msg() {
 	local P_ENV=$1
-	local P_MSG=$2
+	local P_MSG="$2"
 
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$P_ENV
 	echo "chatmsg: $P_MSG"
