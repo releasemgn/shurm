@@ -42,6 +42,7 @@ function f_local_release_check_exists() {
 
 function f_local_release_build() {
 	local P_RELEASE=$1
+	local P_ENV=$2
 
 	echo "start build..."
 
@@ -50,6 +51,11 @@ function f_local_release_build() {
 	if [ "$?" != "0" ]; then
 		echo "buildall-release.sh failed. Exiting"
 		exit 1
+	fi
+
+	local F_ERRORS=`grep "BUILD FAILURE" $P_RELEASE/build.final.out`
+	if [ "$F_ERRORS" != "" ]; then
+		f_local_msg $P_ENV "build errors: $F_ERRORS"
 	fi
 
 	cd $S_SCRIPTDIR
@@ -130,7 +136,7 @@ function f_execute_cmd_uat() {
 	f_local_msg $F_ENV "start build release $F_RELEASE and deploy into $F_ENV environment..."
 
 	# build release and get distributive
-	f_local_release_build $F_RELEASE
+	f_local_release_build $F_RELEASE $F_ENV
 
 	# get database scripts
 	f_local_release_getsql $F_RELEASE
