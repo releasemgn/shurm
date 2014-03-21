@@ -20,6 +20,4 @@ Page is intended to hold information about URM stable releases and new features.
 
 = Development TODO =
 
-  * skip redundant redeploy by md5
-  * implement custom deploy scripts for hotdeploy
-  * add predefined release labels - last, next
+  * add build failure informing
