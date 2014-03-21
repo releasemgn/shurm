@@ -21,3 +21,4 @@ Page is intended to hold information about URM stable releases and new features.
 = Development TODO =
 
   * add build failure informing
+  * bug: timeout fired if total schema set connection check is more than 30 secs while it should be limit for single schema
