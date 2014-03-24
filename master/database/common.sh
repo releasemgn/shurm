@@ -75,7 +75,7 @@ function f_exec_limited() {
 		rm -rf $P_RESFILE
 	fi
 
-	local F_MARKER=marker.proc.$$
+	local F_MARKER=`mktemp urm.XXXXXXXXXXXXXXXXXXX`
 	f_common_watchcmd $P_LIMITSECS $F_MARKER > /dev/null 2>&1 &
 
 	if [ "$P_INFILE" = "" ]; then
