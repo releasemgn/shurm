@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2011-2013 vsavchik@gmail.com
+# Copyright 2011-2014 vsavchik@gmail.com
 
 S_COMMON_EXTLIST="sh xml txt properties conf config xconf groovy"
 S_COMMON_FINDEXTLIST='-name "*.sh" -o -name "*.xml" -o -name "*.txt" -o -name "*.properties" -o -name "*.conf" -o -name "*.config" -o -name "*.xconf" -o -name "*.sql"'
