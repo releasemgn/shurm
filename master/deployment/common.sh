@@ -19,7 +19,7 @@ function f_run_cmd() {
 
 	RUN_CMD_RES=
 	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
-		RUN_CMD_RES=`$P_CMD 2>&1`
+		RUN_CMD_RES=`(eval $P_CMD) 2>&1`
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
