@@ -53,7 +53,7 @@ Release 1.44 notes.
 
 = Minors =
 
-  * *sqlapply.sh*: log directory being applied currently
+  * *sqlapply.sh*: directory being applied currently is logged
 
 = Bugfixes =
 
