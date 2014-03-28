@@ -25,7 +25,7 @@ Defines features implemented in URM.
    * Archive deployment
    * Deployment of configuration files 
    * Save and restore overall configuration
-   * nginx static files deployment
+   * Static files deployment
    * Backup and rollack
   * [featurescontrol Start and Stop Environment Processes]
    * Start and stop of selected servers
