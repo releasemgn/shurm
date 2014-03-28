@@ -277,7 +277,7 @@ Still, files are restored from template directory $C_CONFIG_SOURCE_CFG_ROOTDIR/t
 - currently, restore of hotdeploy configuration is not supported
 }}}
 
-= nginx static files deployment =
+= Static files deployment =
 
   * war-files for web-applications can be separated in distributive from static data - one war file and one related static file
   * useful design is when static files are returned to browser immediately from filesystem, without querying application server
