@@ -49,4 +49,5 @@ Release 1.44 notes.
 
 = Bugfixes =
 
-  * ./codebase-setversion.sh is fixed and available for both git and svn
+  * *codebase-setversion.sh* is fixed: available for both git and svn
+  * *sqlapply.sh* is fixed: now 10-minute limitation affects only single script, not full patch set; also 30-second connectivity test limitation affects only one scheme, not all schemes
