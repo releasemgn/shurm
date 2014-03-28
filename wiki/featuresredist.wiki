@@ -195,8 +195,8 @@ In environment specification file component can assign specific deployment locat
 			...
 			<deploy component="pguweb.dependencies" deploypath="jboss/server/default/lib"/>
 
-Archive type defines how deployment location is treated for archive:
-- archive.direct means that deployment location contains archive content and nothing all
+Archive type defines how deployment location is treated:
+- archive.direct means that deployment location contains archive content and nothing else
 - archive.child means that archive contains single directory equal to archive basename, 
 which should be subdirectory in deployment location
 - archive.subdir means that deployment location should have subdirectory equal to archive basename and
