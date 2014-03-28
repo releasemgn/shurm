@@ -38,16 +38,26 @@ Release 1.44 notes.
 == Skip redundant redeploy by md5 ==
 
   * server redist directory now has state subdirectory, containing ".ver" files, holding information about redist path of deployed item and its md5sum data
+  * deployment places md5 information to redist and state locations
   * every ordinary redist operation skips deployment items which produce the same ".ver" content (i.e. deploy path, file name, version and md5sum)
-  * ./redist.sh -ignoreversion will ignore file version in redundancy check
-  * ./redist.sh -force turns off redundancy check at all
+{{{
+./redist.sh -ignoreversion will ignore file version in redundancy check
+./redist.sh -force turns off redundancy check at all
+}}}
+  * if distribute item contains item.md5 file, its content is used for md5 CRC data, without spending time for calculation
 
 == Add predefined release labels - last, next ==
 
   * new predefined release label "last" - points to $C_CONFIG_VERSION_LAST_FULL value defined in product config.sh script
   * new predefined release label "next" - points to $C_CONFIG_VERSION_NEXT_FULL value defined in product config.sh script
 
+= Minors =
+
+  * *sqlapply.sh*: log directory being applied currently
+
 = Bugfixes =
 
   * *codebase-setversion.sh* is fixed: available for both git and svn
-  * *sqlapply.sh* is fixed: now 10-minute limitation affects only single script, not full patch set; also 30-second connectivity test limitation affects only one scheme, not all schemes
+  * *sqlapply.sh* is fixed: now 10-minutes limitation affects only single script, not full patch set; also 30-seconds connectivity test limitation affects only one scheme, not all schemes
+  * *sqlapply.sh* is fixed: before initial querying release status, admin schema is checked for connectivity, script will not hang
+  * *patch.sh*: prevent from using the same temporary directory for parallel different-mode builds
