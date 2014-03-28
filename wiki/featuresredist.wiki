@@ -190,7 +190,7 @@ Distributive item is then included to the component as usual:
 			<distitem name="pgu-dependencies"/>
 		</component>
 
-In environment specification file component can be aloocated to specific deployment location:
+In environment specification file component can be allocated to specific deployment location:
 		<server name="fedweb" type="generic.web"
 			...
 			<deploy component="pguweb.dependencies" deploypath="jboss/server/default/lib"/>
