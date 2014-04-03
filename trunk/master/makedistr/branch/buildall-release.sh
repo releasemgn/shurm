@@ -18,7 +18,7 @@ fi
 
 . ./common.sh
 
-VERSION=$C_CONFIG_VERSIONBRANCH.$C_CONFIG_NEXT_VERSION_BUILD
+VERSION=$C_CONFIG_VERSION_NEXT_FULL
 
 # override params by options
 if [ "$GETOPT_RELEASE" != "" ]; then
