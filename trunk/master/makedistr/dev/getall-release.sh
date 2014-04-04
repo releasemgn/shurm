@@ -1,9 +1,18 @@
 #!/bin/bash 
 
-cd `dirname $0`
-RUNDIR=`pwd`
+# Get (previously built) components from Nexus - using release.xml from distr/
+# Usage examples (run from makedistr/branch) -
+# cat last-prod-tag.txt
+# less ~/distr/<product>/2.2.18/release.xml
+# ./getall-release.sh -dist
+# ./getall-release.sh -dist core atc-bem-framework
 
+cd `dirname $0`
 . ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
+
+cd ..
 
 MODULE=$1
 if [ "$MODULE" != "" ]; then
@@ -13,16 +22,11 @@ else
 	MODULE_PROJECTLIST=
 fi
 
-# execute
-. ./_context.sh
-export VERSION_MODE=$C_CONTEXT_VERSIONMODE
-
-cd ..
 . ./common.sh
 
-VERSION=$C_CONFIG_VERSIONBRANCH # e.g. 1.0
+VERSION=$C_CONFIG_VERSION_NEXT_FULL
 
 TSVALUE=`date +%Y-%m-%d.%H-%M-%S`
 ./getall-release.sh $VERSION $MODULE "$MODULE_PROJECTLIST"
 
-cd $VERSION_MODE
+cd branch
