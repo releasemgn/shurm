@@ -104,12 +104,14 @@ function f_local_release_deploy() {
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$P_ENV
 	./redist.sh $P_RELEASE
 	if [ "$?" != "0" ]; then
+		f_local_msg $F_ENV "fatal error redist to environment. Exiting, please check"
 		echo "redist.sh failed. Exiting"
 		exit 1
 	fi
 
 	./deployredist.sh -nomsg $P_RELEASE
 	if [ "$?" != "0" ]; then
+		f_local_msg $F_ENV "fatal error deploy to environment. Exiting, please check"
 		echo "deployredist.sh failed. Exiting"
 		exit 1
 	fi
