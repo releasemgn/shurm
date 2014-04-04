@@ -49,8 +49,7 @@ function f_local_release_build() {
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/makedistr/branch
 	./buildall-release.sh -release $P_RELEASE -dist
 	if [ "$?" != "0" ]; then
-		echo "buildall-release.sh failed. Exiting"
-		exit 1
+		f_local_msg $F_ENV "buildall-release.sh failed, please check"
 	fi
 
 	local F_ERRORS=`grep "BUILD FAILURE" $P_RELEASE/build.final.out`
@@ -63,6 +62,7 @@ function f_local_release_build() {
 
 function f_local_release_getsql() {
 	local P_RELEASE=$1
+	local P_ENV=$2
 
 	echo "get database scripts..."
 
@@ -73,7 +73,7 @@ function f_local_release_getsql() {
 	./getsql.sh -m -s $F_SQLFOLDER
 	if [ "$?" != "0" ]; then
 		echo "getsql.sh failed. Exiting"
-		exit 1
+		f_local_msg $F_ENV "errors getting database script file set, please check"
 	fi
 
 	cd $S_SCRIPTDIR
@@ -88,8 +88,8 @@ function f_local_release_applydb() {
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$P_ENV/database
 	./sqlapply.sh -x -s -l $P_RELEASE
 	if [ "$?" != "0" ]; then
-		echo "sqlapply.sh failed. Exiting"
-		exit 1
+		echo "sqlapply.sh failed"
+		f_local_msg $F_ENV "fatal error applying scripts to database, please check"
 	fi
 
 	cd $S_SCRIPTDIR
@@ -139,7 +139,7 @@ function f_execute_cmd_uat() {
 	f_local_release_build $F_RELEASE $F_ENV
 
 	# get database scripts
-	f_local_release_getsql $F_RELEASE
+	f_local_release_getsql $F_RELEASE $F_ENV
 
 	f_local_msg $F_ENV "apply scripts and stop environment to deploy release..."
 
