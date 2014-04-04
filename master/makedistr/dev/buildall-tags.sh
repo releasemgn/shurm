@@ -1,9 +1,9 @@
 #!/bin/bash 
 
 cd `dirname $0`
-RUNDIR=`pwd`
-
 . ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
 TAG=$1
 
@@ -14,9 +14,6 @@ if [ "$TAG" = "" ]; then
 fi
 
 # execute
-. ./_context.sh
-export VERSION_MODE=$C_CONTEXT_VERSIONMODE
-
 cd ..
 
 export OUTDIR=$VERSION_MODE/tag-$TAG
@@ -25,4 +22,4 @@ mkdir -p $OUTDIR
 TSVALUE=`date +%Y-%m-%d.%H-%M-%S`
 ./buildall-tags.sh $TAG $OUTDIR > $OUTDIR/buildall-tags-$TSVALUE.out 2>&1
 
-cd $VERSION_MODE
+cd branch

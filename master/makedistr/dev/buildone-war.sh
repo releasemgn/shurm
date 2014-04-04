@@ -1,9 +1,13 @@
 #!/bin/bash 
 
 cd `dirname $0`
+. ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
+
 RUNDIR=`pwd`
 
-. ../getopts.sh
+cd ..
 
 MODULE_NAME=$1
 
@@ -14,19 +18,27 @@ if [ "$MODULE_NAME" = "" ]; then
 fi
 
 # execute
-. ./_context.sh
-export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
-cd ..
 . ./common.sh
 
-export OUTDIR=$VERSION_MODE/$C_CONFIG_NEXT_MAJORRELEASE
-mkdir -p $OUTDIR
+export C_BUILD_OUTDIR=$RUNDIR/$C_CONFIG_VERSION_NEXT_FULL
+mkdir -p $C_BUILD_OUTDIR
 
 TSVALUE=`date +%Y-%m-%d.%H-%M-%S`
-LOGFNAME=$OUTDIR/buildone-$MODULE_NAME-$TSVALUE.out
-TAG=$C_CONFIG_APPVERSION_TAG
+LOGFNAME=$C_BUILD_OUTDIR/buildone-$MODULE_NAME-$TSVALUE.out
 
-./buildall-war-tags.sh $TAG $OUTDIR $MODULE_NAME > $LOGFNAME 2>&1
+echo get diff sincetag=prod-$C_CONFIG_VERSION_LAST_FULL ... > $LOGFNAME
+f_execute_wars $MODULE_NAME DIFFBRANCHSINCEONE >> $LOGFNAME 2>&1
 
-cd $VERSION_MODE
+echo build war MODULE_NAME=$MODULE_NAME... >> $LOGFNAME 2>&1
+./buildone-war.sh $MODULE_NAME >> $LOGFNAME 2>&1
+
+cd branch
+
+# get if requested
+if [ "$GETOPT_GET" = "yes" ] || [ "$GETOPT_DIST" = "yes" ]; then
+	echo get $MODULE_NAME binaries...
+	./getall.sh IGNORE $TAG war $MODULE_NAME
+fi
+
+echo branch buildone-war.sh finished. >> $LOGFNAME

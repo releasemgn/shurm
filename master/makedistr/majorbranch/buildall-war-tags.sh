@@ -1,6 +1,9 @@
 #!/bin/bash 
 
+cd `dirname $0`
 . ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
 TAG=$1
 shift 1
@@ -14,9 +17,6 @@ if [ "$TAG" = "" ]; then
 fi
 
 # execute
-. ./_context.sh
-export VERSION_MODE=$C_CONTEXT_VERSIONMODE
-
 cd ..
 
 export OUTDIR=$VERSION_MODE/tag-$TAG

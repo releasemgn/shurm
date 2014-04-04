@@ -1,34 +1,30 @@
 #!/bin/bash 
 
 cd `dirname $0`
-RUNDIR=`pwd`
-
 . ../getopts.sh
-
-DOWNLOAD_PROJECT=$1
-if [ "$DOWNLOAD_PROJECT" != "" ]; then
-	shift 1
-	DOWNLOAD_PROJECT_ITEMS=$*
-else
-	DOWNLOAD_PROJECT_ITEMS=
-fi
-
-# execute
 . ./_context.sh
 export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
 cd ..
+
+DOWNLOAD_PROJECT=$1
+if [ "$DOWNLOAD_PROJECT" != "" ]; then
+	shift 1
+	DOWNLOAD_PRODUCTPROJECT_ITEMS=$*
+else
+	DOWNLOAD_PRODUCTPROJECT_ITEMS=
+fi
+
+# execute
+
+export OUTDIR=branch
+
 . ./common.sh
+TAG_VERSION=$C_CONFIG_VERSION_NEXT_FULL
+TAG_GETALL=prod-${TAG_VERSION}-candidate
 
-export OUTDIR=$VERSION_MODE
+./getall.sh $TAG_VERSION $TAG_GETALL $DOWNLOAD_PROJECT "$DOWNLOAD_PRODUCTPROJECT_ITEMS"
 
-. ./common.sh
-
-TAG_VERSION=$C_CONFIG_NEXT_MAJORRELEASE
-TAG_GETALL=$C_CONFIG_APPVERSION_TAG
-
-./getall.sh $TAG_VERSION $TAG_GETALL $DOWNLOAD_PROJECT "$DOWNLOAD_PROJECT_ITEMS"
-
-cd $VERSION_MODE
+cd branch
 
 echo getall.sh finished.
