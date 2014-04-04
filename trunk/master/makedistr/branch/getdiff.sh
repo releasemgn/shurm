@@ -1,8 +1,11 @@
 #!/bin/bash 
 
-MODULE=$1
+cd `dirname $0`
+. ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
-export VERSION_MODE=branch
+MODULE=$1
 
 cd ..
 . ./common.sh

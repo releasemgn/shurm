@@ -1,10 +1,13 @@
 #!/bin/bash 
 
 cd `dirname $0`
+. ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
+
 RUNDIR=`pwd`
 
 cd ..
-. ./getopts.sh
 
 MODULE_NAME=$1
 
@@ -15,8 +18,6 @@ if [ "$MODULE_NAME" = "" ]; then
 fi
 
 # execute
-
-export VERSION_MODE=branch
 
 . ./common.sh
 
