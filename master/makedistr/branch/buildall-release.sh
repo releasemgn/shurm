@@ -2,11 +2,10 @@
 
 # Usage example: ./buildall-release.sh -showall core
 
+cd `dirname $0`
+. ../getopts.sh
 . ./_context.sh
 export VERSION_MODE=$C_CONTEXT_VERSIONMODE
-
-cd ..
-. ./getopts.sh
 
 MODULE=$1
 if [ "$MODULE" != "" ]; then
@@ -16,6 +15,7 @@ else
 	MODULE_PROJECTLIST=
 fi
 
+cd ..
 . ./common.sh
 
 VERSION=$C_CONFIG_VERSION_NEXT_FULL

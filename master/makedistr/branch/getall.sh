@@ -1,7 +1,11 @@
 #!/bin/bash 
 
+cd `dirname $0`
+. ../getopts.sh
+. ./_context.sh
+export VERSION_MODE=$C_CONTEXT_VERSIONMODE
+
 cd ..
-. ./getopts.sh
 
 DOWNLOAD_PROJECT=$1
 if [ "$DOWNLOAD_PROJECT" != "" ]; then
@@ -13,7 +17,6 @@ fi
 
 # execute
 
-export VERSION_MODE=branch
 export OUTDIR=branch
 
 . ./common.sh

@@ -7,11 +7,12 @@
 # ./getall-release.sh -dist
 # ./getall-release.sh -dist core atc-bem-framework
 
+cd `dirname $0`
+. ../getopts.sh
 . ./_context.sh
 export VERSION_MODE=$C_CONTEXT_VERSIONMODE
 
 cd ..
-. ./getopts.sh
 
 MODULE=$1
 if [ "$MODULE" != "" ]; then
