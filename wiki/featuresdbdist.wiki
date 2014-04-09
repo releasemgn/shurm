@@ -13,7 +13,7 @@ Features enabling preparation of database changes in distributives
   * release can contain scripts and data files for sqlplus and sqlldr
 {{{
 Your product can be configured to run in several geographically distributed datacenters.
-Datancenter is named so because it usually contains one or more database.
+Datacenter is named so because it usually contains one or more database.
 URM currently support configuration where database is implemented using clustered Oracle.
 In terms of your product, it stores and processes data in one or more application schemas.
 URM database server is set of product schemas in specific Oracle database.
@@ -280,4 +280,3 @@ Indexes of regional scripts are formed as follows:
 	distributive index = <source index>9RR
 	execution index = <source index>9<regionid>
 }}}
-
