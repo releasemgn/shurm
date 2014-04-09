@@ -14,7 +14,7 @@ Features enabling preparation of database changes in distributives
 {{{
 Your product can be configured to run in several geographically distributed datacenters.
 Datacenter is named so because it usually contains one or more databases.
-URM currently support configuration where database is implemented using clustered Oracle.
+URM currently supports configuration where database is implemented using clustered Oracle.
 In terms of your product, it stores and processes data in one or more application schemas.
 URM database server is set of product schemas in specific Oracle database.
 
