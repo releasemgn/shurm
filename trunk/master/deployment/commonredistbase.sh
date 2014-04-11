@@ -466,8 +466,14 @@ function f_redist_drop() {
 	local P_SERVER=$1
 	local P_ENV_HOSTLOGIN=$2
 
-	f_getpath_redistserverroot $P_SERVER
-	local F_DSTDIR_REDIST=$C_COMMON_DIRPATH
+	local F_DSTDIR_REDIST
+	if [ "$GETOPT_ALL" = "yes" ]; then
+		f_getpath_redistserverroot $P_SERVER
+		F_DSTDIR_REDIST=$C_COMMON_DIRPATH
+	else
+		f_getpath_redistserverreleaseroot $P_SERVER
+		F_DSTDIR_REDIST=$C_COMMON_DIRPATH
+	fi
 
 	f_run_cmd $P_ENV_HOSTLOGIN "if [ -d "$F_DSTDIR_REDIST" ]; then echo ok; fi"
 	if [ "$RUN_CMD_RES" = "ok" ]; then
