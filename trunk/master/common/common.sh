@@ -190,7 +190,7 @@ function f_getpath_redistserverreleaseroot() {
 		exit 1
 	fi
 
-	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME"
+	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME"
 }
 
 function f_getpath_redistserverbackuproot() {
@@ -202,7 +202,7 @@ function f_getpath_redistserverbackuproot() {
 		exit 1
 	fi
 
-	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME-backup"
+	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME-backup"
 }
 
 function f_getpath_redistroot() {
@@ -216,17 +216,17 @@ function f_getpath_redistroot() {
 	fi
 
 	if [ "$P_REDISTTYPE" = "deploy" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME/deploy"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME/deploy"
 	elif [ "$P_REDISTTYPE" = "deploy.backup" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME-backup/deploy"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME-backup/deploy"
 	elif [ "$P_REDISTTYPE" = "config" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME/config"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME/config"
 	elif [ "$P_REDISTTYPE" = "config.backup" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME-backup/config"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME-backup/config"
 	elif [ "$P_REDISTTYPE" = "hotdeploy" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME/hotdeploy"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME/hotdeploy"
 	elif [ "$P_REDISTTYPE" = "hotdeploy.backup" ]; then
-		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/$P_RELEASENAME-backup/hotdeploy"
+		C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME-backup/hotdeploy"
 	else
 		echo "f_getpath_redistroot: invalid path type=$P_REDISTTYPE. Exiting"
 		exit 1
