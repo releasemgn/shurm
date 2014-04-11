@@ -66,6 +66,8 @@ function f_redist_findsourcefile() {
 	if [ "$C_SOURCE_FILE" = "" ]; then
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
 			echo f_redist_findsourcefile: file $C_DISTR_DISTBASENAME$C_DISTR_EXT not found in $P_SRCDIR. Skipped.
+		else
+			echo f_redist_findsourcefile: file $C_DISTR_DISTBASENAME$C_DISTR_EXT 
 		fi
 		return 1
 	fi
