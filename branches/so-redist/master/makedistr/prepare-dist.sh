@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 P_SRCDIR=$1
 
 function f_run_cmd() {
