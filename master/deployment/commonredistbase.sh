@@ -471,7 +471,7 @@ function f_redist_drop() {
 		f_getpath_redistserverroot $P_SERVER
 		F_DSTDIR_REDIST=$C_COMMON_DIRPATH
 	else
-		f_getpath_redistserverreleaseroot $P_SERVER
+		f_getpath_redistserverreleasetoproot $P_SERVER
 		F_DSTDIR_REDIST=$C_COMMON_DIRPATH
 	fi
 
