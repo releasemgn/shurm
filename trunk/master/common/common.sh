@@ -186,11 +186,22 @@ function f_getpath_redistserverreleaseroot() {
 	local P_RELEASENAME=$2
 
 	if [ "$P_SERVER" = "" ] || [ "$P_RELEASENAME" = "" ]; then
-		echo "f_getpath_redistroot: invalid params. Exiting"
+		echo "f_getpath_redistserverreleaseroot: invalid params. Exiting"
 		exit 1
 	fi
 
 	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME"
+}
+
+function f_getpath_redistserverreleasetoproot() {
+	local P_SERVER=$1
+
+	if [ "$P_SERVER" = "" ]; then
+		echo "f_getpath_redistserverreleasetoproot: invalid params. Exiting"
+		exit 1
+	fi
+
+	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases"
 }
 
 function f_getpath_redistserverbackuproot() {
