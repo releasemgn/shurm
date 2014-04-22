@@ -10,6 +10,7 @@ DOWNLOAD_DIR=$1
 DISTVERSION=$2
 DOWNLOAD_PROJECT_LIST="$3"
 DOWNLOAD_ITEM_LIST="$4"
+DOWNLOAD_VERSION="$5"
 
 . ./common.sh
 
@@ -68,6 +69,7 @@ function f_local_download_nexus() {
 function f_local_download_item() {
 	local P_PROJECT=$1
 	local P_ITEM=$2
+	local P_GETVERSION=$3
 
 	# get dist item details
 	f_distr_readitem $P_ITEM
@@ -85,15 +87,18 @@ function f_local_download_item() {
 	f_source_readdistitem prebuilt $P_PROJECT $P_ITEM
 
 	if [ "$C_SOURCE_ITEMTYPE" = "svn" ]; then
-		local F_ITEMPATH=`echo $C_SOURCE_ITEMPATH | sed "s/@RELEASE@/$DISTVERSION/g"`
+		local F_ITEMPATH=`echo $C_SOURCE_ITEMPATH | sed "s/@RELEASE@/$P_GETVERSION/g"`
 		f_local_download_svn $F_ITEMPATH $C_CONFIG_SVNOLD_PATH "$C_CONFIG_SVNOLD_AUTH"
 
 	elif [ "$C_SOURCE_ITEMTYPE" = "svnnew" ]; then
-		local F_ITEMPATH=`echo $C_SOURCE_ITEMPATH | sed "s/@RELEASE@/$DISTVERSION/g"`
+		local F_ITEMPATH=`echo $C_SOURCE_ITEMPATH | sed "s/@RELEASE@/$P_GETVERSION/g"`
 		f_local_download_svn $F_ITEMPATH $C_CONFIG_SVNNEW_PATH "$C_CONFIG_SVNNEW_AUTH"
 
 	elif [ "$C_SOURCE_ITEMTYPE" = "nexus" ]; then
-		local F_ITEMPATH=$C_SOURCE_ITEMPATH/$C_SOURCE_ITEMBASENAME/$C_SOURCE_ITEMVERSION/$C_SOURCE_ITEMBASENAME-$C_SOURCE_ITEMVERSION$C_SOURCE_ITEMEXTENSION
+		if [ "$C_SOURCE_ITEMVERSION" != "" ]; then
+			P_GETVERSION=$C_SOURCE_ITEMVERSION
+		fi
+		local F_ITEMPATH=$C_SOURCE_ITEMPATH/$C_SOURCE_ITEMBASENAME/$P_GETVERSION/$C_SOURCE_ITEMBASENAME-$P_GETVERSION$C_SOURCE_ITEMEXTENSION
 		f_local_download_nexus $P_PROJECT $F_ITEMPATH
 
 	else
@@ -103,6 +108,7 @@ function f_local_download_item() {
 
 function f_local_download_project() {
 	local P_PROJECT=$1
+	local P_GETVERSION=$2
 
 	# get project items
 	f_source_projectitemlist prebuilt $P_PROJECT
@@ -116,7 +122,7 @@ function f_local_download_project() {
 	# iterate items
 	local item
 	for item in $F_PROJECT_ITEMS; do
-		f_local_download_item $P_PROJECT $item
+		f_local_download_item $P_PROJECT $item $P_GETVERSION
 	done
 }
 
@@ -133,10 +139,16 @@ function f_local_download_prebuilt() {
 		DOWNLOAD_PROJECT_LIST=$C_COMMON_SUBSET
 	fi
 
+	# handle version
+	local F_GETVERSION=$DOWNLOAD_VERSION
+	if [ "$F_GETVERSION" = "" ]; then
+		F_GETVERSION=$DISTVERSION
+	fi
+
 	# iterate by projects
 	local project
 	for project in $DOWNLOAD_PROJECT_LIST; do
-		f_local_download_project $project
+		f_local_download_project $project $F_GETVERSION
 	done
 }
 
