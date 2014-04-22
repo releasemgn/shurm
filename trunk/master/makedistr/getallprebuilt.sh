@@ -61,8 +61,13 @@ function f_local_download_nexus() {
 	local P_PROJECT=$1
 	local P_ITEMPATH=$2
 
+	local F_REPO=$C_CONFIG_NEXUS_BASE/content/repositories/$C_CONFIG_NEXUS_REPO
+	if [ "$P_PROJECT" = "thirdparty" ]; then
+		F_REPO=$C_CONFIG_NEXUS_PATH_THIRDPARTY
+	fi
+
 	# download
-	local F_FULLPATH=$C_CONFIG_NEXUS_PATH_THIRDPARTY/$P_ITEMPATH
+	local F_FULLPATH=$F_REPO/$P_ITEMPATH
 	f_download_and_copydistr $P_PROJECT $F_FULLPATH
 }
 
