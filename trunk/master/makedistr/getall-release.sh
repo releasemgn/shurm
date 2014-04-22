@@ -30,28 +30,45 @@ function f_local_get_projectitems() {
 	local P_MODULETYPE=$1
 	local P_MODULELIST="$2"
 
-	local F_DISTITEMS=
 	local module
+	local F_DEFAULTMODULELIST=
+	local F_DEFAULTDISTITEMS=
+	local F_MODULEVERSION=
+	local F_MODULEITEMS=
+
 	for module in $P_MODULELIST; do
 		# get module dist items in release.xml if any
-		f_release_getprojectitems $P_MODULETYPE $module
+		f_release_getprojectinfo $P_MODULETYPE $module
+		F_MODULEVERSION=$C_RELEASE_PROJECT_VERSION
 
-		if [ "$C_RELEASE_ITEMS" != "" ]; then
-			F_DISTITEMS="$F_DISTITEMS $C_RELEASE_ITEMS"
-		else
+		f_release_getprojectitems $P_MODULETYPE $module
+		F_MODULEITEMS="$C_RELEASE_ITEMS"
+
+		if [ "$F_MODULEITEMS" = "" ]; then
 			if [ "$C_RELEASE_ALLITEMS" != "false" ]; then
 				# get all project items from source.xml
 				f_source_projectitemlist $P_MODULETYPE $module
-				F_DISTITEMS="$F_DISTITEMS $C_SOURCE_ITEMLIST"
+				F_MODULEITEMS="$C_SOURCE_ITEMLIST"
+			fi
+		fi
+
+		if [ "$F_MODULEVERSION" = "" ]; then
+			F_DEFAULTMODULELIST="$F_DEFAULTMODULELIST $module"
+			F_DEFAULTDISTITEMS="$F_DEFAULTDISTITEMS $F_MODULEITEMS"
+		else
+			# get versioned module items
+			if [ "$F_MODULEITEMS" != "" ]; then
+				echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$module" "$F_MODULEITEMS" "$F_MODULEVERSION"...
+				./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$module" "$F_MODULEITEMS" "$F_MODULEVERSION"
 			fi
 		fi
 	done
 
-	F_DISTITEMS=${F_DISTITEMS% }
-	F_DISTITEMS=${F_DISTITEMS# }
+	F_DEFAULTDISTITEMS=${F_DEFAULTDISTITEMS% }
+	F_DEFAULTDISTITEMS=${F_DEFAULTDISTITEMS# }
 		
-	echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$MODULELIST" "$F_DISTITEMS"...
-	./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$MODULELIST" "$F_DISTITEMS"
+	echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"...
+	./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"
 }
 
 # read release targets
