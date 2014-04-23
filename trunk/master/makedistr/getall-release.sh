@@ -36,7 +36,14 @@ function f_local_get_projectitems() {
 	local F_MODULEVERSION=
 	local F_MODULEITEMS=
 
-	for module in $P_MODULELIST; do
+	local F_RELEASEMODULELIST="$P_MODULELIST"
+	if [ "$F_RELEASEMODULELIST" = "all" ]; then
+		F_RELEASEMODULELIST=
+	fi
+
+	for module in $F_RELEASEMODULELIST; do
+		f_release_getprojectinfo
+
 		# get module dist items in release.xml if any
 		f_release_getprojectinfo $P_MODULETYPE $module
 		F_MODULEVERSION=$C_RELEASE_PROJECT_VERSION
@@ -67,7 +74,7 @@ function f_local_get_projectitems() {
 	F_DEFAULTMODULELIST=${F_DEFAULTMODULELIST# }
 	F_DEFAULTDISTITEMS=${F_DEFAULTDISTITEMS# }
 
-	if [ "$F_DEFAULTMODULELIST" != "" ]; then		
+	if [ "$F_DEFAULTMODULELIST" != "" ] || [ "$P_MODULELIST" = "all" ]; then		
 		echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"...
 		./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"
 	fi
@@ -90,10 +97,6 @@ function f_local_getall_release() {
 
 		if [ "$F_RELEASE_CORE_TARGETS" != "" ]; then
 			echo GET RELEASE CORE TARGETS=$F_RELEASE_CORE_TARGETS, processid=$$...
-
-			if [ "$F_RELEASE_CORE_TARGETS" = "all" ]; then
-				F_RELEASE_CORE_TARGETS=
-			fi
 
 			local MODULELIST="$F_RELEASE_CORE_TARGETS"
 			if [ "$MODULEPROJECTS" != "" ]; then
@@ -149,10 +152,6 @@ function f_local_getall_release() {
 
 		if [ "$F_RELEASE_PREBUILT_TARGETS" != "" ]; then
 			echo GET RELEASE PREBUILT TARGETS=$F_RELEASE_PREBUILT_TARGETS, processid=$$...
-
-			if [ "$F_RELEASE_PREBUILT_TARGETS" = "all" ]; then
-				F_RELEASE_PREBUILT_TARGETS=
-			fi
 
 			local MODULELIST="$F_RELEASE_PREBUILT_TARGETS"
 			if [ "$MODULEPROJECTS" != "" ]; then
