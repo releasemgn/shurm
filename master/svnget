@@ -72,7 +72,7 @@ function f_execute_file() {
 
 	local F_EXTS="sh txt ctl xml conf properties"
 	for ext in $F_EXTS; do
-		if [[ "$P_FILE" =~ ".$ext$" ]]; then
+		if [[ "$P_FILE" =~ \.$ext$ ]]; then
 	        	cat $P_FILE | sed 's/\r//g' > fntmp
 		        mv fntmp $P_FILE
 		fi
