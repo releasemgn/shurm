@@ -103,7 +103,7 @@ function f_execute_unknown() {
 
 	if [ -d "$P_NAME" ]; then
 		f_execute_dir $P_NAME
-	else if [ -f "$P_NAME" ]; then
+	elif [ -f "$P_NAME" ]; then
 		f_execute_file $P_NAME
 	else
 		echo unexpected - unknown $P_NAME. Exiting
@@ -115,7 +115,7 @@ function f_execute_all() {
 	echo "svnget: process $P_XNAME ..."
 	if [ -d "$P_XNAME" ]; then
 		f_execute_dir $P_XNAME
-	else if [ -f "$P_XNAME" ]; then
+	elif [ -f "$P_XNAME" ]; then
 		f_execute_file $P_XNAME
 	else
 		f_execute_unknown $P_XNAME
