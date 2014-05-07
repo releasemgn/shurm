@@ -79,7 +79,7 @@ function f_execute_file() {
 	done
 			
 	# define access if controlled
-	if [[ "$P_FILE" =~ ".sh$" ]]; then
+	if [[ "$P_FILE" =~ \.sh$ ]]; then
 		chmod 544 $P_FILE
 	fi
 }
