@@ -81,15 +81,7 @@ function f_local_executeconfcomp() {
 		F_SVCRESTORE_LIVE_SERVER_COMP=$S_SVNRESTORE_STGPATH/$P_CONFCOMP
 		f_local_download_live $P_SERVER $P_HOSTLOGIN $P_CONFCOMP $F_LOCATION
 	else
-		f_distr_getconfcompinfo $P_CONFCOMP
-
-		local F_COMPDIR
-		if [ "$C_DISTR_CONF_SUBDIR" != "" ]; then
-			F_COMPDIR=$C_DISTR_CONF_SUBDIR/$P_CONFCOMP
-		else
-			F_COMPDIR=$P_CONFCOMP
-		fi
-		F_SVCRESTORE_LIVE_SERVER_COMP=$S_SVNRESTORE_STGPATH/$DC/$P_SERVER/$P_HOSTLOGIN/$F_COMPDIR
+		F_SVCRESTORE_LIVE_SERVER_COMP=$S_SVNRESTORE_STGPATH/$DC/$P_SERVER/$P_HOSTLOGIN/$P_CONFCOMP
 	fi
 
 	# redist
@@ -150,7 +142,7 @@ function f_local_templates_configure() {
 	local P_SERVER=$1
 
 	# create from templates
-	./configure.sh -dc $DC $S_SVNRESTORE_STGPATH_TEMPLATES $S_SVNRESTORE_STGPATH $P_SERVER
+	./configure.sh -dc $DC templates $S_SVNRESTORE_STGPATH_TEMPLATES $S_SVNRESTORE_STGPATH $P_SERVER
 }
 
 function f_local_execute_server() {

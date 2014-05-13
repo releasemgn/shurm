@@ -13,9 +13,14 @@ if [ "$DC" = "" ]; then
 	exit
 fi
 
-P_DIR_TEMPLATES=$1
-P_DIR_LIVE=$2
+P_DIR_TYPE=$1
+P_DIR_TEMPLATES=$2
+P_DIR_LIVE=$3
 
+if [ "$P_DIR_TYPE" = "" ]; then
+	echo configure.sh: P_DIR_TYPE not set
+	exit 1
+fi
 if [ "$P_DIR_TEMPLATES" = "" ]; then
 	echo configure.sh: P_DIR_TEMPLATES not set
 	exit 1
@@ -57,8 +62,17 @@ function f_local_generatenodecomponentfiles() {
 		return 1
 	fi
 
+	# check dir type
+	local F_COMPSUBDIR=$P_CONFCOMPNAME
+	if [ "$P_DIR_TYPE" = "templates" ]; then
+		f_distr_getconfcompinfo $P_CONFCOMPNAME
+		if [ "$C_DISTR_CONF_SUBDIR" != "" ]; then
+			F_COMPSUBDIR=$C_DISTR_CONF_SUBDIR/$P_CONFCOMPNAME
+		fi
+	fi
+
 	# process component files
-	local F_LOCAL_DIR_FROM=$S_CONFIGURE_PREPAREDTEMPLATES/$P_CONFCOMPNAME
+	local F_LOCAL_DIR_FROM=$S_CONFIGURE_PREPAREDTEMPLATES/$F_COMPSUBDIR
 	local F_LOCAL_DIR_TO=$P_DIR_LIVE/$DC/$P_SERVER/$P_NODEHOSTLOGIN/$P_CONFCOMPNAME
 
 	echo generate component=$P_CONFCOMPNAME to $F_LOCAL_DIR_TO ...
