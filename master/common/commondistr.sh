@@ -27,6 +27,7 @@ C_DISTR_OBSOLETE_ITEMS=
 C_DISTR_CONF_COMPLIST=
 C_DISTR_CONF_OBSOLETECOMPLIST=
 C_DISTR_CONF_KEY=
+C_DISTR_CONF_SUBDIR=
 C_DISTR_CONF_TYPE=
 C_DISTR_CONF_FILES=
 C_DISTR_CONF_EXCLUDE=
@@ -275,6 +276,7 @@ function f_distr_getconfcompinfo() {
 		exit 1
 	fi
 
+	C_DISTR_CONF_SUBDIR=
 	C_DISTR_CONF_TYPE=
 	C_DISTR_CONF_LAYER=
 	C_DISTR_CONF_FILES=
@@ -283,6 +285,9 @@ function f_distr_getconfcompinfo() {
 	# read items
 	f_distr_getxmllineattr component type
 	C_DISTR_CONF_TYPE=$C_DISTR_XMLLINEATTR
+
+	f_distr_getxmllineattr component subdir
+	C_DISTR_CONF_SUBDIR=$C_DISTR_XMLLINEATTR
 
 	f_distr_getxmllineattr component layer
 	C_DISTR_CONF_LAYER=$C_DISTR_XMLLINEATTR
