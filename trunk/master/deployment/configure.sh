@@ -235,7 +235,7 @@ function f_local_prepare_templates() {
 
 	local preparescript
 	local F_COMPDIR
-	for preparescript in `find $S_CONFIGURE_PREPAREDTEMPLATES -maxdepth 2 -name "preconfigure.sh"`; do
+	for preparescript in `find $S_CONFIGURE_PREPAREDTEMPLATES -name "preconfigure.sh" | sort`; do
 		F_COMPDIR=`dirname $preparescript`
 		F_COMPNAME=`basename $F_COMPDIR`
 		
