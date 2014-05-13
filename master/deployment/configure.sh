@@ -53,15 +53,6 @@ function f_local_generatenodecomponentfiles() {
 	local P_NODEHOSTLOGIN=$2
 	local P_CONFCOMPNAME=$3
 
-	# check component is defined in templates
-	if [ ! -d $S_CONFIGURE_PREPAREDTEMPLATES/$P_CONFCOMPNAME ]; then
-		if [ "$GETOPT_DEPLOYPARTIALCONF" != "yes" ]; then
-			echo f_local_generatenodecomponentfiles: $P_CONFCOMPNAME component is not found in $S_CONFIGURE_PREPAREDTEMPLATES. Exiting
-			exit 1
-		fi
-		return 1
-	fi
-
 	# check dir type
 	local F_COMPSUBDIR=$P_CONFCOMPNAME
 	if [ "$P_DIR_TYPE" = "templates" ]; then
@@ -69,6 +60,15 @@ function f_local_generatenodecomponentfiles() {
 		if [ "$C_DISTR_CONF_SUBDIR" != "" ]; then
 			F_COMPSUBDIR=$C_DISTR_CONF_SUBDIR/$P_CONFCOMPNAME
 		fi
+	fi
+
+	# check component is defined in templates
+	if [ ! -d $S_CONFIGURE_PREPAREDTEMPLATES/$F_COMPSUBDIR ]; then
+		if [ "$GETOPT_DEPLOYPARTIALCONF" != "yes" ]; then
+			echo f_local_generatenodecomponentfiles: $P_CONFCOMPNAME component is not found in $S_CONFIGURE_PREPAREDTEMPLATES. Exiting
+			exit 1
+		fi
+		return 1
 	fi
 
 	# process component files
