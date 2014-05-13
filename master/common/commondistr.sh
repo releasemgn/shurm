@@ -276,8 +276,8 @@ function f_distr_getconfcompinfo() {
 		exit 1
 	fi
 
-	C_DISTR_CONF_SUBDIR=
 	C_DISTR_CONF_TYPE=
+	C_DISTR_CONF_SUBDIR=
 	C_DISTR_CONF_LAYER=
 	C_DISTR_CONF_FILES=
 	C_DISTR_CONF_EXCLUDE=
