@@ -29,7 +29,7 @@ if [ "$P_DIR_LIVE" = "" ]; then
 	echo configure.sh: P_DIR_LIVE not set
 	exit 1
 fi
-shift 2
+shift 3
 
 SRVNAME_LIST=$*
 
