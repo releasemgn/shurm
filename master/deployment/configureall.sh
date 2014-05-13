@@ -37,7 +37,7 @@ function f_local_execute_one() {
 
 	# load environment and execute configuring
 	. ./setenv.sh $P_ENVNAME
-	./configure.sh -dc $P_DC $S_CONFIGURE_TEMPLATES $F_CONFIGURE_STG_LIVE $P_SERVERS
+	./configure.sh -dc $P_DC templates $S_CONFIGURE_TEMPLATES $F_CONFIGURE_STG_LIVE $P_SERVERS
 	if [ $? -ne 0 ]; then
 		echo "configureall.sh: configure.sh failed. Exiting"
 		exit 1

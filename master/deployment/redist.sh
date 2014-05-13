@@ -476,13 +476,13 @@ function f_local_prepare_conf() {
 		f_distr_getconfcomplist
 		S_REDIST_CONFCOMPLIST="$C_DISTR_CONF_COMPLIST"
 
-		./configure.sh -dc $DC $S_REDIST_RELEASE_TEMPLATES $S_REDIST_RELEASE_GENERATED $SRVNAME_LIST
+		./configure.sh -dc $DC release $S_REDIST_RELEASE_TEMPLATES $S_REDIST_RELEASE_GENERATED $SRVNAME_LIST
 		if [ "$?" != "0" ]; then
 			echo f_local_prepare_conf: unsuccessul configure.sh. Exiting
 			exit 1
 		fi
 	else
-		./configure.sh -partialconf -dc $DC $S_REDIST_RELEASE_TEMPLATES $S_REDIST_RELEASE_GENERATED $SRVNAME_LIST
+		./configure.sh -partialconf -dc $DC release $S_REDIST_RELEASE_TEMPLATES $S_REDIST_RELEASE_GENERATED $SRVNAME_LIST
 		if [ "$?" != "0" ]; then
 			echo f_local_prepare_conf: unsuccessul configure.sh. Exiting
 			exit 1
