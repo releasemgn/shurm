@@ -405,6 +405,9 @@ function f_redist_createlocation() {
 	local F_ROLLOUT_REDISTTYPE=$C_ROLLOUT_REDISTTYPE
 	local F_ROLLBACK_REDISTTYPE=$C_ROLLBACK_REDISTTYPE
 
+	f_getpath_statelocation $P_SERVER $P_LOCATION $F_ROLLOUT_REDISTTYPE
+	local F_DSTDIR_STATE=$C_COMMON_DIRPATH
+
 	f_getpath_redistlocation $P_SERVER $P_RELEASENAME $P_LOCATION $F_ROLLOUT_REDISTTYPE
 	local F_DSTDIR_DEPLOY=$C_COMMON_DIRPATH
 
@@ -417,6 +420,7 @@ function f_redist_createlocation() {
 	# create empty initial script
 	echo $P_ENV_HOSTLOGIN: create redist location=$P_LOCATION contenttype=$P_CONTENTTYPE ...
 	f_run_cmdcheck $P_ENV_HOSTLOGIN "
+		mkdir -p $F_DSTDIR_STATE
 		mkdir -p $F_DSTDIR_DEPLOY
 		mkdir -p $F_DSTDIR_BACKUP
 		if [ ! -f $F_DSTDIR_DEPLOY/prepare.sh ]; then
