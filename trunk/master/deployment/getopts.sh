@@ -15,10 +15,6 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			export GETOPT_EXECUTE=yes
 			shift 1
 			;;
-		'-ignoreerrors')
-			export GETOPT_IGNOREERRORS=yes
-			shift 1
-			;;
 		'-showonly')
 			export GETOPT_EXECUTE=no
 			shift 1
