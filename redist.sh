@@ -10,7 +10,7 @@ if [ "$P_RELEASE" = "" ]; then
 	exit 1
 fi
 
-S_PRODUCT_LIST="pgu fedpgu ipsh smev geps esnsi esia sir sev carcass"
+S_PRODUCT_LIST="pgu fedpgu ipsh smev geps esnsi esia sir sev carcass o7sia"
 
 function f_execute_product() {
 	local P_DIR_TMP=$1
