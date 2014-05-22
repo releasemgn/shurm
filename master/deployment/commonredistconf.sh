@@ -299,13 +299,12 @@ function f_redist_transfer_configset() {
 		exit 1
 	fi
 
-		# transfer files
-		f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
-		f_upload_file $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE $F_CONFIGTARMD5NAME
+	# transfer files
+	f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
+	f_upload_file $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE $F_CONFIGTARMD5NAME
 
-		# cleanup
-		rm -rf $F_TMPDIR
-	fi
+	# cleanup
+	rm -rf $F_TMPDIR
 
 	# add delete old configuration files to prepare script
 	f_redist_fillconfpreparescript_andbackup $P_SERVER $P_ENV_HOSTLOGIN $P_ROOTDIR $P_RELEASENAME $P_LOCATION $P_CONFCOMP $P_DIRTYPE $F_REDIST_CONFTYPE "$F_REDIST_FILES" $P_PARTIAL
