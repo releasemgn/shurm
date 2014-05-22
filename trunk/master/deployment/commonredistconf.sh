@@ -260,27 +260,23 @@ function f_redist_transfer_configset() {
 	local F_CONFIGTARMD5NAME=$P_CONFCOMP.ver
 
 	local F_TMPDIR=$S_COMMONREDISTCONF_RELADM_TMPDIR
-	if [ "$P_REDIST_DISTR_REMOTEHOST" != "" ]; then
-		# check source exists
-		f_run_cmd $P_REDIST_DISTR_REMOTEHOST "if [ -d $P_REDIST_SRCPATH ]; then echo ok; fi"
-		if [ "$RUN_CMD_RES" != "ok" ]; then
+	rm -rf $F_TMPDIR
+	mkdir -p $F_TMPDIR
+
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: copy $P_REDIST_SRCPATH to $F_DSTDIR_DEPLOY ...
+	fi
+
+	F_COPYSET=$F_TMPDIR/config
+	if [ "$P_REDIST_DISTR_REMOTEHOST" = "release" ]; then
+		# copy from release box to tmpdir
+		f_release_downloaddir $P_REDIST_SRCPATH $F_COPYSET
+		if [ $? != 0 ]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo "f_redist_transfer_configset: not found configuration files at $P_REDIST_DISTR_REMOTEHOST@$P_REDIST_SRCPATH. Skipped."
+				echo "f_redist_transfer_configset: not found configuration files at release host in $P_REDIST_SRCPATH. Skipped."
 			fi
 			return 1
 		fi
-
-		echo $P_ENV_HOSTLOGIN: copy $P_REDIST_SRCPATH to $F_DSTDIR_DEPLOY ...
-
-		# pack files at source to simplify copy
-		f_run_cmdcheck $P_REDIST_DISTR_REMOTEHOST "rm -rf $F_TMPDIR; mkdir -p $F_TMPDIR; cp -R $P_REDIST_SRCPATH $F_TMPDIR/config; cd $F_TMPDIR/config; tar cf $F_TMPDIR/$F_CONFIGTARFILE . > /dev/null; if [ ! -r \"$F_TMPDIR/$F_CONFIGTARFILE\" ]; then echo failed; fi"
-
-		# transfer files
-		f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
-		f_upload_remotefile $P_REDIST_DISTR_REMOTEHOST $P_ENV_HOSTLOGIN $F_TMPDIR/$F_CONFIGTARFILE $F_DSTDIR_DEPLOY/$F_CONFIGTARFILE $F_CONFIGTARMD5NAME
-
-		# cleanup
-		f_run_cmdcheck $P_REDIST_DISTR_REMOTEHOST "rm -rf $F_TMPDIR"
 	else
 		if [ ! -d $P_REDIST_SRCPATH ]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
@@ -289,21 +285,19 @@ function f_redist_transfer_configset() {
 			return 1
 		fi
 
-		echo $P_ENV_HOSTLOGIN: copy $P_REDIST_SRCPATH to $F_DSTDIR_DEPLOY ...
+		cp -R $P_REDIST_SRCPATH $F_COPYSET
+	fi
 
-		# pack files at source to simplify copy
-		local F_SAVEDIR=`pwd`
-		rm -rf $F_TMPDIR
-		mkdir -p $F_TMPDIR
-		cp -R $P_REDIST_SRCPATH $F_TMPDIR/config
-		cd $F_TMPDIR/config
-		tar cf $F_TMPDIR/$F_CONFIGTARFILE . > /dev/null
-		cd $F_SAVEDIR
+	# pack files at source to simplify copy
+	local F_SAVEDIR=`pwd`
+	cd $F_COPYSET
+	tar cf $F_TMPDIR/$F_CONFIGTARFILE . > /dev/null
+	cd $F_SAVEDIR
 
-		if [ ! -f "$F_TMPDIR/$F_CONFIGTARFILE" ]; then
-			echo f_redist_transfer_configset: unable to create $F_TMPDIR/$F_CONFIGTARFILE. Exiting
-			exit 1
-		fi
+	if [ ! -f "$F_TMPDIR/$F_CONFIGTARFILE" ]; then
+		echo f_redist_transfer_configset: unable to create $F_TMPDIR/$F_CONFIGTARFILE. Exiting
+		exit 1
+	fi
 
 		# transfer files
 		f_run_cmdcheck $P_ENV_HOSTLOGIN "mkdir -p $F_DSTDIR_DEPLOY"
