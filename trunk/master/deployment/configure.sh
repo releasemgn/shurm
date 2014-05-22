@@ -75,7 +75,9 @@ function f_local_generatenodecomponentfiles() {
 	local F_LOCAL_DIR_FROM=$S_CONFIGURE_PREPAREDTEMPLATES/$F_COMPSUBDIR
 	local F_LOCAL_DIR_TO=$P_DIR_LIVE/$DC/$P_SERVER/$P_NODEHOSTLOGIN/$P_CONFCOMPNAME
 
-	echo generate component=$P_CONFCOMPNAME to $F_LOCAL_DIR_TO ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo generate component=$P_CONFCOMPNAME to $F_LOCAL_DIR_TO ...
+	fi
 
 	rm -rf $F_LOCAL_DIR_TO
 	mkdir -p $F_LOCAL_DIR_TO
@@ -244,7 +246,9 @@ function f_local_prepare_templates() {
 			cd $F_COMPDIR
 
 			chmod 777 preconfigure.sh
-			echo "$P_SERVER: execute custom configuration script in $F_COMPDIR..."
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo "$P_SERVER: execute custom configuration script in $F_COMPDIR..."
+			fi
 			. ./preconfigure.sh $C_ENV_ID $DC $P_SERVER
 
 			# remove script
