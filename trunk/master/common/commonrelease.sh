@@ -242,13 +242,16 @@ function f_release_getfile() {
 	local P_SRCPATH=$1
 	local P_DSTPATH=$2
 
-	if [ "$S_REDIST_DISTR_USE_LOCAL" = "true" ]; then
+	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 		if [ ! -f "$P_SRCPATH" ]; then
 			echo file is not found - $P_SRCPATH. Exiting
 			exit 1
 		fi
 
 		cp -p $P_SRCPATH $P_DSTPATH
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
 
 	else
 		if [ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" = "" ]; then
@@ -269,4 +272,37 @@ function f_release_getfile() {
 			fi
 		fi
 	fi
+
+	return 0
+}
+
+function f_release_getdir() {
+	local P_SRCPATH=$1
+	local P_DSTPATH=$2
+
+	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
+		if [ -d "$P_SRCPATH" ]; then
+			cp -R $P_SRCPATH $P_DSTPATH
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		fi
+	else
+		f_release_runcmdcheck "if [ -d $P_SRCPATH ]; then echo ok; fi"
+		if [ "$C_RELEASE_CMD_RES" = "ok" ]; then
+			if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+				scp -q -r -B -p -i $C_ENV_PROPERTY_KEYNAME $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+				if [ $? -ne 0 ]; then
+					return 1
+				fi
+			else
+				scp -q -r -B -p $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+				if [ $? -ne 0 ]; then
+					return 1
+				fi
+			fi
+		fi
+	fi
+
+	return 0
 }
