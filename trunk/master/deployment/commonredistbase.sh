@@ -50,10 +50,14 @@ function f_redist_execute() {
 	local P_EXEC_CMD="$2"
 
 	if [ "$C_REDIST_EXECUTE_ECHO_ONLY" = "true" ]; then
-		echo $P_EXEC_HOSTLOGIN: showonly "$P_EXEC_CMD"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_EXEC_HOSTLOGIN: showonly "$P_EXEC_CMD"
+		fi
 		RUN_CMD_RES=
 	else
-		echo $P_EXEC_HOSTLOGIN: execute "$P_EXEC_CMD"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_EXEC_HOSTLOGIN: execute "$P_EXEC_CMD"
+		fi
 		f_run_cmdcheck $P_EXEC_HOSTLOGIN "echo `date` \"(SSH_CLIENT=$SSH_CLIENT): $P_EXEC_CMD\" >> ~/execute.log"
 		f_run_cmdcheck $P_EXEC_HOSTLOGIN "$P_EXEC_CMD"
 	fi
@@ -428,7 +432,9 @@ function f_redist_createlocation() {
 	local F_RUNTIMEDIR=$C_COMMON_DIRPATH
 
 	# create empty initial script
-	echo $P_ENV_HOSTLOGIN: create redist location=$P_LOCATION contenttype=$P_CONTENTTYPE ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: create redist location=$P_LOCATION contenttype=$P_CONTENTTYPE ...
+	fi
 	f_run_cmdcheck $P_ENV_HOSTLOGIN "
 		mkdir -p $F_DSTDIR_STATE
 		mkdir -p $F_DSTDIR_DEPLOY
