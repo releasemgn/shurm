@@ -214,7 +214,7 @@ function f_upload_releasefile() {
 	if [ "$GETOPT_FORCE" != "yes" ]; then
 		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo "f_upload_releasefile: $P_DSTFILE - no changes. Skipped."
+				echo "$P_DST_HOSTLOGIN: $P_DSTFILE - no changes. Skipped."
 			fi
 			return 0
 		fi
