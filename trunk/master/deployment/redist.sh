@@ -38,7 +38,6 @@ S_REDIST_DIST_ITEMS=
 S_REDIST_DIST_OBSOLETE_ITEMS=
 S_REDIST_STATIC_ITEMS=
 S_REDIST_DISTR_REMOTEHOST=
-S_REDIST_DISTR_USE_LOCAL=
 
 S_REDIST_CONFCOMPLIST=
 S_REDIST_RELEASE_CONFIGS=
@@ -454,16 +453,7 @@ function f_local_prepare_conf() {
 	mkdir -p $S_REDIST_RELEASE_GENERATED
 
 	# copy from release and generate environment files using templates
-	if [ "$S_REDIST_DISTR_USE_LOCAL" = "true" ]; then
-		if [ -d "$S_REDIST_SRCDIR/config/templates" ]; then
-			cp -R $S_REDIST_SRCDIR/config/templates $S_REDIST_RELEASE_TEMPLATES
-		fi
-	else
-		f_run_cmd $S_REDIST_DISTR_REMOTEHOST "if [ -d $S_REDIST_SRCDIR/config/templates ]; then echo ok; fi"
-		if [ "$RUN_CMD_RES" = "ok" ]; then
-			f_download_dir $S_REDIST_DISTR_REMOTEHOST $S_REDIST_SRCDIR/config/templates $S_REDIST_RELEASE_TEMPLATES	
-		fi
-	fi
+	f_release_getdir $S_REDIST_SRCDIR/config/templates $S_REDIST_RELEASE_TEMPLATES
 
 	# check any templates in release directory
 	if [ ! -d "$S_REDIST_RELEASE_TEMPLATES" ]; then
@@ -496,8 +486,6 @@ function f_local_prepare() {
 	fi
 
 	# get source directory
-	local S_REDIST_DISTR_USE_LOCAL=$C_ENV_PROPERTY_DISTR_USELOCAL
-	local F_REDIST_DISTR_PATH=$C_ENV_PROPERTY_DISTR_PATH
 	local F_REDIST_RELEASE_FILE=$S_REDIST_TMP/$C_ENV_ID/download/$P_SRCVERSIONDIR-release.xml
 	mkdir -p `dirname $F_REDIST_RELEASE_FILE`
 
