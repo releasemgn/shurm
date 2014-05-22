@@ -33,9 +33,9 @@ EXECUTE_LIST=$*
 . ./common.sh
 . ./commonadmindb.sh
 
-S_RELEASE_ID=
-S_RELEASE_BASEDIR=
-S_RELEASE_SRCDIR=
+S_SQLAPPLY_RELEASE_ID=
+S_SQLAPPLY_RELEASE_BASEDIR=
+S_SQLAPPLY_RELEASE_SRCDIR=
 
 function f_local_copyfile() {
 	local P_SRCFILE=$1
@@ -226,23 +226,15 @@ function f_local_execute_db() {
 
 function f_release_getreleasedir() {
 	f_release_resolverelease "$RELEASEDIR"
-	S_RELEASE_BASEDIR=$C_RELEASE_DISTRID
-	S_RELEASE_ID=`echo $S_RELEASE_BASEDIR | cut -d "-" -f1`
+	S_SQLAPPLY_RELEASE_BASEDIR=$C_RELEASE_DISTRID
 
-	# execute
-	local F_RELEASEDIR=$C_CONFIG_DISTR_PATH/$S_RELEASE_BASEDIR
-	if [ ! -d "$F_RELEASEDIR" ]; then
-		echo sqlapply.sh: unknown release directory - $F_RELEASEDIR. Exiting
-		exit 1
+	if [ "$S_REDIST_DISTR_USE_LOCAL" = "true" ]; then
+		S_REDIST_DISTR_REMOTEHOST=
 	fi
 
-	local F_SRCDIR=$F_RELEASEDIR/SQL
-	if [ ! -d "$F_SRCDIR" ]; then
-		echo sqlapply.sh: no sql scripts in release directory $F_RELEASEDIR. Skipped.
-		exit 0
-	fi
-
-	S_RELEASE_SRCDIR=$F_SRCDIR
+	f_release_getdistrdir $C_ENV_PROPERTY_DISTR_PATH $S_SQLAPPLY_RELEASE_BASEDIR $S_REDIST_DISTR_REMOTEHOST
+	S_SQLAPPLY_RELEASE_ID=$C_RELEASE_SRCVER
+	S_SQLAPPLY_RELEASE_SRCDIR=$C_RELEASE_SRCDIR/SQL
 }
 
 function f_local_execute_all() {
@@ -271,12 +263,12 @@ function f_local_execute_all() {
 
 	# create run dirs
 	local OUTDIR_POSTFIX=`date "+%Y.%m.%d-%0k.%0M.%0S"`
-	local F_RUNDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/$S_RELEASE_BASEDIR-$C_ENV_ID-$DC-$OUTDIR_POSTFIX
+	local F_RUNDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/$S_SQLAPPLY_RELEASE_BASEDIR-$C_ENV_ID-$DC-$OUTDIR_POSTFIX
 
 	# execute
 	echo sqlapply.sh: execute scripts dblist=$F_DBLIST, alignedlist=$F_ALIGNEDDIRLIST ...
 	for db in $F_DBLIST; do
-		f_local_execute_db $db $S_RELEASE_SRCDIR $F_RUNDIR/$db $OUTDIR_POSTFIX "$F_ALIGNEDDIRLIST"
+		f_local_execute_db $db $S_SQLAPPLY_RELEASE_SRCDIR $F_RUNDIR/$db $OUTDIR_POSTFIX "$F_ALIGNEDDIRLIST"
 	done
 }
 
