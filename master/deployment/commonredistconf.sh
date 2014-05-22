@@ -267,8 +267,10 @@ function f_redist_transfer_configset() {
 		echo $P_ENV_HOSTLOGIN: copy $P_REDIST_SRCPATH to $F_DSTDIR_DEPLOY ...
 	fi
 
-	F_COPYSET=$F_TMPDIR/config
+	local F_COPYSET
 	if [ "$P_REDIST_DISTR_REMOTEHOST" = "release" ]; then
+		F_COPYSET=$F_TMPDIR/config
+
 		# copy from release box to tmpdir
 		f_release_downloaddir $P_REDIST_SRCPATH $F_COPYSET
 		if [ $? != 0 ]; then
@@ -285,7 +287,7 @@ function f_redist_transfer_configset() {
 			return 1
 		fi
 
-		cp -R $P_REDIST_SRCPATH $F_COPYSET
+		F_COPYSET=$P_REDIST_SRCPATH
 	fi
 
 	# pack files at source to simplify copy
