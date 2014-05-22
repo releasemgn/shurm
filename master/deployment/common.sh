@@ -223,7 +223,7 @@ function f_upload_releasefile() {
 			local F_STATENOVER=${P_STATEINFO#*:}
 			if [ "$F_REDIST_MD5_SRC" = "$F_STATENOVER" ]; then
 				if [ "$GETOPT_SHOWALL" = "yes" ]; then
-					echo "$P_DST_HOSTLOGIN: $P_REMOTENAME - no CRC changes. Skipped."
+					echo "$P_DST_HOSTLOGIN: $P_DSTFILE - no CRC changes. Skipped."
 				fi
 				return 0
 			fi
