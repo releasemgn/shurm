@@ -453,7 +453,7 @@ function f_local_prepare_conf() {
 	mkdir -p $S_REDIST_RELEASE_GENERATED
 
 	# copy from release and generate environment files using templates
-	f_release_getdir $S_REDIST_SRCDIR/config/templates $S_REDIST_RELEASE_TEMPLATES
+	f_release_downloaddir $S_REDIST_SRCDIR/config/templates $S_REDIST_RELEASE_TEMPLATES
 
 	# check any templates in release directory
 	if [ ! -d "$S_REDIST_RELEASE_TEMPLATES" ]; then
@@ -495,7 +495,7 @@ function f_local_prepare() {
 	S_REDIST_SRCVER=$C_RELEASE_SRCVER
 
 	# activate release.xml
-	f_release_getfile $S_REDIST_SRCDIR/release.xml $F_REDIST_RELEASE_FILE
+	f_release_downloadfile $S_REDIST_SRCDIR/release.xml $F_REDIST_RELEASE_FILE
 	f_release_setfile $F_REDIST_RELEASE_FILE
 
 	# check obsolete status
