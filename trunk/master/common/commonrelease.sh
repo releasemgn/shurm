@@ -32,7 +32,7 @@ function f_release_setfile() {
 	local P_FNAME=$1
 
 	if [ ! -f "$P_FNAME" ]; then
-		echo unable to find release definition file $P_FNAME. Exiting
+		echo "f_release_setfile: unable to find release definition file $P_FNAME. Exiting"
 		exit 1
 	fi
 
@@ -141,7 +141,7 @@ function f_release_runcmd() {
 		fi
 	else
 		if [ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" = "" ]; then
-			echo "C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting
+			echo "f_release_runcmd: C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting"
 			exit 1
 		fi
 
@@ -163,12 +163,12 @@ function f_release_runcmd() {
 function f_release_runcmdcheck() {
 	local P_CMD="$1"
 
-	f_release_runcmd $P_CMD
+	f_release_runcmd "$P_CMD"
 	if [ $? -ne 0 ]; then
 		if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
-			echo f_release_runcmdcheck: unable to execute $P_CMD. Exiting
+			echo "f_release_runcmdcheck: unable to execute $P_CMD. Exiting"
 		else
-			echo f_release_runcmdcheck: unable to execute $P_CMD on $C_ENV_PROPERTY_DISTR_REMOTEHOST. Exiting
+			echo "f_release_runcmdcheck: unable to execute $P_CMD on $C_ENV_PROPERTY_DISTR_REMOTEHOST. Exiting"
 		fi
 		exit 1
 	fi
@@ -183,12 +183,12 @@ function f_release_getfullproddistr() {
 	# check content
 	local F_WORDS=`echo $F_NAME | wc -w`
 	if [ "$F_WORDS" = "0" ]; then
-		echo f_release_getfullproddistr: unable to find prod distributive. Exiting
+		echo "f_release_getfullproddistr: unable to find prod distributive. Exiting"
 		exit 1
 	fi
 
 	if [ "$F_WORDS" != "1" ]; then
-		echo f_release_getfullproddistr: ambiguus distributives - $F_NAME. Exiting
+		echo "f_release_getfullproddistr: ambiguus distributives - $F_NAME. Exiting"
 		exit 1
 	fi
 
@@ -216,7 +216,7 @@ function f_release_getdistrdir() {
 	C_RELEASE_SRCDIR=$C_ENV_PROPERTY_DISTR_PATH/$P_RELEASENAME
 	C_RELEASE_SRCVER=`basename $C_RELEASE_SRCDIR | cut -d "-" -f1`
 	if [ "$C_RELEASE_SRCVER" = "" ]; then
-		echo redist.sh: SRCDIR is expected having name=VERSION-anything, value=$C_RELEASE_SRCDIR
+		echo "f_release_getdistrdir: SRCDIR is expected having name=VERSION-anything, value=$C_RELEASE_SRCDIR. Exiting"
 		exit 1
 	fi
 
@@ -224,9 +224,9 @@ function f_release_getdistrdir() {
 	f_release_runcmdcheck "if [ -d "$C_RELEASE_SRCDIR" ]; then echo true; fi"
 	if [ "$C_RELEASE_CMD_RES" != "true" ]; then
 		if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
-			echo local release directory $C_RELEASE_SRCDIR does not exist. Exiting
+			echo "f_release_getdistrdir: local release directory $C_RELEASE_SRCDIR does not exist. Exiting"
 		else
-			echo "$P_DISTR_HOSTLOGIN: local release directory $C_RELEASE_SRCDIR does not exist". Exiting
+			echo "f_release_getdistrdir: $P_DISTR_HOSTLOGIN - release directory $C_RELEASE_SRCDIR does not exist. Exiting"
 		fi
 		exit 1
 	fi
@@ -238,13 +238,13 @@ function f_release_getdistrdir() {
 	fi
 }
 
-function f_release_getfile() {
+function f_release_downloadfile() {
 	local P_SRCPATH=$1
 	local P_DSTPATH=$2
 
 	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 		if [ ! -f "$P_SRCPATH" ]; then
-			echo file is not found - $P_SRCPATH. Exiting
+			echo "f_release_downloadfile: file is not found - $P_SRCPATH. Exiting"
 			exit 1
 		fi
 
@@ -255,7 +255,7 @@ function f_release_getfile() {
 
 	else
 		if [ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" = "" ]; then
-			echo "C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting
+			echo "f_release_downloadfile: C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting"
 			exit 1
 		fi
 
@@ -276,7 +276,7 @@ function f_release_getfile() {
 	return 0
 }
 
-function f_release_getdir() {
+function f_release_downloaddir() {
 	local P_SRCPATH=$1
 	local P_DSTPATH=$2
 
