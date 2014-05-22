@@ -21,6 +21,8 @@ C_RELEASE_DISTRID=
 C_RELEASE_SRCDIR=
 C_RELEASE_SRCVER=
 
+C_RELEASE_CMD_RES=
+
 function f_release_getxmlproperty() {
 	local P_PROPNAME=$1
 	C_RELEASE_XMLVALUE=`xmlstarlet sel -t -m "release/property[@name='$P_PROPNAME']" -v "@value" $C_RELEASE_FNAME`
@@ -127,30 +129,61 @@ function f_release_getconfcompinfo() {
 	C_RELEASE_CONFCOMP_PARTIAL=`xmlstarlet sel -t -m "release/configure/component[@name='$P_CONFCOMP']" -v "@partial" $C_RELEASE_FNAME`
 }
 
+# run any command
+function f_release_runcmd() {
+	local P_CMD="$1"
+
+	C_RELEASE_CMD_RES=
+	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
+		C_RELEASE_CMD_RES=`(eval $P_CMD) 2>&1`
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	else
+		if [ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" = "" ]; then
+			echo "C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting
+			exit 1
+		fi
+
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			C_RELEASE_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $C_ENV_PROPERTY_DISTR_REMOTEHOST "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			C_RELEASE_CMD_RES=`ssh -n $C_ENV_PROPERTY_DISTR_REMOTEHOST "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		fi
+	fi
+	return 0
+}
+
+function f_release_runcmdcheck() {
+	local P_CMD="$1"
+
+	f_release_runcmd $P_CMD
+	if [ $? -ne 0 ]; then
+		if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
+			echo f_release_runcmdcheck: unable to execute $P_CMD. Exiting
+		else
+			echo f_release_runcmdcheck: unable to execute $P_CMD on $C_ENV_PROPERTY_DISTR_REMOTEHOST. Exiting
+		fi
+		exit 1
+	fi
+}
+
 function f_release_getfullproddistr() {
 	C_RELEASE_DISTRID=
 
-	# get source directory
-	local F_DISTR_PATH=$C_ENV_PROPERTY_DISTR_PATH
-	local F_USE_LOCAL=$C_ENV_PROPERTY_DISTR_USELOCAL
-	local F_REMOTEHOST=$C_ENV_PROPERTY_DISTR_REMOTEHOST
-
-	local F_NAME
-	local F_CMD="find $F_DISTR_PATH -maxdepth 1 -name \"$C_CONFIG_VERSIONBRANCH*-prod\" -exec basename {} \\;"
-	if [ "$F_USE_LOCAL" = "true" ]; then
-		F_NAME=`find $F_DISTR_PATH -maxdepth 1 -name "$C_CONFIG_VERSIONBRANCH*-prod" -exec basename {} \;`
-	else
-		F_NAME=`ssh $C_ENV_PROPERTY_DISTR_REMOTEHOST "$F_CMD"`
-		if [ "$?" != "0" ]; then
-			echo f_release_getfullproddistr: unable to execute $F_CMD on $C_ENV_PROPERTY_DISTR_REMOTEHOST. Exiting
-			exit 1
-		fi
-	fi
+	f_release_runcmdcheck "find $C_ENV_PROPERTY_DISTR_PATH -maxdepth 1 -name \"*-prod\" -exec basename {} \\;"
+	local F_NAME=$C_RELEASE_CMD_RES
 
 	# check content
 	local F_WORDS=`echo $F_NAME | wc -w`
 	if [ "$F_WORDS" = "0" ]; then
-		echo f_release_getfullproddistr: unable to find distributive using $F_CMD. Exiting
+		echo f_release_getfullproddistr: unable to find prod distributive. Exiting
 		exit 1
 	fi
 
@@ -178,9 +211,7 @@ function f_release_resolverelease() {
 }
 
 function f_release_getdistrdir() {
-	local P_DISTRPATH=$1
-	local P_RELEASENAME=$2
-	local P_DISTR_HOSTLOGIN=$3
+	local P_RELEASENAME=$1
 
 	C_RELEASE_SRCDIR=$C_ENV_PROPERTY_DISTR_PATH/$P_RELEASENAME
 	C_RELEASE_SRCVER=`basename $C_RELEASE_SRCDIR | cut -d "-" -f1`
@@ -190,24 +221,52 @@ function f_release_getdistrdir() {
 	fi
 
 	echo check source dir $C_RELEASE_SRCDIR...
-	if [ "$P_DISTR_HOSTLOGIN" != "" ]; then
-		local F_CHECK=`ssh $P_DISTR_HOSTLOGIN "if [ -d "$C_RELEASE_SRCDIR" ]; then echo true; fi" 2>&1`
-		F_CHECK=`echo $F_CHECK | tr -d "\n"`
-		if [ "$F_CHECK" != "true" ]; then
-			echo $P_DISTR_HOSTLOGIN: source directory $C_RELEASE_SRCDIR does not exist
-			exit 1
+	f_release_runcmdcheck "if [ -d "$C_RELEASE_SRCDIR" ]; then echo true; fi"
+	if [ "$C_RELEASE_CMD_RES" != "true" ]; then
+		if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
+			echo local release directory $C_RELEASE_SRCDIR does not exist. Exiting
+		else
+			echo "$P_DISTR_HOSTLOGIN: local release directory $C_RELEASE_SRCDIR does not exist". Exiting
 		fi
-		C_RELEASE_SRCDIR=`ssh $P_DISTR_HOSTLOGIN "cd $C_RELEASE_SRCDIR; pwd" 2>&1`
-	else
-		if [ ! -d "$C_RELEASE_SRCDIR" ]; then
-			echo local source directory $C_RELEASE_SRCDIR does not exist
-			exit 1
-		fi
+		exit 1
 	fi
 
-	if [ "$P_DISTR_HOSTLOGIN" != "" ]; then
-		echo "$P_DISTR_HOSTLOGIN: source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
-	else
+	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 		echo "local source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
+	else
+		echo "$P_DISTR_HOSTLOGIN: source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
+	fi
+}
+
+function f_release_getfile() {
+	local P_SRCPATH=$1
+	local P_DSTPATH=$2
+
+	if [ "$S_REDIST_DISTR_USE_LOCAL" = "true" ]; then
+		if [ ! -f "$P_SRCPATH" ]; then
+			echo file is not found - $P_SRCPATH. Exiting
+			exit 1
+		fi
+
+		cp -p $P_SRCPATH $P_DSTPATH
+
+	else
+		if [ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" = "" ]; then
+			echo "C_ENV_PROPERTY_DISTR_REMOTEHOST is not set. Exiting
+			exit 1
+		fi
+
+		# get remote file - using key file if any
+		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			scp -q -B -p $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		fi
 	fi
 }
