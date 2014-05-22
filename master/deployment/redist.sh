@@ -502,30 +502,12 @@ function f_local_prepare() {
 	mkdir -p `dirname $F_REDIST_RELEASE_FILE`
 
 	# check source dir
-	if [ "$S_REDIST_DISTR_USE_LOCAL" = "true" ]; then
-		S_REDIST_DISTR_REMOTEHOST=
+	f_release_getdistrdir $P_SRCVERSIONDIR
+	S_REDIST_SRCDIR=$C_RELEASE_SRCDIR
+	S_REDIST_SRCVER=$C_RELEASE_SRCVER
 
-		f_release_getdistrdir $F_REDIST_DISTR_PATH $P_SRCVERSIONDIR
-		S_REDIST_SRCDIR=$C_RELEASE_SRCDIR
-		S_REDIST_SRCVER=$C_RELEASE_SRCVER
-
-		cp -p $S_REDIST_SRCDIR/release.xml $F_REDIST_RELEASE_FILE
-
-	else
-		S_REDIST_DISTR_REMOTEHOST=$C_ENV_PROPERTY_DISTR_REMOTEHOST
-
-		if [ "$S_REDIST_DISTR_REMOTEHOST" = "" ]; then
-			echo redist.sh: unable to find property distr-remotehost. Exiting
-			exit 1
-		fi
-
-		f_release_getdistrdir $F_REDIST_DISTR_PATH $P_SRCVERSIONDIR $S_REDIST_DISTR_REMOTEHOST
-		S_REDIST_SRCDIR=$C_RELEASE_SRCDIR
-		S_REDIST_SRCVER=$C_RELEASE_SRCVER
-
-		f_download_file $S_REDIST_DISTR_REMOTEHOST $S_REDIST_SRCDIR/release.xml $F_REDIST_RELEASE_FILE
-	fi
-
+	# activate release.xml
+	f_release_getfile $S_REDIST_SRCDIR/release.xml $F_REDIST_RELEASE_FILE
 	f_release_setfile $F_REDIST_RELEASE_FILE
 
 	# check obsolete status
