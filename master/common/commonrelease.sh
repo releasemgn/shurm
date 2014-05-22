@@ -22,6 +22,7 @@ C_RELEASE_SRCDIR=
 C_RELEASE_SRCVER=
 
 C_RELEASE_CMD_RES=
+C_RELEASE_FINDFILE_NAME=
 
 function f_release_getxmlproperty() {
 	local P_PROPNAME=$1
@@ -305,4 +306,20 @@ function f_release_downloaddir() {
 	fi
 
 	return 0
+}
+
+function f_release_findfile() {
+	local P_SRCDIR=$1
+	local P_XBASENAME=$2
+	local P_XEXTENTION=$3
+
+	f_release_runcmd "if [ -d "$P_SRCDIR" ]; then cd $P_SRCDIR; find . -maxdepth 1 -type f -name \"*$P_XEXTENTION\" | egrep \"./$P_XBASENAME$P_XEXTENTION|./.*[0-9]-$P_XBASENAME$P_XEXTENTION|./$P_XBASENAME-[0-9].*$P_XEXTENTION\"; fi"
+	C_RELEASE_FINDFILE_NAME=$C_RELEASE_CMD_RES
+
+	local F_LOCAL_COUNT=`echo "$C_RELEASE_FINDFILE_NAME" | wc -l`
+	if [ "$F_LOCAL_COUNT" != "1" ]; then
+		local F_SHOWNAMES=`echo $C_RELEASE_FINDFILE_NAME | tr "\n" " "`
+		echo "f_find_file: too many files ($F_SHOWNAMES) with $P_XBASENAME$P_XEXTENTION exist in $P_SRCDIR. Exiting."
+		exit 1
+	fi
 }
