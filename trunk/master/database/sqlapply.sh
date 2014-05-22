@@ -46,7 +46,7 @@ function f_local_copyfile() {
 	if [ "$P_REGIONS" = "" ]; then
 		if [ "$P_ALIGNEDDIR" != "regional" ]; then
 			mkdir -p $P_DSTDIR
-			cp $P_SRCFILE $P_DSTDIR
+			f_release_downloadfile $P_SRCFILE $P_DSTDIR
 		fi
 		return 0
 	fi
@@ -59,12 +59,14 @@ function f_local_copyfile() {
 	if [ "$P_ALIGNEDDIR" != "regional" ]; then
 		if [[ ! "$F_SCRIPTSCHEMA" =~ "RR" ]]; then
 			mkdir -p $P_DSTDIR
-			cp $P_SRCFILE $P_DSTDIR
+			f_release_downloadfile $P_SRCFILE $P_DSTDIR
 			return 0
 		fi
 	else
 		# get regions to apply in
-		local F_REGIONS=`grep "^\-\- REGIONS " $P_SRCFILE`
+		f_release_runcmd "grep \"^\-\- REGIONS \" $P_SRCFILE"
+		local F_REGIONS="$C_RELEASE_CMD_RES"
+
 		F_REGIONS=${F_REGIONS#-- REGIONS }
 		f_getsubsetexact "$P_REGIONS" "$F_REGIONS"
 		P_REGIONS="$C_COMMON_SUBSET"
@@ -84,7 +86,7 @@ function f_local_copyfile() {
 	mkdir -p $P_DSTDIR
 	for region in $P_REGIONS; do
 		F_DSTNAME=$F_SCRIPTNUMUSE$region-${F_SCRIPTSCHEMA/RR/$region}-$F_SCRIPTTAIL
-		cp $P_SRCFILE $P_DSTDIR/$F_DSTNAME
+		f_release_downloadfile $P_SRCFILE $P_DSTDIR/$F_DSTNAME
 		sed -i "s/@region@/$region/g" $P_DSTDIR/$F_DSTNAME
 	done
 }
@@ -101,21 +103,19 @@ function f_local_createrundir() {
 
 	echo sqlapply.sh: copy distributive from $P_SRCDIR to $P_RUNDIR ...
 	if [ "$EXECUTE_LIST" = "" ]; then
-		local F_SAVEPATH=`pwd`
-		cd $P_SRCDIR
+		f_release_runcmd "cd $P_SRCDIR; find . -type f | egrep -v \"(^\\./aligned|^\\./manual)\""
+		local F_LIST="$C_RELEASE_CMD_RES"
 
-		local F_DIRNAME
-		for fname in `find . -type f | egrep -v "(^\./aligned|^\./manual)"`; do
+		for fname in $F_LIST; do
 			F_DIRNAME=`dirname $fname`
-			f_local_copyfile $fname $P_RUNDIR/$F_DIRNAME $P_ALIGNEDDIR "$P_REGIONS"
+			f_local_copyfile $P_SRCDIR/$fname $P_RUNDIR/$F_DIRNAME $P_ALIGNEDDIR "$P_REGIONS"
 		done
-
-		cd $F_SAVEPATH
 	else
 		f_sqlidx_getegrepmask "$EXECUTE_LIST" $P_ALIGNEDID
 		local F_GREP="$S_SQL_LISTMASK"
 
-		F_FILES=`find $P_SRCDIR -type f -printf "%P\n" | egrep "$F_GREP" | tr "\n" " "`
+		f_release_runcmd "cd $P_SRCDIR; find . -type f -printf \"%P\\n\" | egrep \"$F_GREP\" | tr \"\\n\" \" \""
+		F_FILES="$C_RELEASE_CMD_RES"
 
 		if [ "$F_FILES" != "" ]; then
 			local F_DIRNAME
