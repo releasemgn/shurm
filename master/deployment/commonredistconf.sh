@@ -30,18 +30,24 @@ function f_redist_rollout_config() {
 	local F_REDIST_CONFIG_VER="$C_REDIST_DEPLOY_CONTENT_VER"
 
 	if [ "$F_REDIST_CONFIG_TARS" = "" ]; then
-		echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_DEPLOY is empty. Skipped"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_DEPLOY is empty. Skipped"
+		fi
 		return 1
 	fi
 
 	echo $P_ENV_HOSTLOGIN: ============================================ rollout configuration app=$P_SERVER node=$P_NODE, location=$P_LOCATION ...
 
 	# remove old
-	echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_DEPLOY/prepare.sh before deploy ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_DEPLOY/prepare.sh before deploy ...
+	fi
 	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_DEPLOY/prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_CONFIG_VER"
 
 	# deploy new
-	echo $P_ENV_HOSTLOGIN: deploy new from $F_DSTDIR_DEPLOY to $F_RUNTIMEDIR ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: deploy new from $F_DSTDIR_DEPLOY to $F_RUNTIMEDIR ...
+	fi
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_DEPLOY/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
@@ -79,18 +85,24 @@ function f_redist_rollback_config() {
 	local F_REDIST_CONFIG_VER="$C_REDIST_DEPLOY_BACKUP_CONTENT_VER"
 
 	if [ "$F_REDIST_CONFIG_TARS" = "" ]; then
-		echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_BACKUP is empty. Skipped"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_ENV_HOSTLOGIN: $F_DSTDIR_BACKUP is empty. Skipped"
+		fi
 		return 1
 	fi
 
 	echo $P_ENV_HOSTLOGIN: ============================================ rollback configuration app=$P_SERVER node=$P_NODE, location=$P_LOCATION ...
 
 	# remove current
-	echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_BACKUP/prepare.sh before rollback ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: run $F_DSTDIR_BACKUP/prepare.sh before rollback ...
+	fi
 	f_redist_execute $P_ENV_HOSTLOGIN "mkdir -p $F_RUNTIMEDIR; $F_DSTDIR_BACKUP/prepare.sh; mkdir -p $F_DSTDIR_STATE; cd $F_DSTDIR_STATE; rm -rf $F_REDIST_CONFIG_VER"
 
 	# restore from backup
-	echo $P_ENV_HOSTLOGIN: restore from backup $F_DSTDIR_BACKUP to $F_RUNTIMEDIR ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: restore from backup $F_DSTDIR_BACKUP to $F_RUNTIMEDIR ...
+	fi
 	local F_LOGIN=${P_ENV_HOSTLOGIN%%@*}
 	f_redist_execute $P_ENV_HOSTLOGIN "cd $F_RUNTIMEDIR; for tf in $F_REDIST_CONFIG_TARS; do tar xmf $F_DSTDIR_BACKUP/\$tf.config.tar -o --owner=$F_LOGIN > /dev/null; done"
 
@@ -221,7 +233,9 @@ function f_redist_fillconfpreparescript_andbackup() {
 		fi
 	fi
 
-	echo $P_ENV_HOSTLOGIN: backup created - $F_DSTDIR_BACKUP/$F_CONFIGTARFILE
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: backup created - $F_DSTDIR_BACKUP/$F_CONFIGTARFILE
+	fi
 
 	local F_STATEFILE=$F_DSTDIR_STATE/$P_CONFCOMP.ver
 	f_run_cmdcheck $P_ENV_HOSTLOGIN "if [ -f $F_STATEFILE ]; then cp $F_STATEFILE $F_DSTDIR_BACKUP; fi"
@@ -335,7 +349,9 @@ function f_redist_get_configset() {
 	f_getpath_runtimelocation $P_SERVER $P_ROOTDIR $P_LOCATION
 	local F_RUNTIMEDIR=$C_COMMON_DIRPATH
 
-	echo $P_ENV_HOSTLOGIN: copy configuration from $F_RUNTIMEDIR ...
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo $P_ENV_HOSTLOGIN: copy configuration from $F_RUNTIMEDIR ...
+	fi
 
 	local F_FILEMASK=
 	local F_FILES
@@ -375,7 +391,9 @@ function f_redist_get_configset() {
 	fi
 
 	if [ "$F_FILES" = "" ]; then
-		echo "$P_ENV_HOSTLOGIN: $F_RUNTIMEDIR is empty (mask=$F_FILEMASK). Skipped."
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_ENV_HOSTLOGIN: $F_RUNTIMEDIR is empty (mask=$F_FILEMASK). Skipped."
+		fi
 		return 1
 	fi
 
@@ -392,7 +410,9 @@ function f_redist_get_configset() {
 	f_run_cmd $P_ENV_HOSTLOGIN "rm -rf $F_TMPDIR/$F_CONFIGTARFILE; mkdir -p $F_TMPDIR; if [ -d $F_RUNTIMEDIR ]; then cd $F_RUNTIMEDIR; tar cf $F_TMPDIR/$F_CONFIGTARFILE $F_FILES > /dev/null; echo ok; else echo nodir; fi"
 	if [ "$RUN_CMD_RES" != "ok" ]; then
 		if [ "$RUN_CMD_RES" = "nodir" ]; then
-			echo $P_ENV_HOSTLOGIN: $F_RUNTIMEDIR does not exist. Skipped.
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo "$P_ENV_HOSTLOGIN: $F_RUNTIMEDIR does not exist. Skipped."
+			fi
 			return 1
 		fi
 
