@@ -235,7 +235,7 @@ function f_release_getdistrdir() {
 	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 		echo "local source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
 	else
-		echo "$release source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
+		echo "release source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
 	fi
 }
 
