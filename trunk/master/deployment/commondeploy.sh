@@ -9,10 +9,14 @@ function f_deploy_execute() {
 	local P_EXEC_CMD="$4"
 
 	if [ "$C_DEPLOY_EXECUTE_ECHO_ONLY" = "true" ]; then
-		echo $P_EXEC_ITEM: showonly "$P_EXEC_CMD"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_EXEC_ITEM: showonly "$P_EXEC_CMD"
+		fi
 		RUN_CMD_RES=
 	else
-		echo $P_EXEC_ITEM: execute "$P_EXEC_CMD"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_EXEC_ITEM: execute "$P_EXEC_CMD"
+		fi
 		f_run_cmdcheck $P_EXEC_ITEM "echo `date` \"(SSH_CLIENT=\$SSH_CLIENT): $P_EXEC_CMD\" >> ~/execute.log"
 		f_run_cmdcheck $P_EXEC_ITEM "$P_EXEC_CMD"
 	fi
@@ -28,7 +32,9 @@ function f_deploy_stop_generic() {
 	# check status
 	f_process_pid $P_DC $P_PROGRAMNAME $P_HOSTLOGIN
 	if [ "$C_PROCESS_PID" = "" ]; then
-		echo "$P_HOSTLOGIN: server already stopped"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_HOSTLOGIN: server already stopped"
+		fi
 		return 1
 	fi
 
@@ -43,7 +49,10 @@ function f_deploy_stop_generic() {
 	C_PROCESS_PID_SAVE=$C_PROCESS_PID
 	local KWAIT=0
 	local F_WAITTIME=60
-	echo "`date` $P_HOSTLOGIN: wait for stop server..."
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "`date` $P_HOSTLOGIN: wait for stop server..."
+	fi
+
 	local F_WAIT_DATE1=`date '+%s'`
 	local F_WAIT_DATE2
 	while [ "$KWAIT" -lt $F_WAITTIME ]; do
@@ -75,7 +84,9 @@ function f_deploy_stop_service() {
 	f_process_service_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_SERVICENAME
 
 	if [ "$C_PROCESS_STATUS" = "STOPPED" ]; then
-		echo "$P_HOSTLOGIN: $P_SERVICENAME already stopped"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_HOSTLOGIN: $P_SERVICENAME already stopped"
+		fi
 		return 1
 	fi
 
@@ -94,7 +105,10 @@ function f_deploy_stop_service() {
 	C_PROCESS_PID_SAVE=$C_PROCESS_PID
 	local KWAIT=0
 	local F_WAITTIME=60
-	echo "`date` $P_HOSTLOGIN: wait for stop $P_SERVICENAME..."
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "`date` $P_HOSTLOGIN: wait for stop $P_SERVICENAME..."
+	fi
+
 	local F_WAIT_DATE1=`date '+%s'`
 	local F_WAIT_DATE2
 	while [ "$KWAIT" -lt $F_WAITTIME ]; do
@@ -124,7 +138,9 @@ function f_deploy_start_generic() {
 	# check already started
 	f_process_generic_started_status $P_DC $P_PROGRAMNAME generic $P_HOSTLOGIN $P_FULLBINPATH
 	if [ "$C_PROCESS_STATUS" = "STARTED" ]; then
-		echo "$P_HOSTLOGIN: server already started (pid=$C_PROCESS_PID)"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_HOSTLOGIN: server already started (pid=$C_PROCESS_PID)"
+		fi
 		return 1
 	fi
 
@@ -147,7 +163,9 @@ function f_deploy_start_service() {
 	# check already started
 	f_process_service_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_SERVICENAME
 	if [ "$C_PROCESS_STATUS" = "STARTED" ]; then
-		echo "$P_HOSTLOGIN: server already started"
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "$P_HOSTLOGIN: server already started"
+		fi
 		return 1
 	fi
 
