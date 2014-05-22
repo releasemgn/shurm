@@ -97,8 +97,13 @@ function f_redist_findsourcefile() {
 	C_SOURCE_FILE=
 	C_SOURCE_FILE_STATIC=
 
-	f_find_file $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_EXT $P_DISTR_HOSTLOGIN
-	C_SOURCE_FILE=$C_COMMON_FINDFILE_NAME
+	if [ "$P_DISTR_HOSTLOGIN" = "release" ]; then
+		f_release_findfile $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_EXT
+		C_SOURCE_FILE=$C_RELEASE_FINDFILE_NAME
+	else
+		f_find_file $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_EXT
+		C_SOURCE_FILE=$C_COMMON_FINDFILE_NAME
+	fi
 
 	# ensure correct file
 	if [ "$C_SOURCE_FILE" = "" ]; then
@@ -112,8 +117,13 @@ function f_redist_findsourcefile() {
 	
 	# find static for war
 	if [ "$C_DISTR_TYPE" = "war" ] || [ "$C_DISTR_TYPE" = "pguwar" ]; then
-		f_find_file $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_WAR_STATICEXT $P_DISTR_HOSTLOGIN
-		C_SOURCE_FILE_STATIC=$C_COMMON_FINDFILE_NAME
+		if [ "$P_DISTR_HOSTLOGIN" = "release" ]; then
+			f_release_findfile $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_WAR_STATICEXT
+			C_SOURCE_FILE_STATIC=$C_RELEASE_FINDFILE_NAME
+		else
+			f_find_file $P_SRCDIR $C_DISTR_DISTBASENAME $C_DISTR_WAR_STATICEXT
+			C_SOURCE_FILE_STATIC=$C_COMMON_FINDFILE_NAME
+		fi
 
 		if [ "$C_SOURCE_FILE_STATIC" != "" ]; then
 			C_SOURCE_FILE_STATIC=`basename $C_SOURCE_FILE_STATIC`
