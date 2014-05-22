@@ -87,7 +87,7 @@ function f_local_executeconfcomp() {
 	# redist
 	local F_REDIST_FULLSRCDIR=$F_SVCRESTORE_LIVE_SERVER_COMP
 	local F_PARTIAL="false"
-	f_redist_transfer_configset $P_SERVER $P_HOSTLOGIN $P_ROOTDIR $S_VERSIONDIR $P_LOCATION $P_CONFCOMP "config" $F_PARTIAL $F_REDIST_FULLSRCDIR
+	f_redist_transfer_configset $P_SERVER $P_HOSTLOGIN $P_ROOTDIR $S_VERSIONDIR $P_LOCATION $P_CONFCOMP "config" $F_PARTIAL $F_REDIST_FULLSRCDIR "local"
 	if [ $? -ne 0 ]; then
 		echo "transfer failed for $P_CONFCOMP location=$P_LOCATION. Skipped."
 		return 1
