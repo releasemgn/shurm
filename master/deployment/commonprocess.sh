@@ -146,7 +146,9 @@ function f_process_waitone() {
 	local P_FULLBINPATH=$5
 	local P_PROCESS_TIMEOUT=$6
 
-	echo "`date` $P_HOSTLOGIN: wait for start $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "`date` $P_HOSTLOGIN: wait for start $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
+	fi
 
 	local KWAIT=0
 	local F_WAITTIME=$P_PROCESS_TIMEOUT
@@ -204,7 +206,9 @@ function f_process_waitall_service() {
 			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
-			echo wait for service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo wait for service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			fi
 			f_process_wait_service $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
@@ -237,7 +241,9 @@ function f_process_waitall() {
 			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
-			echo wait for $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo wait for $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			fi
 			f_process_waitone $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
