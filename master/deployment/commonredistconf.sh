@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2011-2013 vsavchik@gmail.com
+# Copyright 2011-2014 vsavchik@gmail.com
 
 S_COMMONREDISTCONF_RELADM_TMPDIR=/tmp/$HOSTNAME.$USER.commonredistconf.p$$
 
