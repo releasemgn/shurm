@@ -186,40 +186,45 @@ function f_upload_file() {
 	return 0
 }
 
-# upload any file from remote source
-function f_upload_remotefile() {
-	local P_SRC_HOSTLOGIN=$1
-	local P_DST_HOSTLOGIN=$2
-	local P_SRCFILE=$3
-	local P_DSTFILE=$4
-	local P_MD5NAME=$5
-	local P_STATEINFO="$6"
+# upload any file from release source
+function f_upload_releasefile() {
+	local P_DST_HOSTLOGIN=$1
+	local P_SRCFILE=$2
+	local P_DSTFILE=$3
+	local P_MD5NAME=$4
+	local P_STATEINFO="$5"
 
 	# calculate md5
-	f_run_cmd $P_SRC_HOSTLOGIN "if [ ! -f $P_SRCFILE ]; then echo true; fi"
-	if [ "$RUN_CMD_RES" = "true" ]; then
-		echo "f_upload_remotefile: file $P_SRCFILE is missing in $P_SRCDIR, skipped."
+	f_release_runcmd "if [ ! -f $P_SRCFILE ]; then echo true; fi"
+	if [ "$C_RELEASE_CMD_RES" = "true" ]; then
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo "f_upload_releasefile: file $P_SRCFILE is missing in $P_SRCDIR, skipped."
+		fi
 		return 1
 	fi
 
 	# calculate md5
 	local F_SRCDIRNAME=`dirname $P_SRCFILE`
 	local F_MD5SRCPATH=$F_SRCDIRNAME/$P_MD5NAME
-	f_run_cmd $P_SRC_HOSTLOGIN "if [ -f "$F_MD5SRCPATH" ]; then cat $F_MD5SRCPATH; else ( md5sum $P_SRCFILE | cut -d\" \" -f1 ); fi"
-	local F_REDIST_MD5_SRC=$RUN_CMD_RES
+	f_release_runcmd "if [ -f "$F_MD5SRCPATH" ]; then cat $F_MD5SRCPATH; else ( md5sum $P_SRCFILE | cut -d\" \" -f1 ); fi"
+	local F_REDIST_MD5_SRC=$C_RELEASE_CMD_RES
 
 	# check duplicate
 	local F_NEWSTATEINFO="$P_DSTFILE:$F_REDIST_MD5_SRC"
 	if [ "$GETOPT_FORCE" != "yes" ]; then
 		if [ "$F_NEWSTATEINFO" = "$P_STATEINFO" ]; then
-			echo "f_upload_remotefile: $P_DSTFILE - no changes. Skipped."
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo "f_upload_releasefile: $P_DSTFILE - no changes. Skipped."
+			fi
 			return 0
 		fi
 
 		if [ "$GETOPT_IGNOREVERSION" = "yes" ]; then
 			local F_STATENOVER=${P_STATEINFO#*:}
 			if [ "$F_REDIST_MD5_SRC" = "$F_STATENOVER" ]; then
-				echo "$P_HOSTLOGIN: $P_REMOTENAME - no CRC changes. Skipped."
+				if [ "$GETOPT_SHOWALL" = "yes" ]; then
+					echo "$P_HOSTLOGIN: $P_REMOTENAME - no CRC changes. Skipped."
+				fi
 				return 0
 			fi
 		fi
@@ -232,34 +237,29 @@ function f_upload_remotefile() {
 	f_run_cmd $P_DST_HOSTLOGIN "rm -rf $F_MD5DSTPATH"
 
 	if [ "$P_DST_HOSTLOGIN" = "local" ]; then
-		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $P_DSTFILE
-			if [ $? -ne 0 ]; then
-				return 1
-			fi
-		else
-			scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $P_DSTFILE
-			if [ $? -ne 0 ]; then
-				return 1
-			fi
+		f_release_downloadfile $P_SRCFILE $P_DSTFILE
+		if [ $? -ne 0 ]; then
+			echo "f_upload_releasefile: release download failed - $P_SRCFILE. Exiting."
+			return 1
 		fi
 	else
 		local F_LOCALNAME=$HOSTNAME.$USER.redist.p$$.tmp-scpfile
+		f_release_downloadfile $P_SRCFILE $F_LOCALNAME
+		if [ $? -ne 0 ]; then
+			echo "f_upload_releasefile: release download failed - $P_SRCFILE. Exiting."
+			return 1
+		fi
 
 		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
 			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
-			rm -rf $F_LOCALNAME
-			if [ $? -ne 0 ]; then
-				return 1
-			fi
 		else
-			scp -q -B -p $P_SRC_HOSTLOGIN:$P_SRCFILE $F_LOCALNAME
 			scp -q -B -p $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
-			rm -rf $F_LOCALNAME
-			if [ $? -ne 0 ]; then
-				return 1
-			fi
+		fi
+
+		rm -rf $F_LOCALNAME
+		if [ $? -ne 0 ]; then
+			echo "f_upload_releasefile: rm failed - $F_LOCALNAME. Exiting."
+			return 1
 		fi
 	fi
 
@@ -269,7 +269,7 @@ function f_upload_remotefile() {
 
 	# check copy succeeded
 	if [ "$F_REDIST_MD5_SRC" != "$F_REDIST_MD5_DST" ]; then
-		echo "f_upload_remotefile: copy failed $P_SRCFILE to $P_DSTFILE (dst md5=$F_REDIST_MD5_DST). Exiting."
+		echo "f_upload_releasefile: copy failed $P_SRCFILE to $P_DSTFILE (dst md5=$F_REDIST_MD5_DST). Exiting."
 		exit 1
 	fi
 

@@ -80,8 +80,8 @@ function f_redist_copy_file() {
 	local L_MD5NAME=$P_DISTITEM.ver
 
 	# copy file
-	if [ "$P_SRC_HOSTLOGIN" != "" ]; then
-		f_upload_remotefile $P_SRC_HOSTLOGIN $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME "$P_STATEINFO"
+	if [ "$P_SRC_HOSTLOGIN" = "release" ]; then
+		f_upload_releasefile $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME "$P_STATEINFO"
 	else
 		f_upload_file $P_DST_HOSTLOGIN $F_REDIST_SRCFILE $F_REDIST_DSTFILE $L_MD5NAME "$P_STATEINFO"
 	fi
