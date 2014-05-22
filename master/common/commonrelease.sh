@@ -227,7 +227,7 @@ function f_release_getdistrdir() {
 		if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 			echo "f_release_getdistrdir: local release directory $C_RELEASE_SRCDIR does not exist. Exiting"
 		else
-			echo "f_release_getdistrdir: $P_DISTR_HOSTLOGIN - release directory $C_RELEASE_SRCDIR does not exist. Exiting"
+			echo "f_release_getdistrdir: release directory $C_RELEASE_SRCDIR does not exist. Exiting"
 		fi
 		exit 1
 	fi
@@ -235,7 +235,7 @@ function f_release_getdistrdir() {
 	if [ "$C_ENV_PROPERTY_DISTR_USELOCAL" = "true" ]; then
 		echo "local source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
 	else
-		echo "$P_DISTR_HOSTLOGIN: source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
+		echo "$release source dir found path=$C_RELEASE_SRCDIR, version=$C_RELEASE_SRCVER."
 	fi
 }
 
