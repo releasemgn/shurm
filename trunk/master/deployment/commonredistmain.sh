@@ -47,7 +47,9 @@ function f_redist_savebackup() {
 			f_find_file $F_RUNTIMEDIR $C_DISTR_DEPLOYBASENAME $C_DISTR_EXT $P_DST_HOSTLOGIN
 			local F_REDIST_BFILE=$C_COMMON_FINDFILE_NAME
 			if [ "$F_REDIST_BFILE" = "" ]; then
-				echo $P_DST_HOSTLOGIN: $C_DISTR_DEPLOYBASENAME$C_DISTR_EXT $C_DISTR_TYPE not found in $F_RUNTIMEDIR. Backup skipped.
+				if [ "$GETOPT_SHOWALL" = "yes" ]; then
+					echo $P_DST_HOSTLOGIN: $C_DISTR_DEPLOYBASENAME$C_DISTR_EXT $C_DISTR_TYPE not found in $F_RUNTIMEDIR. Backup skipped.
+				fi
 				return 0
 			fi
 
@@ -55,7 +57,9 @@ function f_redist_savebackup() {
 
 			f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cp -p $F_RUNTIMEDIR/$BACKUP_SRCBASE $F_DSTDIR_BACKUP"
 			F_BACKUPFILE=$F_DSTDIR_BACKUP/$BACKUP_SRCBASE
-			echo $P_DST_HOSTLOGIN: $C_DISTR_TYPE backup created - $F_BACKUPFILE
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo $P_DST_HOSTLOGIN: $C_DISTR_TYPE backup created - $F_BACKUPFILE
+			fi
 
 		# backup binary file - link only
 		elif [ "$P_DEPLOYTYPE" = "links-multidir" ]; then
@@ -66,12 +70,16 @@ function f_redist_savebackup() {
 			f_run_cmd $P_DST_HOSTLOGIN "if [ -f $F_LINKDIR/$F_LINKNAME ]; then readlink $F_LINKDIR/$F_LINKNAME; fi"
 			local F_LINKTARGETPATH=$RUN_CMD_RES
 			if [ "$F_LINKTARGETPATH" = "" ]; then
-				echo $P_DST_HOSTLOGIN: $F_LINKNAME $C_DISTR_TYPE not found in $F_LINKDIR. Backup skipped.
+				if [ "$GETOPT_SHOWALL" = "yes" ]; then
+					echo $P_DST_HOSTLOGIN: $F_LINKNAME $C_DISTR_TYPE not found in $F_LINKDIR. Backup skipped.
+				fi
 				return 0
 			fi
 
 			f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; echo $F_LINKPATH > $F_DSTDIR_BACKUP/$F_LINKNAME.link"
-			echo $P_DST_HOSTLOGIN: link backup created - $F_LINKNAME.link references $F_LINKTARGETPATH
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo $P_DST_HOSTLOGIN: link backup created - $F_LINKNAME.link references $F_LINKTARGETPATH
+			fi
 
 		# backup static
 		elif [ "$P_DEPLOYTYPE" = "static" ]; then
@@ -82,14 +90,18 @@ function f_redist_savebackup() {
 			# create archive and copy to backup
 			f_run_cmd $P_DST_HOSTLOGIN "if [ -d $F_ARCHIVE_DIR/$F_ARCHIVE_NAME ]; then echo ok; fi"
 			if [ "$RUN_CMD_RES" != "ok" ]; then
-				echo $P_DST_HOSTLOGIN: $F_ARCHIVE_DIR/$F_ARCHIVE_NAME static not found. Backup skipped.
+				if [ "$GETOPT_SHOWALL" = "yes" ]; then
+					echo $P_DST_HOSTLOGIN: $F_ARCHIVE_DIR/$F_ARCHIVE_NAME static not found. Backup skipped.
+				fi
 				return 0
 			fi
 
 			f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cd $F_ARCHIVE_DIR; tar zcf $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME $F_ARCHIVE_NAME; if [ \$? -ne 0 ]; then echo failed; fi"
 
 			F_BACKUPFILE=$F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
-			echo $P_DST_HOSTLOGIN: static backup of $F_ARCHIVE_DIR/$F_ARCHIVE_NAME created in $F_BACKUPFILE
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo $P_DST_HOSTLOGIN: static backup of $F_ARCHIVE_DIR/$F_ARCHIVE_NAME created in $F_BACKUPFILE
+			fi
 		fi
 
 	elif [[ "$C_DISTR_TYPE" =~ ^archive ]]; then
@@ -107,14 +119,18 @@ function f_redist_savebackup() {
 		# create archive and copy to backup
 		f_run_cmd $P_DST_HOSTLOGIN "if [ -d $F_ARCHIVE_DIR ]; then echo ok; fi"
 		if [ "$RUN_CMD_RES" != "ok" ]; then
-			echo $P_DST_HOSTLOGIN: $F_ARCHIVE_DIR $C_DISTR_TYPE not found. Backup skipped.
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo $P_DST_HOSTLOGIN: $F_ARCHIVE_DIR $C_DISTR_TYPE not found. Backup skipped.
+			fi
 			return 0
 		fi
 
 		f_run_cmdcheck $P_DST_HOSTLOGIN "mkdir -p $F_DSTDIR_BACKUP; cd $F_ARCHIVE_DIR; tar zcf $F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME *; if [ \$? -ne 0 ]; then echo failed; fi"
 
 		F_BACKUPFILE=$F_DSTDIR_BACKUP/$F_ARCHIVE_SAVENAME
-		echo $P_DST_HOSTLOGIN: archive backup of $F_ARCHIVE_DIR created in $F_BACKUPFILE
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_DST_HOSTLOGIN: archive backup of $F_ARCHIVE_DIR created in $F_BACKUPFILE
+		fi
 	fi
 
 	local F_STATEFILE=$F_DSTDIR_STATE/$P_DISTITEM.ver
@@ -230,7 +246,10 @@ function f_redist_transfer_fileset() {
 	f_run_cmd $P_DST_HOSTLOGIN "cd $F_DSTDIR_STATE; grep -H : *"
 	local F_STATELIST="$RUN_CMD_RES"
 
-	echo "$P_DST_HOSTLOGIN: redist path=$F_DSTDIR_DEPLOY: items - $P_DIST_ITEMS..."
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "$P_DST_HOSTLOGIN: redist path=$F_DSTDIR_DEPLOY: items - $P_DIST_ITEMS..."
+	fi
+
 	local F_RELEASE=${P_RELEASENAME%%-*}
 	local item
 	local F_STATEINFO
@@ -280,7 +299,9 @@ function f_redist_transfer_staticset() {
 	f_run_cmd $P_DST_HOSTLOGIN "cd $F_DSTDIR_STATE; grep -H : *"
 	local F_STATELIST="$RUN_CMD_RES"
 
-	echo "$P_DST_HOSTLOGIN: redist path=$F_DSTDIR_DEPLOY: static items - $P_DIST_ITEMS..."
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "$P_DST_HOSTLOGIN: redist path=$F_DSTDIR_DEPLOY: static items - $P_DIST_ITEMS..."
+	fi
 
 	local F_RELEASE=${P_RELEASENAME%%-*}
 	local item
@@ -378,7 +399,9 @@ function f_redist_rollout_generic() {
 	local F_REDIST_DIRITEMS_VER=$C_REDIST_DIRITEMS_VER
 
 	if [ "$C_REDIST_DIRITEMS_ISEMPTY" = "true" ]; then
-		echo $P_ENV_HOSTLOGIN: nothing to roll out
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_ENV_HOSTLOGIN: nothing to roll out
+		fi
 		return 1
 	fi
 
@@ -523,7 +546,9 @@ function f_redist_rollback_generic() {
 	local F_REDIST_DIRITEMS_VER=$C_REDIST_DIRITEMS_VER
 
 	if [ "$C_REDIST_DIRITEMS_ISEMPTY" = "true" ]; then
-		echo $P_ENV_HOSTLOGIN: nothing to rollback
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo $P_ENV_HOSTLOGIN: nothing to rollback
+		fi
 		return 1
 	fi
 
