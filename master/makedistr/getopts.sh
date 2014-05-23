@@ -3,6 +3,10 @@
 
 while [ "$#" -gt "0" ]; do
 	case $1 in
+		'-all')
+			export GETOPT_ALL=yes
+			shift 1
+			;;
 		'-get')
 			export GETOPT_GET=yes
 			shift 1

@@ -23,6 +23,7 @@ if [ "$P_DISTR_DSTDIR" = "" ]; then
 fi
 
 # execute
+S_USE_PROD_DISTR=
 
 function f_local_download_core() {
 	if [ "$P_DISTR_SRCDIR" = "" ]; then
@@ -119,12 +120,14 @@ function f_local_get_projectlib() {
 	local lib=$C_SOURCE_PROJECT_DISTLIBITEM-$C_CONFIG_APPVERSION.jar
 
 	local RELEASED_TO_PROD=no
-	if [ -f ../servicecall-prod-libs/APP-INF/lib/$lib ]; then
-		RELEASED_TO_PROD=yes
+	if [ "$S_USE_PROD_DISTR" = "yes" ]; then
+		if [ -f ../servicecall-prod-libs/APP-INF/lib/$lib ]; then
+			RELEASED_TO_PROD=yes
+		fi
 	fi
 
 	# echo GETOPT_DIST=$GETOPT_DIST - check if $lib exists in $P_DISTR_DSTDIR/$P_PROJECT ...
-	if [ "$VERSION_MODE" = "branch" ] && [ ! -f $C_CONFIG_DISTR_PATH/$P_DISTR_DSTDIR/$F_PROJECT_DISTITEM*war ] && [ "$RELEASED_TO_PROD" = "yes" ]; then
+	if [ "$S_USE_PROD_DISTR" = "yes" ] && [ ! -f $C_CONFIG_DISTR_PATH/$P_DISTR_DSTDIR/$F_PROJECT_DISTITEM*war ] && [ "$RELEASED_TO_PROD" = "yes" ]; then
 		# if microportal is NOT in current distributive & present in current PROD - then copy lib from PROD
 		if [ -f ../servicecall-prod-libs/APP-INF/lib/$lib ]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
@@ -202,6 +205,11 @@ function f_local_download_deps() {
 function f_local_executeall() {
 	echo getallwar-app.sh: create servicecall.ear and storageservice.ear...
 
+	S_USE_PROD_DISTR=true
+	if [ "$GETOPT_ALL" = "yes" ] || [ "$VERSION_MODE" != "branch" ]; then
+		S_USE_PROD_DISTR=false
+	fi
+
 	cd $P_DOWNLOAD_DIR
 	rm -rf pgu-services-lib
 	rm -rf servicecall-prod-libs
@@ -209,7 +217,7 @@ function f_local_executeall() {
 	f_local_download_core
 
 	# unzip servicecall libs - from current PROD (distr/xxx-prod) - action for branch mode only
-	if [ "$VERSION_MODE" = "branch" ]; then
+	if [ "$S_USE_PROD_DISTR" = "true" ]; then
 		f_local_copy_prod
 	fi
 
