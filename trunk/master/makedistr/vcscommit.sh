@@ -48,6 +48,12 @@ function f_local_vcs_commit_git() {
 	local F_SAVEDIR=`pwd`
 	cd $PATCHPATH
 
+	# automatically add modified
+	local F_LIST=`git diff --name-only`
+	if [ "$F_LIST" != "" ]; then
+		git add $F_LIST
+	fi
+
 	git commit -m "PGU-0000: set version"
 	git push origin
 
