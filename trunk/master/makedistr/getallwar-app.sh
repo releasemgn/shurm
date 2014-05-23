@@ -63,9 +63,11 @@ function f_local_download_libs() {
 	cd pgu-services-lib
 
 	# download latest API libs - pfr, fed-common-util
-	echo download API libs for pfr and fed-common-util from Nexus - to pgu-services-lib...
-	f_downloadnexus war $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID pfr-api $C_CONFIG_APPVERSION_SERVICES "jar"
-	f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.atc.pgu.fed.common.util pgu-fed-common-util $C_CONFIG_APPVERSION_SERVICES "jar"
+	if [ "$C_CONFIG_PRODUCT" = "fedpgu" ]; then
+		echo download API libs for pfr and fed-common-util from Nexus - to pgu-services-lib...
+		f_downloadnexus war $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID pfr-api $C_CONFIG_APPVERSION_SERVICES "jar"
+		f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.atc.pgu.fed.common.util pgu-fed-common-util $C_CONFIG_APPVERSION_SERVICES "jar"
+	fi
 
 	# download latest built libs for all microportals
 	echo download last built libs for all microportals from Nexus - to pgu-services-lib...
