@@ -302,6 +302,28 @@ function f_execute_setversion() {
 	./setversion.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$C_VERSION"
 }
 
+function f_execute_checkout() {
+	local P_VCSTYPE=$1
+	local P_EXECUTE_SET=$2
+	local P_PROJECT=$3
+	local P_VCSPATH=$4
+	local P_PROD_BRANCH=$5
+
+	F_BRANCH=$P_PROD_BRANCH
+	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
+		F_BRANCH=$C_CONFIG_BRANCHNAME
+	fi
+
+	local F_PATH=$C_TARGETDIR/$P_PROJECT
+	mkdir -p $F_PATH
+	if [ $? != 0 ]; then
+		echo unable to create $F_PATH. Exiting
+		exit 1
+	fi
+
+	./vcscheckout.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
+}
+
 function f_execute_diffbranchtag() {
 	local P_GROUP=$1
 	local P_VCSTYPE=$2
@@ -450,6 +472,9 @@ function f_execute_one() {
 			;;
 		SETVERSION)
 			f_execute_setversion $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			;;
+		CHECKOUT)
+			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
 		DIFFBRANCHTAG)
 			f_execute_diffbranchtag $P_GROUP $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
