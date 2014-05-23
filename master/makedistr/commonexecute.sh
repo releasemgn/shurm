@@ -1,4 +1,4 @@
-# Copyright 2011-2013 vsavchik@gmail.com
+# Copyright 2011-2014 vsavchik@gmail.com
 
 C_TAG=
 C_PGUWARNEXUSGROUPID="com.nvision.pgu.service"
@@ -324,6 +324,27 @@ function f_execute_checkout() {
 	./vcscheckout.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
 }
 
+function f_execute_commit() {
+	local P_VCSTYPE=$1
+	local P_EXECUTE_SET=$2
+	local P_PROJECT=$3
+	local P_VCSPATH=$4
+	local P_PROD_BRANCH=$5
+
+	local F_PATH=$C_TARGETDIR/$P_PROJECT
+	mkdir -p $F_PATH
+	if [ $? != 0 ]; then
+		echo unable to create $F_PATH. Exiting
+		exit 1
+	fi
+
+	if [ "$C_COMMITMSG" = "" ]; then
+		C_COMMITMSG="default commit message"
+	fi
+
+	./vcscommit.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$C_COMMITMSG"
+}
+
 function f_execute_diffbranchtag() {
 	local P_GROUP=$1
 	local P_VCSTYPE=$2
@@ -464,6 +485,12 @@ function f_execute_one() {
 		VCSRENAMEBRANCH)
 			f_execute_vcsrenamebranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
+		VCSCHECKOUT)
+			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			;;
+		VCSCOMMIT)
+			f_execute_commit $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			;;
 		STARTCANDIDATETAGS)
 			f_execute_start_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
 			;;
@@ -472,9 +499,6 @@ function f_execute_one() {
 			;;
 		SETVERSION)
 			f_execute_setversion $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
-			;;
-		CHECKOUT)
-			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
 		DIFFBRANCHTAG)
 			f_execute_diffbranchtag $P_GROUP $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
