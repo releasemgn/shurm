@@ -5,18 +5,13 @@ cd `dirname $0`
 . ./getopts.sh
 
 TARGETDIR=$1
-BRANCH=$2
-shift 2
+shift 1
 
 SCOPE=$*
 
 # check params
 if [ "$TARGETDIR" = "" ]; then
 	echo TARGETDIR not set
-	exit 1
-fi
-if [ "$BRANCH" = "" ]; then
-	echo BRANCH not set
 	exit 1
 fi
 
@@ -26,7 +21,6 @@ fi
 
 # core and wars
 export C_TARGETDIR=$TARGETDIR # used in common.sh
-export C_BRANCH=$BRANCH # used in common.sh
 
 if [ "$SCOPE" = "" ]; then
 	SCOPE=all
