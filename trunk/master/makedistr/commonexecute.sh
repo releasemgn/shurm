@@ -160,6 +160,23 @@ function f_execute_vcscopytag() {
 	./vcscopytag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "tags/$C_TAG2"
 }
 
+function f_execute_vcscopytagtobranch() {
+	local P_VCSTYPE=$1
+	local P_EXECUTE_SET=$2
+	local P_PROJECT=$3
+	local P_VCSPATH=$4
+
+	if [ "$C_TAG1" = "" ]; then
+		echo f_execute_vcscopytagtobranch: C_TAG1 is not set
+		exit 1
+	fi
+	if [ "$C_BRANCH2" = "" ]; then
+		echo f_execute_vcscopytagtobranch: C_BRANCH2 is not set
+		exit 1
+	fi
+	./vcscopytag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "branches/$C_BRANCH2"
+}
+
 function f_execute_vcscopynewtag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
@@ -469,6 +486,9 @@ function f_execute_one() {
 			;;
 		VCSCOPYTAG)
 			f_execute_vcscopytag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			;;
+		VCSCOPYTAGTOBRANCH)
+			f_execute_vcscopytagtobranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
 			;;
 		VCSCOPYNEWTAG)
 			f_execute_vcscopynewtag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
