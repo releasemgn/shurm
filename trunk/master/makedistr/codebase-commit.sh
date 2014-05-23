@@ -5,7 +5,8 @@ cd `dirname $0`
 . ./getopts.sh
 
 TARGETDIR=$1
-shift 1
+COMMITMSG=$2
+shift 2
 
 SCOPE=$*
 
@@ -20,12 +21,13 @@ fi
 . ./common.sh
 
 # core and wars
-export C_TARGETDIR=$TARGETDIR # used in common.sh
+export C_TARGETDIR=$TARGETDIR
+export C_COMMITMSG=$COMMITMSG
 
 if [ "$SCOPE" = "" ]; then
 	SCOPE=all
 fi
 
-f_execute_all "$SCOPE" VCSCHECKOUT
+f_execute_all "$SCOPE" VCSCOMMIT
 
-echo codebase-checkout.sh: finished.
+echo codebase-commit.sh: finished.
