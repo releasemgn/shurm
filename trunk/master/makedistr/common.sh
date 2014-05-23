@@ -73,6 +73,8 @@ function f_downloadnexus() {
 		F_SUBFILE=$P_FOLDER/$F_SUBFILE
 	fi
 
+	S_NEXUS_AUTH=`cat 
+
 	S_DOWNLOAD_URL=$F_REPOPATH/$F_GROUPID/$P_ARTEFACTID/$P_VERSION/$F_NAME
 	S_DOWNLOAD_URL_REQUEST="$C_CONFIG_NEXUS_BASE/service/local/artifact/maven/redirect?g=$P_GROUPID&a=$P_ARTEFACTID&v=$P_VERSION&r=$P_REPO&p=$P_PACKAGING&"
 
