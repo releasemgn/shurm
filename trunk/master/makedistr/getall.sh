@@ -58,7 +58,11 @@ function f_execute_all() {
 
 	local F_RELEASE_FOLDER=$C_CONFIG_APPVERSION_RELEASEFOLDER
 	if [ "$GETOPT_RELEASE" != "" ]; then
-		F_RELEASE_FOLDER=prod-patch-$GETOPT_RELEASE
+		if [[ "$GETOPT_RELEASE" =~ ^[0-9]+\.[0-9]+$ ]]; then
+			F_RELEASE_FOLDER=major-release-$GETOPT_RELEASE
+		else
+			F_RELEASE_FOLDER=prod-patch-$GETOPT_RELEASE
+		fi
 	fi
 	
 	if [ "$DOWNLOAD_PROJECTSET" = "config" ] || [ "$DOWNLOAD_PROJECTSET" = "" ]; then
