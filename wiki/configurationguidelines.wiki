@@ -40,6 +40,9 @@ This page contains guidelines to developers on how to prepare configuration chan
   * $C_CONFIG_SOURCE_CFG_ROOTDIR/templates is svn location of full set of product configuration files, which can be used to create tags and setup/restore environment
   * if changes are tracked automatically in the environment, then current state of configuration files in this environemtn is available at $C_CONFIG_SOURCE_CFG_LIVEROOTDIR
   * environment-dependent variables are defined in environment definition file (see [model Model]) and optional secret properties file
+{{{
+	<property name="configuration-secretpropertyfile" value="/etc/myproduct/secrets.txt"/>
+}}}
   * release directory has below structure:
 {{{
 templates
