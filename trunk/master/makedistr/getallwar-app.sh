@@ -207,9 +207,9 @@ function f_local_download_deps() {
 function f_local_executeall() {
 	echo getallwar-app.sh: create servicecall.ear and storageservice.ear...
 
-	S_USE_PROD_DISTR=true
+	S_USE_PROD_DISTR=yes
 	if [ "$GETOPT_ALL" = "yes" ] || [ "$VERSION_MODE" != "branch" ]; then
-		S_USE_PROD_DISTR=false
+		S_USE_PROD_DISTR=no
 	fi
 
 	cd $P_DOWNLOAD_DIR
@@ -219,7 +219,7 @@ function f_local_executeall() {
 	f_local_download_core
 
 	# unzip servicecall libs - from current PROD (distr/xxx-prod) - action for branch mode only
-	if [ "$S_USE_PROD_DISTR" = "true" ]; then
+	if [ "$S_USE_PROD_DISTR" = "yes" ]; then
 		f_local_copy_prod
 	fi
 
