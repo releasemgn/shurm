@@ -918,6 +918,11 @@ function f_local_execute_all() {
 	SQL_VERSION_PREPARED=`pwd`
 	cd $F_PREPARE_SAVEDIR
 
+	if [ ! -d "$SQL_VERSION_ORIGINAL/sql" ]; then
+		echo sql folder does not exist - $SQL_VERSION_ORIGINAL/sql. Exiting
+		exit 1
+	fi
+
 	cd $SQL_VERSION_ORIGINAL/sql
 
 	# get aligned
