@@ -146,13 +146,23 @@ function f_release_runcmd() {
 			exit 1
 		fi
 
+		# port version
+		local F_RELHOST=
+		local F_RELPORTOPTION=
+		if [[ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" =~ ":" ]]; then
+			F_RELHOST=${C_ENV_PROPERTY_DISTR_REMOTEHOST%:*}
+			F_RELPORTOPTION="-p ${C_ENV_PROPERTY_DISTR_REMOTEHOST#*:}"
+		else
+			F_RELHOST=$C_ENV_PROPERTY_DISTR_REMOTEHOST
+		fi
+
 		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			C_RELEASE_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $C_ENV_PROPERTY_DISTR_REMOTEHOST "$P_CMD" 2>&1`
+			C_RELEASE_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $F_RELPORTOPTION $F_RELHOST "$P_CMD" 2>&1`
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
 		else
-			C_RELEASE_CMD_RES=`ssh -n $C_ENV_PROPERTY_DISTR_REMOTEHOST "$P_CMD" 2>&1`
+			C_RELEASE_CMD_RES=`ssh -n $F_RELPORTOPTION $F_RELHOST "$P_CMD" 2>&1`
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
@@ -260,14 +270,24 @@ function f_release_downloadfile() {
 			exit 1
 		fi
 
+		# port version
+		local F_RELHOST=
+		local F_RELPORTOPTION=
+		if [[ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" =~ ":" ]]; then
+			F_RELHOST=${C_ENV_PROPERTY_DISTR_REMOTEHOST%:*}
+			F_RELPORTOPTION="-P ${C_ENV_PROPERTY_DISTR_REMOTEHOST#*:}"
+		else
+			F_RELHOST=$C_ENV_PROPERTY_DISTR_REMOTEHOST
+		fi
+
 		# get remote file - using key file if any
 		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_RELPORTOPTION $F_RELHOST:$P_SRCPATH $P_DSTPATH
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
 		else
-			scp -q -B -p $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+			scp -q -B -p $F_RELPORTOPTION $F_RELHOST:$P_SRCPATH $P_DSTPATH
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
@@ -291,13 +311,22 @@ function f_release_downloaddir() {
 	else
 		f_release_runcmdcheck "if [ -d $P_SRCPATH ]; then echo ok; fi"
 		if [ "$C_RELEASE_CMD_RES" = "ok" ]; then
+			local F_RELHOST=
+			local F_RELPORTOPTION=
+			if [[ "$C_ENV_PROPERTY_DISTR_REMOTEHOST" =~ ":" ]]; then
+				F_RELHOST=${C_ENV_PROPERTY_DISTR_REMOTEHOST%:*}
+				F_RELPORTOPTION="-P ${C_ENV_PROPERTY_DISTR_REMOTEHOST#*:}"
+			else
+				F_RELHOST=$C_ENV_PROPERTY_DISTR_REMOTEHOST
+			fi
+
 			if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-				scp -q -r -B -p -i $C_ENV_PROPERTY_KEYNAME $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+				scp -q -r -B -p -i $C_ENV_PROPERTY_KEYNAME $F_RELPORTOPTION $F_RELHOST:$P_SRCPATH $P_DSTPATH
 				if [ $? -ne 0 ]; then
 					return 1
 				fi
 			else
-				scp -q -r -B -p $C_ENV_PROPERTY_DISTR_REMOTEHOST:$P_SRCPATH $P_DSTPATH
+				scp -q -r -B -p $F_RELPORTOPTION $F_RELHOST:$P_SRCPATH $P_DSTPATH
 				if [ $? -ne 0 ]; then
 					return 1
 				fi
