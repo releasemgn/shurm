@@ -1,5 +1,12 @@
 #!/bin/bash 
 
+# Get (previously built) components from Nexus - using release.xml from distr/
+# Usage examples (run from makedistr/branch) -
+# cat last-prod-tag.txt
+# less ~/distr/<product>/2.2.18/release.xml
+# ./getall-release.sh -dist
+# ./getall-release.sh -dist core atc-bem-framework
+
 cd `dirname $0`
 . ../getopts.sh
 . ./_context.sh
