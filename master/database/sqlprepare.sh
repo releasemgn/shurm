@@ -637,12 +637,23 @@ function f_local_process_uddi_smevattrs() {
 
 		if [ "$UDDI_ATTR_ID" = "" ] || [ "$UDDI_ATTR_NAME" = "" ] || [ "$UDDI_ATTR_CODE" = "" ] || [ "$UDDI_ATTR_REGION" = "" ] || [ "$UDDI_ATTR_ACCESSPOINT" = "" ]; then
 			echo "sqlprepare.sh: invalid string - line=$line"
-			S_CHECK_FAILED=yes
-		else
-			echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_UAT
-			echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_PROD
 		fi
+
+		echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_UAT
+		echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_PROD
 	done
+
+	if [ `cat $FNAME_UAT | grep set_endpoint_smev_attributes | grep -c "''" ` -ne 0 ]; then
+		echo $FNAME_UAT: not all UAT attrs are filled in...
+		S_CHECK_FAILED=yes
+		return 1
+	fi
+
+	if [ `cat $FNAME_PROD | grep set_endpoint_smev_attributes | grep -c "''"` -ne 0 ] && [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+		echo $FNAME_PROD: not all PROD attrs are filled in...
+		S_CHECK_FAILED=yes
+		return 1
+	fi
 
 	(
 		echo commit\;
