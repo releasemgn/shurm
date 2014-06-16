@@ -246,7 +246,7 @@ function f_local_execute_all() {
 	fi
 
 	# get aligned dir list
-        local F_SRCDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR/SQL
+	local F_SRCDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR/SQL
 	local F_ALIGNEDDIRLIST=
 	if [ -d $F_SRCDIR/aligned ]; then
 		local F_SAVEDIR=`pwd`
