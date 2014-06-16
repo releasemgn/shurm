@@ -27,8 +27,6 @@ SRVNAME_LIST=$1
 # execute
 
 function f_local_executeall() {
-	echo execute datacenter=$DC...
-
 	export C_EXECUTE_CMD=$P_RUNCMD_CMD
 	f_common_execute_set "key" $DC "$SRVNAME_LIST"
 }
