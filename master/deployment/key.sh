@@ -18,7 +18,7 @@ if [ "$P_RUNCMD_CMD" = "" ]; then
 fi
 shift 1
 
-SRVNAME_LIST=$1
+SRVNAME_LIST=$*
 
 # load common functions
 . ./common.sh
