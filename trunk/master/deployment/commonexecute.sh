@@ -96,6 +96,9 @@ function f_common_execute_function() {
 		RUNCMD)
 			f_common_execute_runcmd $P_SUB $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
 			;;
+		KEY)
+			f_common_execute_key $P_SUB $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
+			;;
 	esac
 }
 
