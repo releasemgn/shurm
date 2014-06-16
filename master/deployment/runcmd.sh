@@ -18,16 +18,7 @@ if [ "$P_RUNCMD_CMD" = "" ]; then
 fi
 shift 1
 
-# check if node syntax
-if [[ "$2" =~ ^[1-9] ]]; then
-	SRVNAME_LIST=$1
-	shift 1
-	EXECUTE_NODELIST=$*
-	shift 2
-else
-	SRVNAME_LIST=$*
-	EXECUTE_NODELIST=
-fi
+SRVNAME_LIST=$1
 
 # load common functions
 . ./common.sh
