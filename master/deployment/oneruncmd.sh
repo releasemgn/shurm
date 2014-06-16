@@ -6,6 +6,8 @@ P_NODE=$2
 P_EXECUTE_HOSTLOGIN=$3
 P_RUNCMD_CMD="$4"
 
+. ./common.sh
+
 function f_local_execute() {
 	if [ "$GETOPT_EXECUTE" = "yes" ]; then
 		echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD"
