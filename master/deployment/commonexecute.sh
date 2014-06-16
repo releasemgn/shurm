@@ -132,7 +132,7 @@ function f_common_execute_server() {
 	fi
 
 	S_EXECUTE_ENABLED=yes
-	f_execute_function "startserver" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER
+	f_common_execute_function "startserver" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER
 	if [ "$S_EXECUTE_ENABLED" != "yes" ]; then
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
 			echo "ignore server=$P_SERVER, type=$C_ENV_SERVER_TYPE (filtered)"
@@ -151,7 +151,7 @@ function f_common_execute_server() {
 		NODE=$(expr $NODE + 1)
 	done
 
-	f_execute_function "finishserver" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER
+	f_common_execute_function "finishserver" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER
 }
 
 function f_common_execute_group() {
@@ -163,7 +163,7 @@ function f_common_execute_group() {
 
 	# limit server and order
 	S_EXECUTE_SERVERS=
-	f_execute_function "getservers" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP
+	f_common_execute_function "getservers" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP
 
 	# iterate servers	
 	local server
@@ -172,7 +172,7 @@ function f_common_execute_group() {
 		f_common_execute_server $P_DC $P_FUNCTION "$F_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $server
 	done
 
-	f_execute_function "finishgroup" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP
+	f_common_execute_function "finishgroup" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP
 }
 
 function f_common_execute_splitservers() {
@@ -210,7 +210,7 @@ function f_common_execute_set() {
 	S_EXECUTE_ENABLED=
 
 	# split into groups
-	f_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
+	f_common_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
 
 	# iterate groups
 	local group
@@ -219,5 +219,5 @@ function f_common_execute_set() {
 		f_common_execute_group $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES" $group 
 	done
 
-	f_execute_function "finishdc" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
+	f_common_execute_function "finishdc" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
 }
