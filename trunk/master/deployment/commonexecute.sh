@@ -43,6 +43,43 @@ function f_common_execute_runcmd() {
 	fi
 }
 
+function f_common_execute_key() {
+	local P_SUB=$1
+	local P_DC=$2
+	local P_FUNCTION=$3
+	local P_SERVER_LIST="$4"
+	local P_NODE_LIST="$5"
+	local P_GROUP=$6
+	local P_SERVER=$7
+	local P_NODE=$8
+	local P_HOSTLOGIN=$9
+
+	if [ "$C_EXECUTE_CMD" = "" ]; then
+		echo C_EXECUTE_CMD is not set. Exiting
+		exit 1
+	fi
+
+	if [ "$P_SUB" = "getgroups" ]; then
+		S_EXECUTE_GROUPS=all
+
+	elif [ "$P_SUB" = "getservers" ]; then
+		S_EXECUTE_SERVERS=$P_SERVER_LIST
+
+	elif [ "$P_SUB" = "startserver" ]; then
+		if [ "$C_ENV_SERVER_TYPE" = "generic.windows" ]; then
+			echo "ignore server=$P_EXECUTE_SRVNAME, type=$C_ENV_SERVER_TYPE (windows)"
+			S_EXECUTE_ENABLED=no
+			return 1
+		fi
+
+	elif [ "$P_SUB" = "executenode" ]; then
+		local F_NEWKEY=$C_ENV_PROPERTY_KEYNAME
+		local F_OLDKEY=$GETOPT_KEY
+
+		./onekey.sh $C_EXECUTE_CMD $P_HOSTLOGIN "$F_NEWKEY" "$F_OLDKEY"
+	fi
+}
+
 function f_common_execute_function() {
 	local P_SUB=$1
 	local P_DC=$2
