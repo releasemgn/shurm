@@ -151,6 +151,10 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			export GETOPT_KEY=$2
 			shift 2
 			;;
+		'-newkey')
+			export GETOPT_NEWKEY=$2
+			shift 2
+			;;
 		*)
 			echo getopts.sh: invalid option=$1 in command line. Exiting
 			exit 1
