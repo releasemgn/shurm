@@ -28,7 +28,7 @@ SRVNAME_LIST=$*
 
 function f_local_executeall() {
 	export C_EXECUTE_CMD=$P_RUNCMD_CMD
-	f_common_execute_set "KEY" $DC "$SRVNAME_LIST"
+	f_common_execute_unique "KEY" $DC "$SRVNAME_LIST"
 }
 
 # execute in environment (except for windows-based)
