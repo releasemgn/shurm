@@ -24,9 +24,14 @@ else
 	P_KEYFILENEXTPRV=${P_KEYACCESS%.pub}
 fi
 
-if [ ! -f "$P_KEYFILENEXTPRV" ] || [ ! -f "$P_KEYFILENEXTPUB" ]; then
-	echo "onekey.sh: invalid public key file $P_KEYFILENEXT (should have private and public key files). Exiting"
+if [ ! -f "$P_KEYFILENEXTPUB" ]; then
+	echo "onekey.sh: cannot find public key file $P_KEYFILENEXTPUB. Exiting"
 	exit 1
+fi
+
+S_HASNEXTPRIVATEKEY=no
+if [ -f "$P_KEYFILENEXTPRV" ]; then
+	S_HASNEXTPRIVATEKEY=yes
 fi
 
 function f_execute_all() {
@@ -87,13 +92,15 @@ function f_execute_all() {
 	fi
 
 	if [ "$P_CMD" = "change" ] || [ "$P_CMD" = "set" ]; then
-		# check
-		ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $F_HOSTLOGIN "echo change successfully completed"
-		if [ "$?" != "0" ]; then
-			echo "onekey.sh: error executing new key check. Exiting"
-			exit 1
+		# check - if there is next key
+		if [ "$S_HASNEXTPRIVATEKEY" = "yes" ]; then
+			ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $F_HOSTLOGIN "echo change successfully completed"
+			if [ "$?" != "0" ]; then
+				echo "onekey.sh: error executing new key check. Exiting"
+				exit 1
+			fi
+			echo "$F_HOSTLOGIN: new key successfully verified."
 		fi
-		echo "$F_HOSTLOGIN: new key successfully verified."
 	fi
 }
 
