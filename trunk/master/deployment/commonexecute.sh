@@ -76,6 +76,10 @@ function f_common_execute_key() {
 
 	elif [ "$P_SUB" = "executenode" ]; then
 		local F_NEWKEY=$C_ENV_PROPERTY_KEYNAME
+		if [ "$GETOPT_NEWKEY" != "" ]; then
+			F_NEWKEY=$GETOPT_NEWKEY
+		fi
+
 		local F_OLDKEY=$GETOPT_KEY
 
 		./onekey.sh $C_EXECUTE_CMD $P_HOSTLOGIN "$F_NEWKEY" "$F_OLDKEY"
@@ -203,7 +207,7 @@ function f_common_execute_splitservers() {
 	fi
 }
 
-function f_common_execute_set() {
+function f_common_execute_all() {
 	local P_FUNCTION=$1
 	local P_DC=$2
 	local P_EXECUTE_LIST="$3"
@@ -229,7 +233,6 @@ function f_common_execute_set() {
 	f_common_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
 
 	# iterate groups
-	S_EXECUTE_UNIQUE=no
 	local group
 	for group in $S_EXECUTE_GROUPS; do
 		# execute group
@@ -239,38 +242,20 @@ function f_common_execute_set() {
 	f_common_execute_function "finishdc" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
 }
 
+function f_common_execute_set() {
+	local P_FUNCTION=$1
+	local P_DC=$2
+	local P_EXECUTE_LIST="$3"
+
+	S_EXECUTE_UNIQUE=no
+	f_common_execute_all $P_FUNCTION $P_DC "$P_EXECUTE_LIST"
+}
+
 function f_common_execute_unique() {
 	local P_FUNCTION=$1
 	local P_DC=$2
 	local P_EXECUTE_LIST="$3"
 
-	# split into servers and nodes
-	S_EXECUTE_PARAM_SERVERS=
-	S_EXECUTE_PARAM_NODES=
-	f_common_execute_splitservers $P_EXECUTE_LIST
-
-	echo execute datacenter=$P_DC...
-	f_env_getxmlserverlist $P_DC
-	local F_SERVER_LIST=$C_ENV_XMLVALUE
-
-	f_checkvalidlist "$F_SERVER_LIST" "$S_EXECUTE_PARAM_SERVERS"
-	f_getsubset "$F_SERVER_LIST" "$S_EXECUTE_PARAM_SERVERS"
-	F_SERVER_LIST=$C_COMMON_SUBSET
-
-	S_EXECUTE_GROUPS=
-	S_EXECUTE_SERVERS=
-	S_EXECUTE_ENABLED=
-
-	# split into groups
-	f_common_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
-
-	# iterate groups
 	S_EXECUTE_UNIQUE=yes
-	local group
-	for group in $S_EXECUTE_GROUPS; do
-		# execute group
-		f_common_execute_group $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES" $group 
-	done
-
-	f_common_execute_function "finishdc" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
+	f_common_execute_all $P_FUNCTION $P_DC "$P_EXECUTE_LIST"
 }
