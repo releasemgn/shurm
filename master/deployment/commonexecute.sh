@@ -8,6 +8,8 @@ S_EXECUTE_SERVERS=
 S_EXECUTE_ENABLED=
 S_EXECUTE_PARAM_SERVERS=
 S_EXECUTE_PARAM_NODES=
+S_EXECUTE_UNIQUE=
+S_EXECUTE_DONELIST=
 
 function f_common_execute_runcmd() {
 	local P_SUB=$1
@@ -112,7 +114,18 @@ function f_common_execute_node() {
 	local P_NODE=$7
 	local P_HOSTLOGIN=$8
 
+	if [ "$S_EXECUTE_UNIQUE" = "yes" ]; then
+		if [[ " $S_EXECUTE_DONELIST " =~ " $P_HOSTLOGIN " ]]; then
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo "ignore hostlogin=$P_HOSTLOGIN (already executed)"
+			fi
+			return 1
+		fi
+	fi
+
 	f_common_execute_function "executenode" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
+
+	S_EXECUTE_DONELIST="$S_EXECUTE_DONELIST $P_HOSTLOGIN"
 }
 
 function f_common_execute_server() {
@@ -216,6 +229,43 @@ function f_common_execute_set() {
 	f_common_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
 
 	# iterate groups
+	S_EXECUTE_UNIQUE=no
+	local group
+	for group in $S_EXECUTE_GROUPS; do
+		# execute group
+		f_common_execute_group $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES" $group 
+	done
+
+	f_common_execute_function "finishdc" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
+}
+
+function f_common_execute_unique() {
+	local P_FUNCTION=$1
+	local P_DC=$2
+	local P_EXECUTE_LIST="$3"
+
+	# split into servers and nodes
+	S_EXECUTE_PARAM_SERVERS=
+	S_EXECUTE_PARAM_NODES=
+	f_common_execute_splitservers $P_EXECUTE_LIST
+
+	echo execute datacenter=$P_DC...
+	f_env_getxmlserverlist $P_DC
+	local F_SERVER_LIST=$C_ENV_XMLVALUE
+
+	f_checkvalidlist "$F_SERVER_LIST" "$S_EXECUTE_PARAM_SERVERS"
+	f_getsubset "$F_SERVER_LIST" "$S_EXECUTE_PARAM_SERVERS"
+	F_SERVER_LIST=$C_COMMON_SUBSET
+
+	S_EXECUTE_GROUPS=
+	S_EXECUTE_SERVERS=
+	S_EXECUTE_ENABLED=
+
+	# split into groups
+	f_common_execute_function "getgroups" $P_DC $P_FUNCTION "$F_SERVER_LIST" "$S_EXECUTE_PARAM_NODES"
+
+	# iterate groups
+	S_EXECUTE_UNIQUE=yes
 	local group
 	for group in $S_EXECUTE_GROUPS; do
 		# execute group
