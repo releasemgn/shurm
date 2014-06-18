@@ -207,7 +207,7 @@ function f_local_create_binaries() {
 }
 
 function f_local_download_deps() {
-	./getallcore.sh $P_DOWNLOAD_DIR ignore pgu-portal pgu-dependencies
+	./getallcore.sh $P_DOWNLOAD_DIR ignore pgu-portal pgu-dependencies $DOWNLOAD_VERSION
 }
 
 function f_local_executeall() {
