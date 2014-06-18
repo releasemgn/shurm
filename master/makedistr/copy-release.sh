@@ -53,7 +53,7 @@ function f_local_executeall() {
 
 	# copy servicecall and storageservice if any
 	if [ -f "$C_CONFIG_DISTR_PATH/$DISTVERSION_SRC/servicecall-$C_CONFIG_APPVERSION.ear" ]; then
-		./getallwar-app.sh $C_CONFIG_ARTEFACTDIR $DISTVERSION_DST $DISTVERSION_SRC
+		./getallwar-app.sh $C_CONFIG_ARTEFACTDIR "ignore" $DISTVERSION_DST $DISTVERSION_SRC
 	fi
 }
 

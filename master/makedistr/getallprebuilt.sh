@@ -23,8 +23,8 @@ if [ "$DISTVERSION" = "" ]; then
 	echo DISTVERSION not set
 	exit 1
 fi
-if [ "$C_CONFIG_APPVERSION" = "" ]; then
-	echo C_CONFIG_APPVERSION not set
+if [ "$DOWNLOAD_VERSION" = "" ]; then
+	echo DOWNLOAD_VERSION not set
 	exit 1
 fi
 

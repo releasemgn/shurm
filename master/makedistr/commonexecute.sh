@@ -51,6 +51,11 @@ function f_execute_download_wardistr() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
 
+	if [ "$C_VERSION" = "" ]; then
+		echo f_execute_download_wardistr: C_VERSION is not set
+		exit 1
+	fi
+
 	f_source_readproject war $P_PROJECT
 	local F_PROJECT_DISTITEM=$C_SOURCE_PROJECT_DISTITEM
 
@@ -66,25 +71,25 @@ function f_execute_download_wardistr() {
 		return 1
 	fi
 
-	local WAR_FILENAME=$C_DISTR_DISTBASENAME-$C_CONFIG_APPVERSION_SERVICES.war
-	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $C_DISTR_DISTBASENAME $C_CONFIG_APPVERSION_SERVICES "war"
+	local WAR_FILENAME=$C_DISTR_DISTBASENAME-$C_VERSION.war
+	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $C_DISTR_DISTBASENAME $C_VERSION "war"
 	if [ $? -ne 0 ]; then
 		return 1
 	fi
 
-	local STATIC_FILENAME=$C_DISTR_DISTBASENAME-$C_CONFIG_APPVERSION_SERVICES-webstatic.tar.gz
-	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $C_DISTR_DISTBASENAME $C_CONFIG_APPVERSION_SERVICES "tar.gz" "webstatic"
+	local STATIC_FILENAME=$C_DISTR_DISTBASENAME-$C_VERSION-webstatic.tar.gz
+	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $C_DISTR_DISTBASENAME $C_VERSION "tar.gz" "webstatic"
 	if [ $? -ne 0 ]; then
 		return 1
 	fi
 
 	# download versioninfo
 	local VERSION_FILENAME=$P_PROJECT-$C_CONFIG_APPVERSION-version.txt
-	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO release $P_PROJECT $C_CONFIG_APPVERSION "txt" "version"
+	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO release $P_PROJECT $C_VERSION "txt" "version"
 	local VERSION_TAGNAME=`cat $VERSION_FILENAME`
 
 	f_copy_distr $WAR_FILENAME
-	f_repackage_staticdistr $P_PROJECT $C_CONFIG_APPVERSION_SERVICES $WAR_FILENAME $STATIC_FILENAME $VERSION_TAGNAME
+	f_repackage_staticdistr $P_PROJECT $C_VERSION $WAR_FILENAME $STATIC_FILENAME $VERSION_TAGNAME
 
 	return 0
 }
@@ -92,6 +97,11 @@ function f_execute_download_wardistr() {
 function f_execute_download_lib() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
+
+	if [ "$C_VERSION" = "" ]; then
+		echo f_execute_download_lib: C_VERSION is not set
+		exit 1
+	fi
 
 	f_source_readproject war $P_PROJECT
 	local F_PROJECT_DISTITEM=$C_SOURCE_PROJECT_DISTITEM
@@ -109,7 +119,7 @@ function f_execute_download_lib() {
 	fi
 
 	local F_LIB=$C_SOURCE_PROJECT_DISTLIBITEM
-	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $F_LIB $C_CONFIG_APPVERSION_SERVICES "jar"
+	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO $C_PGUWARNEXUSGROUPID $F_LIB $C_VERSION "jar"
 }
 
 function f_execute_copy_release_to_release() {
