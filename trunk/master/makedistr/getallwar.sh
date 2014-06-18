@@ -18,13 +18,19 @@ if [ "$DOWNLOAD_DIR" = "" ]; then
 	echo DOWNLOAD_DIR not set
 	exit 1
 fi
+if [ "$DOWNLOAD_VERSION" = "" ]; then
+	echo DOWNLOAD_VERSION not set
+	exit 1
+fi
 
 # execute
 
 cd $DOWNLOAD_DIR
 
 # download new ones
-echo get web portals and static DOWNLOAD_PROJECTS=$DOWNLOAD_PROJECTS to $DOWNLOAD_DIR...
+echo get web portals and static DOWNLOAD_PROJECTS=$DOWNLOAD_PROJECTS to $DOWNLOAD_DIR, VERSION=$DOWNLOAD_VERSION...
+export C_VERSION=$DOWNLOAD_VERSION
+
 if [ "$DOWNLOAD_PROJECTS" = "" ]; then
 	echo download all wars...
 	f_execute_wars all DOWNLOADWAR
@@ -37,6 +43,6 @@ fi
 
 cd $SCRIPTDIR
 
-./getallwar-app.sh $DOWNLOAD_DIR $DISTVERSION
+./getallwar-app.sh $DOWNLOAD_DIR $DOWNLOAD_VERSION $DISTVERSION
 
 echo getallwar.sh: dowload done.
