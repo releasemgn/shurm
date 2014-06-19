@@ -13,6 +13,7 @@ C_RELEASE_CONFCOMPLIST=
 C_RELEASE_CONFCOMPPATH=
 C_RELEASE_CONFCOMP_PARTIAL=
 
+C_RELEASE_PROJECTSET_BRANCH=
 C_RELEASE_PROJECT_TAG=
 C_RELEASE_PROJECT_BRANCH=
 C_RELEASE_PROJECT_VERSION=
@@ -76,6 +77,9 @@ function f_release_getprojects() {
 		C_RELEASE_TARGETS=${C_RELEASE_TARGETS% }
 		C_RELEASE_TARGETS=${C_RELEASE_TARGETS# }
 	fi
+
+	# use specific build branch
+	C_RELEASE_PROJECTSET_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildbranch" $C_RELEASE_FNAME`
 }
 
 function f_release_getprojectitems() {
