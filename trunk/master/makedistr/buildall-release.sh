@@ -30,7 +30,8 @@ S_BUILDALL_USETAG=
 
 function f_buildall_maketags() {
 	local P_PROJECTSET=$1
-	local P_TARGETS=$2
+	local P_TARGETS="$2"
+	local P_BRANCH="$3"
 
 	# compare with source set
 	f_source_projectlist $P_PROJECTSET
@@ -70,12 +71,17 @@ function f_buildall_maketags() {
 	for project in $S_BUILDALL_PROJECTS; do
 		f_release_getprojectinfo $P_PROJECTSET $project
 		if [ "$C_RELEASE_PROJECT_TAG" = "" ]; then
-			if [ "$C_RELEASE_PROJECT_BRANCH" = "" ]; then
+			local F_BRANCH=$C_RELEASE_PROJECT_BRANCH
+			if [ "$F_BRANCH" = "" ]; then
+				F_BRANCH=$P_BRANCH
+			fi
+
+			if [ "$F_BRANCH" = "" ]; then
 				S_BUILDALL_PROJECTS_HEAD="$S_BUILDALL_PROJECTS_HEAD $project"
 			else
 				# set required tag to release branch
 				export C_TAG=$S_BUILDALL_USETAG
-				export C_CONFIG_BRANCHNAME=$C_RELEASE_PROJECT_BRANCH
+				export C_CONFIG_BRANCHNAME=$F_BRANCH
 				f_execute_set $P_PROJECTSET "$project" VCSSETBRANCHTAG
 			fi
 		else
@@ -88,6 +94,8 @@ function f_buildall_maketags() {
 
 	if [ "$S_BUILDALL_PROJECTS_HEAD" != "" ]; then
 		echo set default release tag=$S_BUILDALL_USETAG to head in projects=$S_BUILDALL_PROJECTS_HEAD ...
+		export C_TAG=
+		export C_CONFIG_BRANCHNAME=
 		f_execute_all "$S_BUILDALL_PROJECTS_HEAD" UPDATETAGS
 	fi
 
@@ -112,9 +120,10 @@ function f_buildall_maketags() {
 
 function f_buildall_release_core() {
 	local P_TARGETS="$1"
+	local P_BRANCH="$2"
 
 	# analyze build set
-	f_buildall_maketags core "$P_TARGETS"
+	f_buildall_maketags core "$P_TARGETS" "$P_BRANCH"
 
 	echo build tag=$S_BUILDALL_USETAG for core projects=$S_BUILDALL_PROJECTS ...
 	export C_TAG=$S_BUILDALL_USETAG
@@ -136,9 +145,10 @@ function f_buildall_release_core() {
 
 function f_buildall_release_war() {
 	local P_TARGETS="$1"
+	local P_BRANCH="$2"
 
 	# analyze build set
-	f_buildall_maketags war "$P_TARGETS"
+	f_buildall_maketags war "$P_TARGETS" "$P_BRANCH"
 
 	echo build tag=$S_BUILDALL_USETAG for war projects=$S_BUILDALL_PROJECTS ...
 	export C_TAG=$S_BUILDALL_USETAG
@@ -164,9 +174,11 @@ function f_buildall_release() {
 
 	f_release_getprojects core
 	local F_RELEASE_CORE_TARGETS=$C_RELEASE_TARGETS
+	local F_RELEASE_CORE_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
 
 	f_release_getprojects war
 	local F_RELEASE_WAR_TARGETS=$C_RELEASE_TARGETS
+	local F_RELEASE_WAR_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
 
 	mkdir -p $OUTDIR
 	echo FINAL STATUS: > $OUTDIR/build.final.out
@@ -174,13 +186,13 @@ function f_buildall_release() {
 	# set tags and build
 	if [ "$MODULE" = "core" ] || [ "$MODULE" = "" ]; then
 		if [ "$F_RELEASE_CORE_TARGETS" != "" ]; then
-			f_buildall_release_core "$F_RELEASE_CORE_TARGETS"
+			f_buildall_release_core "$F_RELEASE_CORE_TARGETS" "$F_RELEASE_CORE_BRANCH"
 		fi
 	fi
 
 	if [ "$MODULE" = "war" ] || [ "$MODULE" = "" ]; then
 		if [ "$F_RELEASE_WAR_TARGETS" != "" ]; then
-			f_buildall_release_war "$F_RELEASE_WAR_TARGETS"
+			f_buildall_release_war "$F_RELEASE_WAR_TARGETS" "$F_RELEASE_WAR_BRANCH"
 		fi
 	fi
 
