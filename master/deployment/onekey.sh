@@ -58,33 +58,25 @@ function f_execute_all() {
 	# change
 	F_AUTHFILE=.ssh/authorized_keys
 
-	# handle user
-	local F_HOSTLOGIN=$P_HOSTLOGIN
-	if [ "$GETOPT_HOSTUSER" != "" ]; then
-		F_HOSTLOGIN=${GETOPT_HOSTUSER}@${P_HOSTLOGIN#*@}
-	elif [ "$GETOPT_ROOTUSER" = "yes" ]; then
-		F_HOSTLOGIN=root@${P_HOSTLOGIN#*@}
-	fi
-
 	if [ "$P_CMD" = "change" ] || [ "$P_CMD" = "add" ]; then
-		echo "$F_HOSTLOGIN: change key to $P_KEYFILENEXTPUB ($F_KEYOWNER) on $F_HOSTLOGIN$F_ACCESSMSG ..."
-		ssh -n $F_ACCESSOPTION $F_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; cat $F_AUTHFILE | grep -v $F_KEYOWNER\$ > $F_AUTHFILE.2; echo \"$F_KEYDATA\" >> $F_AUTHFILE.2; cp $F_AUTHFILE.2 $F_AUTHFILE; rm -rf $F_AUTHFILE.2;"
+		echo "$P_HOSTLOGIN: change key to $P_KEYFILENEXTPUB ($F_KEYOWNER) on $P_HOSTLOGIN$F_ACCESSMSG ..."
+		ssh -n $F_ACCESSOPTION $P_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; cat $F_AUTHFILE | grep -v $F_KEYOWNER\$ > $F_AUTHFILE.2; echo \"$F_KEYDATA\" >> $F_AUTHFILE.2; cp $F_AUTHFILE.2 $F_AUTHFILE; rm -rf $F_AUTHFILE.2;"
 		if [ "$?" != "0" ]; then
 			echo "onekey.sh: error executing key replacement. Exiting"
 			exit 1
 		fi
 
 	elif [ "$P_CMD" = "set" ]; then
-		echo "$F_HOSTLOGIN: set the only key to $P_KEYFILENEXTPUB ($F_KEYOWNER) on $F_HOSTLOGIN$F_ACCESSMSG ..."
-		ssh -n $F_ACCESSOPTION $F_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; echo \"$F_KEYDATA\" > $F_AUTHFILE"
+		echo "$P_HOSTLOGIN: set the only key to $P_KEYFILENEXTPUB ($F_KEYOWNER) on $P_HOSTLOGIN$F_ACCESSMSG ..."
+		ssh -n $F_ACCESSOPTION $P_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; echo \"$F_KEYDATA\" > $F_AUTHFILE"
 		if [ "$?" != "0" ]; then
 			echo "onekey.sh: error executing key set. Exiting"
 			exit 1
 		fi
 
 	elif [ "$P_CMD" = "delete" ]; then
-		echo "$F_HOSTLOGIN: delete key $P_KEYFILENEXTPUB ($F_KEYOWNER) on $F_HOSTLOGIN$F_ACCESSMSG ..."
-		ssh -n $F_ACCESSOPTION $F_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; cat $F_AUTHFILE | grep -v $F_KEYOWNER\$ > $F_AUTHFILE.2; cp $F_AUTHFILE.2 $F_AUTHFILE; rm -rf $F_AUTHFILE.2;"
+		echo "$P_HOSTLOGIN: delete key $P_KEYFILENEXTPUB ($F_KEYOWNER) on $P_HOSTLOGIN$F_ACCESSMSG ..."
+		ssh -n $F_ACCESSOPTION $P_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; cat $F_AUTHFILE | grep -v $F_KEYOWNER\$ > $F_AUTHFILE.2; cp $F_AUTHFILE.2 $F_AUTHFILE; rm -rf $F_AUTHFILE.2;"
 		if [ "$?" != "0" ]; then
 			echo "onekey.sh: error executing key delete. Exiting"
 			exit 1
@@ -94,12 +86,12 @@ function f_execute_all() {
 	if [ "$P_CMD" = "change" ] || [ "$P_CMD" = "set" ]; then
 		# check - if there is next key
 		if [ "$S_HASNEXTPRIVATEKEY" = "yes" ]; then
-			ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $F_HOSTLOGIN "echo change successfully completed"
+			ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $P_HOSTLOGIN "echo change successfully completed"
 			if [ "$?" != "0" ]; then
 				echo "onekey.sh: error executing new key check. Exiting"
 				exit 1
 			fi
-			echo "$F_HOSTLOGIN: new key successfully verified."
+			echo "$P_HOSTLOGIN: new key successfully verified."
 		fi
 	fi
 }

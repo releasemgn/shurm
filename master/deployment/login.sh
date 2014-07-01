@@ -37,23 +37,24 @@ function f_execute_all() {
 
 	# find hostlogin by node
 	f_getlistitem "$F_HOSTOGINLIST" $P_NODE
-	local F_ENV_HOST=$C_LISTITEM
-	if [ "$F_ENV_HOST" = "" ]; then
+	local F_HOSTLOGIN=$C_LISTITEM
+	if [ "$F_HOSTLOGIN" = "" ]; then
 		echo login.sh: unknown host login to $F_SRVNAME node $NODE.
 		exit 1
 	fi
 
-	# use root login
-	if [ "$GETOPT_ROOTUSER" = "yes" ]; then
-		local F_HOST=${F_ENV_HOST#*@}
-		F_ENV_HOST=root@$F_HOST
+	# handle user options
+	if [ "$GETOPT_HOSTUSER" != "" ]; then
+		F_HOSTLOGIN=${GETOPT_HOSTUSER}@${F_HOSTLOGIN#*@}
+	elif [ "$GETOPT_ROOTUSER" = "yes" ]; then
+		F_HOSTLOGIN=root@${F_HOSTLOGIN#*@}
 	fi
 
-	echo login dc=$DC, server=$F_SRVNAME, node=$P_NODE, hostlogin=$F_ENV_HOST...
+	echo login dc=$DC, server=$F_SRVNAME, node=$P_NODE, hostlogin=$F_HOSTLOGIN ...
 	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		ssh -i $C_ENV_PROPERTY_KEYNAME $F_ENV_HOST
+		ssh -i $C_ENV_PROPERTY_KEYNAME $F_HOSTLOGIN
 	else
-		ssh $F_ENV_HOST
+		ssh $F_HOSTLOGIN
 	fi
 }
 
