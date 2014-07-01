@@ -118,18 +118,26 @@ function f_common_execute_node() {
 	local P_NODE=$7
 	local P_HOSTLOGIN=$8
 
+	# handle user options
+	local F_HOSTLOGIN=$P_HOSTLOGIN
+	if [ "$GETOPT_HOSTUSER" != "" ]; then
+		F_HOSTLOGIN=${GETOPT_HOSTUSER}@${P_HOSTLOGIN#*@}
+	elif [ "$GETOPT_ROOTUSER" = "yes" ]; then
+		F_HOSTLOGIN=root@${P_HOSTLOGIN#*@}
+	fi
+
 	if [ "$S_EXECUTE_UNIQUE" = "yes" ]; then
-		if [[ " $S_EXECUTE_DONELIST " =~ " $P_HOSTLOGIN " ]]; then
+		if [[ " $S_EXECUTE_DONELIST " =~ " $F_HOSTLOGIN " ]]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo "ignore hostlogin=$P_HOSTLOGIN (already executed)"
+				echo "ignore hostlogin=$F_HOSTLOGIN (already executed)"
 			fi
 			return 1
 		fi
 	fi
 
-	f_common_execute_function "executenode" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
+	f_common_execute_function "executenode" $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $F_HOSTLOGIN
 
-	S_EXECUTE_DONELIST="$S_EXECUTE_DONELIST $P_HOSTLOGIN"
+	S_EXECUTE_DONELIST="$S_EXECUTE_DONELIST $F_HOSTLOGIN"
 }
 
 function f_common_execute_server() {
