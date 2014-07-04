@@ -66,6 +66,7 @@ function f_execute_all() {
 				F_CHECK=`ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $P_HOSTLOGIN "echo ok"`
 				if [ "$?" = "0" ]; then
 					F_ACCESSOPTION="-i $P_KEYFILENEXTPRV"
+					F_ACCESSMSG=" using access key $P_KEYFILENEXTPRV"
 				fi
 			fi
 		fi
