@@ -58,6 +58,19 @@ function f_execute_all() {
 	# change
 	F_AUTHFILE=.ssh/authorized_keys
 
+	# check new key is already placed and access using old key is not avalable
+	if [ "$P_CMD" != "delete" ]; then
+		local F_CHECK=`ssh -n -i $F_ACCESSOPTION -o PasswordAuthentication=no $P_HOSTLOGIN "echo ok"`
+		if [ "$?" != "0" ]; then
+			if [ "$S_HASNEXTPRIVATEKEY" = "yes" ]; then
+				F_CHECK=`ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $P_HOSTLOGIN "echo ok"`
+				if [ "$?" = "0" ]; then
+					F_ACCESSOPTION="-i $P_KEYFILENEXTPRV"
+				fi
+			fi
+		fi
+	fi
+
 	if [ "$P_CMD" = "change" ] || [ "$P_CMD" = "add" ]; then
 		echo "$P_HOSTLOGIN: change key to $P_KEYFILENEXTPUB ($F_KEYOWNER) on $P_HOSTLOGIN$F_ACCESSMSG ..."
 		ssh -n $F_ACCESSOPTION $P_HOSTLOGIN "if [ ! -f $F_AUTHFILE ]; then mkdir -p .ssh; chmod 700 .ssh; echo \"\" > $F_AUTHFILE; chmod 600 $F_AUTHFILE; fi; cat $F_AUTHFILE | grep -v $F_KEYOWNER\$ > $F_AUTHFILE.2; echo \"$F_KEYDATA\" >> $F_AUTHFILE.2; cp $F_AUTHFILE.2 $F_AUTHFILE; rm -rf $F_AUTHFILE.2;"
