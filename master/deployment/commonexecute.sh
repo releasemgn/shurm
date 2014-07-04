@@ -76,11 +76,14 @@ function f_common_execute_key() {
 
 	elif [ "$P_SUB" = "executenode" ]; then
 		local F_NEWKEY=$C_ENV_PROPERTY_KEYNAME
+		local F_OLDKEY=$C_ENV_PROPERTY_KEYNAME
+
 		if [ "$GETOPT_NEWKEY" != "" ]; then
 			F_NEWKEY=$GETOPT_NEWKEY
 		fi
-
-		local F_OLDKEY=$GETOPT_KEY
+		if [ "$GETOPT_KEY" != "" ]; then
+			F_OLDKEY=$GETOPT_KEY
+		fi
 
 		./onekey.sh $C_EXECUTE_CMD $P_HOSTLOGIN "$F_NEWKEY" "$F_OLDKEY"
 	fi

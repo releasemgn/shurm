@@ -50,9 +50,14 @@ function f_execute_all() {
 		F_HOSTLOGIN=root@${F_HOSTLOGIN#*@}
 	fi
 
+	local F_KEY=$C_ENV_PROPERTY_KEYNAME
+	if [ "$GETOPT_KEY" != "" ]; then
+		F_KEY=$GETOPT_KEY
+	fi
+
 	echo login dc=$DC, server=$F_SRVNAME, node=$P_NODE, hostlogin=$F_HOSTLOGIN ...
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		ssh -i $C_ENV_PROPERTY_KEYNAME $F_HOSTLOGIN
+	if [ "$F_KEY" != "" ]; then
+		ssh -i $F_KEY $F_HOSTLOGIN
 	else
 		ssh $F_HOSTLOGIN
 	fi
