@@ -61,10 +61,10 @@ function f_execute_all() {
 	# check new key is already placed and access using old key is not avalable
 	if [ "$P_CMD" != "delete" ]; then
 		local F_CHECK=`ssh -n $F_ACCESSOPTION -o PasswordAuthentication=no $P_HOSTLOGIN "echo ok"`
-		if [ "$?" != "0" ]; then
+		if [ "$F_CHECK" != "ok" ]; then
 			if [ "$S_HASNEXTPRIVATEKEY" = "yes" ]; then
 				F_CHECK=`ssh -n -i $P_KEYFILENEXTPRV -o PasswordAuthentication=no $P_HOSTLOGIN "echo ok"`
-				if [ "$?" = "0" ]; then
+				if [ "$F_CHECK" = "ok" ]; then
 					F_ACCESSOPTION="-i $P_KEYFILENEXTPRV"
 					F_ACCESSMSG=" using access key $P_KEYFILENEXTPRV"
 				fi
