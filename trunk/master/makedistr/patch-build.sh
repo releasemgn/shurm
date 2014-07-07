@@ -81,14 +81,19 @@ function f_execute_all() {
 	export PATH=$JAVA_HOME/bin:$PATH
 
 	# set maven environment
-	if [ "$C_CONFIG_MAVEN_VERSION" = "" ]; then
-		echo C_CONFIG_MAVEN_VERSION is not defined - maven version is unknown. Exiting.
+	local BUILD_MAVEN_VERSION=$C_CONFIG_MAVEN_VERSION
+	if [ "$C_SOURCE_MAVENVERSION" != "" ]; then
+		BUILD_MAVEN_VERSION=$C_SOURCE_MAVENVERSION
+	fi
+
+	if [ "$BUILD_MAVEN_VERSION" = "" ]; then
+		echo BUILD_MAVEN_VERSION is not defined - maven version is unknown. Exiting.
 		exit 1
 	fi
-	
+
 	local F_MAVEN_CMD="mvn -B -P $MODULE_MAVEN_PROFILES $C_CONFIG_MAVEN_ADDITIONAL_OPTIONS clean $MODULE_MAVEN_CMD $MODULE_ALT_REPO $MODULE_MSETTINGS -Dmaven.test.skip=true"
 
-	export M2_HOME=/usr/local/apache-maven-$C_CONFIG_MAVEN_VERSION
+	export M2_HOME=/usr/local/apache-maven-$BUILD_MAVEN_VERSION
 	export M2=$M2_HOME/bin
 	export PATH="$M2:$PATH"
 	export MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=300m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled"
