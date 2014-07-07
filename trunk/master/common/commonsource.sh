@@ -19,6 +19,7 @@ C_SOURCE_PATH=
 C_SOURCE_JIRA=
 C_SOURCE_BRANCH=
 C_SOURCE_JAVAVERSION=
+C_SOURCE_MAVENVERSION=
 
 C_SOURCE_XMLLINE=
 C_SOURCE_XMLLINEATTR=
@@ -64,6 +65,7 @@ function f_source_readproject() {
 	C_SOURCE_JIRA=
 	C_SOURCE_BRANCH=
 	C_SOURCE_JAVAVERSION=
+	C_SOURCE_MAVENVERSION=
 	C_SOURCE_PROJECT_MVNCMD=
 	C_SOURCE_PROJECT_DISTITEM=
 	C_SOURCE_PROJECT_DISTLIBITEM=
@@ -94,6 +96,8 @@ function f_source_readproject() {
 	C_SOURCE_BRANCH=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project javaversion
 	C_SOURCE_JAVAVERSION=$C_SOURCE_XMLLINEATTR
+	f_source_getxmllineattr project mavenversion
+	C_SOURCE_MAVENVERSION=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project mvncmd
 	C_SOURCE_PROJECT_MVNCMD=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project distitem
