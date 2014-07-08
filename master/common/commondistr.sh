@@ -121,6 +121,9 @@ function f_distr_readitem() {
 		C_DISTR_DEPLOYBASENAME=$C_DISTR_DISTBASENAME
 	fi
 
+	f_distr_getxmllineattr distitem options
+	C_DISTR_OPTIONS=$C_DISTR_XMLLINEATTR
+		
 	# binary item
 	if [ "$C_DISTR_TYPE" = "binary" ]; then
 		f_distr_getxmllineattr distitem extension
@@ -130,9 +133,6 @@ function f_distr_readitem() {
 			exit 1
 		fi
 
-		f_distr_getxmllineattr distitem options
-		C_DISTR_OPTIONS=$C_DISTR_XMLLINEATTR
-		
 		return 0
 	fi
 
