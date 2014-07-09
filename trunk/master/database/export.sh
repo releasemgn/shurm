@@ -27,7 +27,7 @@ function f_execute_all() {
 	fi
 
 	# create final execute dir
-	local F_EXECUTE_DIR=execute-$P_RUNCONFIG-$P_CMD
+	local F_EXECUTE_DIR=execute-$P_RUNCONFIG
 
 	rm -rf $F_EXECUTE_DIR
 	mkdir $F_EXECUTE_DIR
