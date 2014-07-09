@@ -1,9 +1,14 @@
 #!/bin/bash
 # Copyright 2011-2014 vsavchik@gmail.com
 
+# C_CONFIG_PRODUCT should be defined
+if [ "$C_CONFIG_PRODUCT" = "" ]; then
+	echo C_CONFIG_PRODUCT is not defined. Exiting
+	exit 1
+fi
+
 C_CONFIG_SVNPATH=$C_CONFIG_SVNOLD_PATH
 C_CONFIG_SVNAUTH=$C_CONFIG_SVNOLD_AUTH
-C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT
 
 C_CONFIG_SCRIPT_DROPUSERS=import_dropold.sql
 C_CONFIG_PREPAREDATA_SQLFILE=import_preparedata.sql
