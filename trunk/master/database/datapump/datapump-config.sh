@@ -38,4 +38,3 @@ C_CONFIG_DEFAULT_TABLESET=system.admindb_uatdata
 # C_ENV_CONFIG_USETRANSFORM=yes/no
 C_ENV_CONFIG_ADDTRANSFORM=
 
-cat $C_CONFIG_TABLE_FILE | grep "^[^#]" | grep "/TABLE/" | cut -d "/" -f 1 | sort -u
