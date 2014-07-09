@@ -76,7 +76,10 @@ function f_local_postrefresh() {
 }
 
 function f_local_executeall() {
-	f_local_checkdata
+	if [ "$P_CMD" = "data" ] || [ "$P_CMD" = "all" ]; then
+		f_local_checkdata
+	fi
+
 	f_local_main_load
 	f_local_postrefresh
 }
