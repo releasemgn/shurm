@@ -2,11 +2,10 @@
 
 P_ENV=$1
 P_DB=$2
-P_DBCONN_LOCAL=$3
-P_DBCONN_REMOTE=$4
-P_SINGLE_SCHEMA=$5
+P_DBCONN_REMOTE=$3
+P_SINGLE_SCHEMA=$4
 
-echo "execute run-export.sh: P_ENV=$P_ENV, P_DB=$P_DB, P_DBCONN_LOCAL=$P_DBCONN_LOCAL, P_DBCONN_REMOTE=$P_DBCONN_REMOTE, P_SINGLE_SCHEMA=$P_SINGLE_SCHEMA ..."
+echo "execute run-export.sh: P_ENV=$P_ENV, P_DB=$P_DB, P_DBCONN_REMOTE=$P_DBCONN_REMOTE, P_SINGLE_SCHEMA=$P_SINGLE_SCHEMA ..."
 
 # load common and env params
 . ./common.sh
@@ -133,7 +132,7 @@ function f_execute_all() {
 		fi
 	fi
 
-	S_CONNECTION=`echo $C_ENV_CONFIG_CONNECTION | tr " " "\n" | grep "$P_DBCONN_LOCAL=" | cut -d "=" -f2`
+	S_CONNECTION=`echo $C_ENV_CONFIG_CONNECTION | tr " " "\n" | grep "$P_DBCONN_REMOTE=" | cut -d "=" -f2`
 	S_REMOTE_HOSTLOGIN=$C_ENV_CONFIG_REMOTE_HOSTLOGIN
 	S_REMOTE_ROOT=$C_ENV_CONFIG_REMOTE_ROOT
 

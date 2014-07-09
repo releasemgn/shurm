@@ -4,18 +4,13 @@ cd `dirname $0`
 . ./getopts.sh
 
 P_RUNCONFIG=$1
-P_CMD=$2
 
 if [ "$P_RUNCONFIG" = "" ]; then
 	echo P_RUNCONFIG is not set. Exiting
 	exit 1
 fi
-if [ "$P_CMD" = "" ]; then
-	echo P_CMD is not set. Exiting
-	exit 1
-fi
 
-P_SCHEMA=$3
+P_SCHEMA=$2
 
 . ../../etc/config.sh
 
@@ -31,13 +26,13 @@ function f_execute_all() {
 		exit 1
 	fi
 
-	local F_TABLELIST=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/datapump/datalight-tables.txt
-
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG-$P_CMD
+
 	rm -rf $F_EXECUTE_DIR
 	mkdir $F_EXECUTE_DIR
 
+	# create contents
 	# create contents
 	cp datapump/* $F_EXECUTE_DIR/
 
@@ -51,9 +46,9 @@ function f_execute_all() {
 
 	# execute
 	cd $F_EXECUTE_DIR
-	./run-import-std.sh $P_CMD $P_SCHEMA
+	./run-export-std.sh $P_SCHEMA
 }
 
 f_execute_all
 
-echo import.sh: successfully finished
+echo export.sh: successfully finished
