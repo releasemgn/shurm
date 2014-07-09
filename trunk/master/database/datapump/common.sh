@@ -196,5 +196,6 @@ function f_execute_createinitial() {
 	f_execute_fillinitial $P_DBCONN
 
 	# execute generated file
+	scp $C_CONFIG_CREATEDATA_SQLFILE $C_ENV_CONFIG_REMOTE_HOSTLOGIN:$C_ENV_CONFIG_REMOTE_ROOT
 	f_remote_sqlexec $P_CONNECTION $C_CONFIG_CREATEDATA_SQLFILE $C_CONFIG_CREATEDATA_SQLFILE.out
 }
