@@ -43,7 +43,6 @@ function f_execute_all() {
 
 	echo "C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT" >> $F_EXECUTE_DIR/datapump-config.sh
 	echo "C_CONFIG_SVNOLD_PATH=$C_CONFIG_SVNOLD_PATH" >> $F_EXECUTE_DIR/datapump-config.sh
-	echo "C_CONFIG_SVNOLD_AUTH=\"$C_CONFIG_SVNOLD_AUTH\"" >> $F_EXECUTE_DIR/datapump-config.sh
 	echo "C_CONFIG_SCHEMAALLLIST=\"$C_CONFIG_SCHEMAALLLIST\"" >> $F_EXECUTE_DIR/datapump-config.sh
 
 	cat $F_EXECUTE_DIR/datapump-default.sh >> $F_EXECUTE_DIR/datapump-config.sh
