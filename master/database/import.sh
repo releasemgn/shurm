@@ -31,8 +31,6 @@ function f_execute_all() {
 		exit 1
 	fi
 
-	local F_TABLELIST=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/datapump/datalight-tables.txt
-
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG-$P_CMD
 	rm -rf $F_EXECUTE_DIR
@@ -47,6 +45,8 @@ function f_execute_all() {
 
 	cat $F_EXECUTE_DIR/datapump-default.sh >> $F_EXECUTE_DIR/datapump-config.sh
 	cat $F_CONFIGPATH >> $F_EXECUTE_DIR/datapump-config.sh
+
+	local F_TABLELIST=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/datapump/datalight-tables.txt
 	cp $F_TABLELIST $F_EXECUTE_DIR/
 
 	# execute
