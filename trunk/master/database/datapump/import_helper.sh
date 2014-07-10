@@ -88,7 +88,8 @@ function f_execute_all_finishdata() {
 }
 
 function f_execute_all_importmeta() {
-	f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=role.dmp LOGFILE=role.log" ignoreerrors
+	f_common_getschemadump "role"
+	f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$C_DUMP_NAME LOGFILE=role.log" ignoreerrors
 
 	# collect remap - only for different
 	F_REMAP_SCHEMALIST=
@@ -121,7 +122,8 @@ function f_execute_all_importmeta() {
 		F_TRANSFORM="$F_TRANSFORM $C_ENV_CONFIG_ADDTRANSFORM"
 	fi
 
-	f_impdp $S_CONNECTION "CONTENT=METADATA_ONLY SCHEMAS=$F_SCHEMALIST_UPPER DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=meta.dmp LOGFILE=meta.log $F_TRANSFORM $F_REMAP_SCHEMALIST" ignoreerrors
+	f_common_getschemadump "meta"
+	f_impdp $S_CONNECTION "CONTENT=METADATA_ONLY SCHEMAS=$F_SCHEMALIST_UPPER DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$C_DUMP_NAME LOGFILE=meta.log $F_TRANSFORM $F_REMAP_SCHEMALIST" ignoreerrors
 }
 
 function f_execute_all_importdatafull() {
@@ -141,8 +143,12 @@ function f_execute_all_importdatafull() {
 	local F_SCHEMAONE_FINAL
 	local F_SCHEMA_FINAL_UPPER
 	local F_REMAP
+	local F_DUMP
 	for schema in $P_SCHEMALIST; do
-		if [ ! -f "$S_LOAD_ORACLEDIR/$schema.dmp" ]; then
+		f_common_getschemadump $schema
+		F_DUMP=$C_DUMP_NAME
+
+		if [ ! -f "$S_LOAD_ORACLEDIR/$F_DUMP" ]; then
 			echo dump for schema=$schema not found in $S_LOAD_ORACLEDIR. Skipped.
 		else
 			# get final schema
@@ -160,7 +166,7 @@ function f_execute_all_importdatafull() {
 				F_REMAP=""
 			fi
 
-			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$schema.dmp LOGFILE=$schema.log $F_REMAP $F_TRANSFORM" ignoreerrors
+			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_DUMP LOGFILE=$schema.log $F_REMAP $F_TRANSFORM" ignoreerrors
 		fi
 	done
 
@@ -175,8 +181,12 @@ function f_execute_all_importdatatables() {
 	local F_SCHEMAONE_FINAL
 	local F_SCHEMA_FINAL_UPPER
 	local F_REMAP
+	local F_DUMP
 	for schema in $P_SCHEMALIST; do
-		if [ -f "$S_LOAD_ORACLEDIR/$schema.dmp" ]; then
+		f_common_getschemadump $schema
+		F_DUMP=$C_DUMP_NAME
+
+		if [ -f "$S_LOAD_ORACLEDIR/$F_DUMP" ]; then
 			# get final schema
 			f_get_finalschema $schema
 			F_SCHEMAONE_FINAL=$S_FINAL_SCHEMA
@@ -197,7 +207,7 @@ function f_execute_all_importdatatables() {
 				F_TRANSFORM=
 			fi
 
-			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR SCHEMAS=$schema DUMPFILE=$schema.dmp LOGFILE=$schema.log INCLUDE=TABLE_DATA TABLE_EXISTS_ACTION=TRUNCATE $F_REMAP $F_TRANSFORM" ignoreerrors
+			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR SCHEMAS=$schema DUMPFILE=$F_DUMP LOGFILE=$schema.log INCLUDE=TABLE_DATA TABLE_EXISTS_ACTION=TRUNCATE $F_REMAP $F_TRANSFORM" ignoreerrors
 		fi
 	done
 
