@@ -90,18 +90,6 @@ function f_execute_importdata_schema() {
 	local P_LOADMODE=$1
 	local P_SCHEMA=$2
 
-	if [ ! -f "$S_DATADIR/$P_SCHEMA.dmp" ]; then
-		echo schema dump file $S_DATADIR/$P_SCHEMA.dmp not found. Skipped.
-		return 1
-	fi
-
-	# copy dumps
-	echo copy data...
-	f_execute_cmd "rm -rf import.status.log"
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_SCHEMA.*"
-
-	scp $S_DATADIR/$P_SCHEMA.dmp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
-
 	echo execute import mode=$P_LOADMODE
 	f_execute_cmd "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN $P_LOADMODE $P_SCHEMA > import.log 2>&1&"
 
@@ -116,20 +104,32 @@ function f_execute_importdata_schema() {
 		echo "schema $P_SCHEMA - cannot get import log"
 	fi
 
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_SCHEMA.*"
+	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
 }
 
 function f_execute_importdump() {
 	local P_LOADMODE=$1
 	local P_DUMP=$2
 
-	f_common_getdumpschemas $P_DUMP
+	# check dump
+	if [ ! -f "$S_DATADIR/$P_DUMP" ]; then
+		echo schema dump file $S_DATADIR/$P_DUMP not found. Skipped.
+		return 1
+	fi
+
+	# copy dumps
+	echo copy data...
+	f_execute_cmd "rm -rf import.status.log"
+	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
+
+	scp $S_DATADIR/$P_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
+
+	f_common_getdumpschemas $P_DUMP "$S_SCHEMALIST"
 	local F_SCHEMASET="$C_DUMP_SCHEMALIST"
 
-	F_RUNSET=
-	for schema in 
-	for schema in $S_SCHEMALIST; do
-		f_execute_importdata_schema $F_LOADMODE $schema
+	for schema in $F_SCHEMASET; do
+		f_execute_importdata_schema $P_LOADMODE $schema
+	done
 }
 
 function f_execute_importdata() {
@@ -143,16 +143,10 @@ function f_execute_importdata() {
 	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
 
 	# get dumps
-	local F_DUMPS=
-	for schema in $S_SCHEMALIST; do
-		f_common_getschemadump $schema
-		if [[ " $F_DUMPS " =~ " $C_DUMP_NAME " ]]; then
-			F_DUMPS="$F_DUMPS $C_DUMP_NAME"
-		fi
+	f_common_getdumplist "$S_SCHEMALIST"
+	local F_DUMPS="$C_DUMP_LIST"
 
 	# execute by dump groups
-	f_common_getdumplist
-	local F_DUMPS="$C_DUMP_LIST"
 	local F_SCHEMASET
 	for dump in $F_DUMPS; do
 		f_execute_importdump $F_LOADMODE $dump
