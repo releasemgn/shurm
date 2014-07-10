@@ -14,6 +14,10 @@ S_FINAL_SCHEMA=
 S_FINAL_SCHEMALIST=
 S_RUNCMDRES=
 
+C_DUMP_NAME=
+C_DUMP_LIST=
+C_DUMP_SCHEMALIST=
+
 function f_execute_cmd() {
 	P_CMD="$1"
 	echo "$S_REMOTE_HOSTLOGIN: execute $P_CMD in $S_REMOTE_ROOT ..."
@@ -198,4 +202,25 @@ function f_execute_createinitial() {
 	# execute generated file
 	scp $C_CONFIG_CREATEDATA_SQLFILE $C_ENV_CONFIG_REMOTE_HOSTLOGIN:$C_ENV_CONFIG_REMOTE_ROOT
 	f_remote_sqlexec $P_CONNECTION $C_CONFIG_CREATEDATA_SQLFILE $C_CONFIG_CREATEDATA_SQLFILE.out
+}
+
+function f_common_getschemadump() {
+	local P_SCHEMA=$1
+
+	if [ "$C_ENV_CONFIG_IMPORT_DUMPGROUPS" = "" ]; then
+		C_DUMP_NAME=role.dmp
+		return 0
+	fi
+
+	C_DUMP_NAME=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr ";," "\n " | sed "s/:/: /;s/$/ /" | grep " $P_SCHEMA " | cut -d ":" -f1`
+}
+
+function f_common_getdumplist() {
+	C_DUMP_LIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";" "\n" | cut -d ":" -f1 | tr "\n" " "`
+	C_DUMP_LIST=${C_DUMP_LIST% }
+}
+
+function f_common_getdumpschemas() {
+	local P_DUMP=$1
+	C_DUMP_SCHEMALIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";," "\n " | grep "$P_DUMP:" | cut -d ":" -f2 | tr -d "\n"`
 }
