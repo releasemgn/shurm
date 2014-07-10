@@ -30,8 +30,15 @@ function f_execute_cleanup() {
 		rm -rf $S_LOGDIR/*
 		f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
 	else
+		f_common_getschemadump "role"
+		local F_ROLE_DUMP=$C_DUMP_NAME
+		f_common_getschemadump "meta"
+		local F_META_DUMP=$C_DUMP_NAME
+		f_common_getschemadump "$S_SINGLE_SCHEMA"
+		local F_DATA_DUMP=$C_DUMP_NAME
+
 		rm -rf $S_LOGDIR/$S_SINGLE_SCHEMA.* $S_LOGDIR/meta.* $S_LOGDIR/role.*
-		f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$S_SINGLE_SCHEMA.* $S_LOAD_ORACLEDIR/role.* $S_LOAD_ORACLEDIR/meta.*"
+		f_execute_cmd "cd $S_LOAD_ORACLEDIR; rm -rf $F_META_DUMP $F_ROLE_DUMP $F_DATA_DUMP $S_SINGLE_SCHEMA.log role.log meta.log"
 	fi
 }
 
@@ -61,9 +68,14 @@ function f_execute_importmeta() {
 		F_SCHEMAONE=$S_SINGLE_SCHEMA
 	fi
 
-	scp $S_DATADIR/role.dmp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/role.dmp
-	scp $S_DATADIR/meta.dmp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/meta.dmp
-	f_execute_cmd "chmod 444 $S_LOAD_ORACLEDIR/role.dmp $S_LOAD_ORACLEDIR/meta.dmp"
+	f_common_getschemadump "role"
+	local F_ROLE_DUMP=$C_DUMP_NAME
+	f_common_getschemadump "meta"
+	local F_META_DUMP=$C_DUMP_NAME
+
+	scp $S_DATADIR/$F_ROLE_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_ROLE_DUMP
+	scp $S_DATADIR/$F_META_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_META_DUMP
+	f_execute_cmd "chmod 444 $S_LOAD_ORACLEDIR/$F_ROLE_DUMP $S_LOAD_ORACLEDIR/$F_META_DUMP"
 
 	f_execute_cmd "./import_helper.sh $P_ENV $P_DB $P_DBCONN importmeta $F_SCHEMAONE"
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/role.log $S_LOGDIR/role.impdp.log
@@ -81,9 +93,14 @@ function f_execute_all() {
 
 	mkdir -p $S_LOGDIR
 
+	f_common_getschemadump "role"
+	local F_ROLE_DUMP=$C_DUMP_NAME
+	f_common_getschemadump "meta"
+	local F_META_DUMP=$C_DUMP_NAME
+
 	# import roles meta
-	if [ ! -f "$S_DATADIR/role.dmp" ] || [ ! "$S_DATADIR/meta.dmp" ]; then
-		echo role.dmp and meta.dmp are required in $S_DATADIR. Exiting.
+	if [ ! -f "$S_DATADIR/$F_ROLE_DUMP" ] || [ ! "$S_DATADIR/$F_META_DUMP" ]; then
+		echo role and meta dumps are required in $S_DATADIR. Exiting.
 		exit 1
 	fi
 

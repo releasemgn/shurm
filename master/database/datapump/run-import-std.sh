@@ -27,12 +27,16 @@ function f_local_checkdata() {
 	fi
 
 	local F_DATADIR=`echo $C_ENV_CONFIG_LOCAL_DATADIR | tr " " "\n" | grep "$P_DB=" | cut -d "=" -f2 | tr -d "\n"`
+	local F_DUMP
 	for schema in $F_SCHEMALIST; do
 		if [[ ! " $C_ENV_CONFIG_METAONLYSCHEMALIST " =~ " $schema " ]]; then
-			if [ -f $F_DATADIR/$schema.dmp ]; then
+			f_common_getschemadump $schema
+			F_DUMP=$C_DUMP_NAME
+
+			if [ -f $F_DATADIR/$F_DUMP ]; then
 				echo "verified dump file exists: schema=$schema"
 			else
-				echo "missing dump file=$F_DATADIR/$schema.dmp. Exiting"
+				echo "schema=$schema - missing dump file=$F_DATADIR/$F_DUMP. Exiting"
 				exit 1
 			fi
 		fi
