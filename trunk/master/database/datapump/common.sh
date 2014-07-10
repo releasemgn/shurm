@@ -207,22 +207,21 @@ function f_execute_createinitial() {
 function f_common_getschemadump() {
 	local P_SCHEMA=$1
 
-	if [ "$C_ENV_CONFIG_IMPORT_DUMPGROUPS" = "" ]; then
-		if [ "$P_SCHEMA" = "role" ]; then
-			C_DUMP_NAME=role.dmp
-		elif [ "$P_SCHEMA" = "meta" ]; then
-			C_DUMP_NAME=meta.dmp
-		else
-			C_DUMP_NAME=$P_SCHEMA.dmp
+	# check defined in dump map
+	if [ "$C_ENV_CONFIG_IMPORT_DUMPGROUPS" != "" ]; then
+		C_DUMP_NAME=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr ";," "\n " | sed "s/:/: /;s/$/ /" | grep " $P_SCHEMA " | cut -d ":" -f1`
+		if [ "$C_DUMP_NAME" != "" ]; then
+			return 0
 		fi
-			
-		return 0
 	fi
 
-	C_DUMP_NAME=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr ";," "\n " | sed "s/:/: /;s/$/ /" | grep " $P_SCHEMA " | cut -d ":" -f1`
-	if [ "$C_DUMP_NAME" = "" ]; then
-		echo unable to find dump filename for schema=$P_SCHEMA. Exiting
-		exit 1
+	# default naming
+	if [ "$P_SCHEMA" = "role" ]; then
+		C_DUMP_NAME=role.dmp
+	elif [ "$P_SCHEMA" = "meta" ]; then
+		C_DUMP_NAME=meta.dmp
+	else
+		C_DUMP_NAME=$P_SCHEMA.dmp
 	fi
 }
 

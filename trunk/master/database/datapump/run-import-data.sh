@@ -126,9 +126,10 @@ function f_execute_importdata() {
 		F_LOADMODE=importdatatables
 	fi
 
-	# remove old dumps
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp"
+	# remove old dumps and logs
+	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
 
+	# execute by dump groups
 	for schema in $S_SCHEMALIST; do
 		f_execute_importdata_schema $F_LOADMODE $schema
 	done
