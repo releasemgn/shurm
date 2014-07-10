@@ -230,14 +230,18 @@ function f_execute_all_exportdata() {
 	local schema
 	local F_SCHEMAONE_FINAL
 	local F_SCHEMA_FINAL_UPPER
+	local F_DUMP
 	for schema in $P_SCHEMALIST; do
+		f_common_getschemadump $schema
+		F_DUMP=$C_DUMP_NAME
+
 		# get final schema
 		f_get_finalschema $schema
 		F_SCHEMAONE_FINAL=$S_FINAL_SCHEMA
 
 		echo export schema=$schema, target schema=$F_SCHEMAONE_FINAL ...
 		F_SCHEMA_FINAL_UPPER=`echo $F_SCHEMAONE_FINAL | tr '[a-z]' '[A-Z]'`
-		f_expdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$schema.dmp LOGFILE=$schema.log schemas=$F_SCHEMA_FINAL_UPPER"
+		f_expdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_DUMP LOGFILE=$schema.log schemas=$F_SCHEMA_FINAL_UPPER"
 	done
 }
 
