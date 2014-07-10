@@ -226,11 +226,41 @@ function f_common_getschemadump() {
 }
 
 function f_common_getdumplist() {
-	C_DUMP_LIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";" "\n" | cut -d ":" -f1 | tr "\n" " "`
-	C_DUMP_LIST=${C_DUMP_LIST% }
+	local P_SCHEMASET="$1"
+
+	if [ "$P_SCHEMASET" = "" ]; then
+		C_DUMP_LIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";" "\n" | cut -d ":" -f1 | tr "\n" " "`
+		C_DUMP_LIST=${C_DUMP_LIST% }
+		return 0
+	fi
+
+	C_DUMP_LIST=
+	for schema in $P_SCHEMASET; do
+		f_common_getschemadump $schema
+		if [[ ! " $C_DUMP_LIST " =~ " $C_DUMP_NAME " ]]; then
+			C_DUMP_LIST="$C_DUMP_LIST $C_DUMP_NAME"
+		fi
+	done
+
+	C_DUMP_LIST=${C_DUMP_LIST# }
 }
 
 function f_common_getdumpschemas() {
 	local P_DUMP=$1
-	C_DUMP_SCHEMALIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";," "\n " | grep "$P_DUMP:" | cut -d ":" -f2 | tr -d "\n"`
+	local P_SCHEMASET="$2"
+
+	C_DUMP_SCHEMALIST=
+	if [ "$P_SCHEMASET" = "" ]; then
+		C_DUMP_SCHEMALIST=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr -d " " | tr ";," "\n " | grep "$P_DUMP:" | cut -d ":" -f2 | tr -d "\n"`
+		return 0
+	fi
+
+	for schema in $P_SCHEMASET; do
+		f_common_getschemadump $schema
+		if [ "$P_DUMP" = "$C_DUMP_NAME" ]; then
+			C_DUMP_SCHEMALIST="$C_DUMP_SCHEMALIST $schema"
+		fi
+	done
+
+	C_DUMP_SCHEMALIST=${C_DUMP_SCHEMALIST# }
 }
