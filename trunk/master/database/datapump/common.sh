@@ -208,7 +208,7 @@ function f_common_getschemadump() {
 
 	# check defined in dump map
 	if [ "$C_ENV_CONFIG_IMPORT_DUMPGROUPS" != "" ]; then
-		C_DUMP_NAME=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr ";," "\n " | sed "s/:/: /;s/$/ /" | grep " $P_SCHEMA " | cut -d ":" -f1`
+		C_DUMP_NAME=`echo $C_ENV_CONFIG_IMPORT_DUMPGROUPS | tr ";," "\n " | sed "s/:/: /;s/$/ /" | grep " $P_SCHEMA " | cut -d ":" -f1 | tr -d " "`
 		if [ "$C_DUMP_NAME" != "" ]; then
 			return 0
 		fi
