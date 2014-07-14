@@ -118,6 +118,19 @@ function f_buildall_maketags() {
 	fi
 }
 
+function f_buildall_addlog() {
+	local P_PROJECTSET=$1
+	local P_PROJECT="$2"
+
+	local F_LOG=$OUTDIR/$P_PROJECTSET/$P_PROJECT-build.log
+	local F_STATUS=`grep "[INFO|ERROR]] BUILD" $F_LOG`
+	if [ "$F_STATUS" = "" ]; then
+		F_STATUS="[FATAL] BUILD FAILURE"
+	fi
+
+	echo "$P_PROJECT: $F_STATUS (see $F_LOG)" >> $OUTDIR/build.final.out
+}
+
 function f_buildall_release_core() {
 	local P_TARGETS="$1"
 	local P_BRANCH="$2"
@@ -138,9 +151,8 @@ function f_buildall_release_core() {
 
 		export C_BUILD_APPVERSION
 		f_execute_core "$release_project" BUILDCORE
+		f_buildall_addlog core $release_project
 	done
-
-	grep "[INFO|ERROR]] BUILD" $OUTDIR/core/*.log >> $OUTDIR/build.final.out
 }
 
 function f_buildall_release_war() {
@@ -162,9 +174,8 @@ function f_buildall_release_war() {
 		fi
 
 		f_execute_wars "$release_project" BUILDWAR
+		f_buildall_addlog war $release_project
 	done
-
-	grep "[INFO|ERROR]] BUILD" $OUTDIR/war/*.log >> $OUTDIR/build.final.out
 }
 
 function f_buildall_release() {
