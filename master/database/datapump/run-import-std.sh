@@ -41,6 +41,12 @@ function f_local_checkdata() {
 			fi
 		fi
 	done
+
+	f_execute_cmdres "if [ -d $S_REMOTE_ROOT ]; then date > laststartdate.txt; echo ok; fi"
+	if [ "$S_RUNCMDRES" != "ok" ]; then
+		echo unable to access remote root - $S_REMOTE_ROOT. Exiting
+		exit 1
+	fi
 }
 
 function f_local_main_load() {
