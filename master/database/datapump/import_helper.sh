@@ -89,7 +89,7 @@ function f_execute_all_finishdata() {
 
 function f_execute_all_importmeta() {
 	f_common_getschemadump "role"
-	f_impdp $S_CONNECTION "INCLUDE=ROLES DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$C_DUMP_NAME LOGFILE=role.log" ignoreerrors
+	f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$C_DUMP_NAME LOGFILE=role.log" ignoreerrors
 
 	# collect remap - only for different
 	F_REMAP_SCHEMALIST=
