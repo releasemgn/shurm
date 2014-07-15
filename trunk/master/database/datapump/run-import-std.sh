@@ -33,7 +33,7 @@ function f_local_checkdata() {
 			f_common_getschemadump $schema
 			F_DUMP=$C_DUMP_NAME
 
-			if [ -f $F_DATADIR/$F_DUMP ]; then
+			if [ -f "$F_DATADIR/$F_DUMP" ]; then
 				echo "verified dump file exists: schema=$schema"
 			else
 				echo "schema=$schema - missing dump file=$F_DATADIR/$F_DUMP. Exiting"
