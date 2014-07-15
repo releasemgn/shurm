@@ -19,14 +19,20 @@ C_DUMP_LIST=
 C_DUMP_SCHEMALIST=
 
 function f_execute_cmd() {
-	P_CMD="$1"
-	echo "$S_REMOTE_HOSTLOGIN: execute $P_CMD in $S_REMOTE_ROOT ..."
-	ssh $S_REMOTE_HOSTLOGIN "cd $S_REMOTE_ROOT; $P_CMD"
+	local P_REMOTE_HOSTLOGIN=$1
+	local P_REMOTE_ROOT=$2
+	local P_CMD="$3"
+
+	echo "$P_REMOTE_HOSTLOGIN: execute $P_CMD in $P_REMOTE_ROOT ..."
+	ssh $P_REMOTE_HOSTLOGIN "cd $P_REMOTE_ROOT; $P_CMD"
 }
 
 function f_execute_cmdres() {
-	P_CMD="$1"
-	S_RUNCMDRES=`ssh $S_REMOTE_HOSTLOGIN "cd $S_REMOTE_ROOT; $P_CMD"`
+	local P_REMOTE_HOSTLOGIN=$1
+	local P_REMOTE_ROOT=$2
+	local P_CMD="$3"
+
+	S_RUNCMDRES=`ssh $P_REMOTE_HOSTLOGIN "cd $P_REMOTE_ROOT; $P_CMD"`
 }
 
 function f_get_finalschema() {

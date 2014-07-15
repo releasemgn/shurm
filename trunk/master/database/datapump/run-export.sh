@@ -28,7 +28,7 @@ function f_execute_cleanup() {
 
 		# clear log and staging area
 		rm -rf $F_LOGDIR/*
-		f_execute_cmd "rm -rf $C_ENV_CONFIG_STAGINGDIR; mkdir $C_ENV_CONFIG_STAGINGDIR"
+		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $C_ENV_CONFIG_STAGINGDIR; mkdir $C_ENV_CONFIG_STAGINGDIR"
 
 	elif [ "$P_SINGLE_SCHEMA" = "meta" ]; then
 		rm -rf $C_ENV_CONFIG_LOCAL_DATADIR/meta.* $C_ENV_CONFIG_LOCAL_DATADIR/role.* $F_LOGDIR/meta.* $F_LOGDIR/role.*
@@ -51,14 +51,14 @@ function f_execute_copycorefiles() {
 		scp $C_CONFIG_TABLE_FILE $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	fi
 
-	f_execute_cmd "chmod 777 $S_REMOTE_ROOT/*.sh"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 777 $S_REMOTE_ROOT/*.sh"
 }
 
 function f_execute_exportmeta() {
 	# export meta
 	if [ "$P_SINGLE_SCHEMA" = "" ] || [ "$P_SINGLE_SCHEMA" = "meta" ]; then
 		echo "export metadata ($S_SCHEMALIST)..."
-		f_execute_cmd "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportmeta $S_SCHEMALIST" > $F_LOGDIR/meta.log 2>&1
+		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportmeta $S_SCHEMALIST" > $F_LOGDIR/meta.log 2>&1
 
 		echo "copy exported metadata to $C_ENV_CONFIG_LOCAL_DATADIR ..."
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.dmp $C_ENV_CONFIG_LOCAL_DATADIR/meta.dmp
@@ -69,7 +69,7 @@ function f_execute_exportmeta() {
 }
 
 function f_execute_getexportdatastatus() {
-	f_execute_cmdres "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata-status"
+	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata-status"
 	S_RUNCMDRES=`echo $S_RUNCMDRES | tr -d "\n"`
 	if [[ "$S_RUNCMDRES" =~ "STATUS=RUNNING" ]]; then
 		S_EXPORTDATA_STATUS=RUNNING
@@ -97,7 +97,7 @@ function f_execute_exportdata() {
 	fi
 
 	# export dumps
-	f_execute_cmd "/usr/bin/nohup ./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata $S_SCHEMALIST > exportdata.log 2>&1 &"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "/usr/bin/nohup ./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata $S_SCHEMALIST > exportdata.log 2>&1 &"
 
 	# wait to start
 	sleep 5
