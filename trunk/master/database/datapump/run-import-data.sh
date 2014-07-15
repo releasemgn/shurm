@@ -104,7 +104,7 @@ function f_execute_importdata_schema() {
 		echo "schema $P_SCHEMA - cannot get import log"
 	fi
 
-	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
 }
 
 function f_execute_importdump() {
@@ -130,6 +130,8 @@ function f_execute_importdump() {
 	for schema in $F_SCHEMASET; do
 		f_execute_importdata_schema $P_LOADMODE $schema
 	done
+
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP"
 }
 
 function f_execute_importdata() {
