@@ -37,7 +37,7 @@ function f_execute_copycorefiles() {
 		scp $C_CONFIG_FINISHDATA_SQLFILE $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	fi
 
-	f_execute_cmd "chmod 777 *.sh"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 777 *.sh"
 }
 
 function f_wait_finishimportdata() {
@@ -64,7 +64,7 @@ function f_execute_preparedata() {
 		F_SCHEMAONE=$S_SINGLE_SCHEMA
 	fi
 
-	f_execute_cmd "./import_helper.sh $P_ENV $P_DB $P_DBCONN preparedata $F_SCHEMAONE"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN preparedata $F_SCHEMAONE"
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_CONFIG_CREATEDATA_SQLFILE.out $S_LOGDIR
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_CONFIG_PREPAREDATA_SQLFILE.out $S_LOGDIR
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_CONFIG_TRUNCATEDATA_SQLFILE.out $S_LOGDIR
@@ -82,7 +82,7 @@ function f_execute_finishdata() {
 
 	# finish data
 	echo restore indexes and constraints in database ...
-	f_execute_cmd "./import_helper.sh $P_ENV $P_DB $P_DBCONN finishdata $F_SCHEMAONE"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN finishdata $F_SCHEMAONE"
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_CONFIG_FINISHDATA_SQLFILE.out $S_LOGDIR/$C_CONFIG_FINISHDATA_SQLFILE.out
 }
 
@@ -91,7 +91,7 @@ function f_execute_importdata_schema() {
 	local P_SCHEMA=$2
 
 	echo execute import mode=$P_LOADMODE
-	f_execute_cmd "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN $P_LOADMODE $P_SCHEMA > import.log 2>&1&"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN $P_LOADMODE $P_SCHEMA > import.log 2>&1&"
 
 	# wait import to finish
 	f_wait_finishimportdata
@@ -104,7 +104,7 @@ function f_execute_importdata_schema() {
 		echo "schema $P_SCHEMA - cannot get import log"
 	fi
 
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
 }
 
 function f_execute_importdump() {
@@ -119,8 +119,8 @@ function f_execute_importdump() {
 
 	# copy dumps
 	echo copy data...
-	f_execute_cmd "rm -rf import.status.log"
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf import.status.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
 
 	scp $S_DATADIR/$P_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
 
@@ -140,7 +140,7 @@ function f_execute_importdata() {
 	fi
 
 	# remove old dumps and logs
-	f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
 
 	# get dumps
 	f_common_getdumplist "$S_SCHEMALIST"
@@ -163,6 +163,12 @@ function f_execute_all() {
 	S_LOGDIR=$P_LOGDIR
 
 	mkdir -p $S_LOGDIR
+
+	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "if [ -d $S_REMOTE_ROOT ]; then date > laststartdate.txt; echo ok; fi"
+	if [ "$S_RUNCMDRES" != "ok" ]; then
+		echo unable to access remote root - $S_REMOTE_ROOT. Exiting
+		exit 1
+	fi
 
 	# defines schemas
 	if [ "$S_SINGLE_SCHEMA" != "" ]; then

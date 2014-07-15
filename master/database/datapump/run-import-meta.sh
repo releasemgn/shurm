@@ -28,7 +28,7 @@ function f_execute_cleanup() {
 	echo cleanup...
 	if [ "$S_SINGLE_SCHEMA" = "" ]; then
 		rm -rf $S_LOGDIR/*
-		f_execute_cmd "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
+		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/*.dmp $S_LOAD_ORACLEDIR/*.log"
 	else
 		f_common_getschemadump "role"
 		local F_ROLE_DUMP=$C_DUMP_NAME
@@ -38,7 +38,7 @@ function f_execute_cleanup() {
 		local F_DATA_DUMP=$C_DUMP_NAME
 
 		rm -rf $S_LOGDIR/$S_SINGLE_SCHEMA.* $S_LOGDIR/meta.* $S_LOGDIR/role.*
-		f_execute_cmd "cd $S_LOAD_ORACLEDIR; rm -rf $F_META_DUMP $F_ROLE_DUMP $F_DATA_DUMP $S_SINGLE_SCHEMA.log role.log meta.log"
+		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "cd $S_LOAD_ORACLEDIR; rm -rf $F_META_DUMP $F_ROLE_DUMP $F_DATA_DUMP $S_SINGLE_SCHEMA.log role.log meta.log"
 	fi
 }
 
@@ -49,13 +49,13 @@ function f_execute_copycorefiles() {
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp import_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp $C_CONFIG_SCRIPT_DROPUSERS $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
-	f_execute_cmd "chmod 777 *.sh"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 777 *.sh"
 }
 
 function f_execute_dropdb() {
 	# database to exclusive mode, kill sessions, drop schemas
 	echo prepare for import...
-	f_execute_cmd "./import_helper.sh $P_ENV $P_DB $P_DBCONN dropold $S_SCHEMALIST"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN dropold $S_SCHEMALIST"
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_CONFIG_SCRIPT_DROPUSERS.out $S_LOGDIR/dropusers.out
 }
 
@@ -78,8 +78,8 @@ function f_execute_importmeta() {
 		scp $S_DATADIR/$F_META_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_META_DUMP
 	fi
 
-	f_execute_cmd "cd $S_LOAD_ORACLEDIR; chmod 444 $F_ROLE_DUMP $F_META_DUMP"
-	f_execute_cmd "./import_helper.sh $P_ENV $P_DB $P_DBCONN importmeta $F_SCHEMAONE"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "cd $S_LOAD_ORACLEDIR; chmod 444 $F_ROLE_DUMP $F_META_DUMP"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN importmeta $F_SCHEMAONE"
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/role.log $S_LOGDIR/role.impdp.log
 	scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/meta.log $S_LOGDIR/meta.impdp.log
 }
@@ -94,6 +94,12 @@ function f_execute_all() {
 	S_SINGLE_SCHEMA=$P_SINGLE_SCHEMA
 
 	mkdir -p $S_LOGDIR
+
+	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "if [ -d $S_REMOTE_ROOT ]; then date > laststartdate.txt; echo ok; fi"
+	if [ "$S_RUNCMDRES" != "ok" ]; then
+		echo unable to access remote root - $S_REMOTE_ROOT. Exiting
+		exit 1
+	fi
 
 	f_common_getschemadump "role"
 	local F_ROLE_DUMP=$C_DUMP_NAME

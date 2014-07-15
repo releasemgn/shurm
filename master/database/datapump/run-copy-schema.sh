@@ -28,7 +28,7 @@ function f_execute_copycorefiles() {
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp import_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 
-	f_execute_cmd "chmod 777 *.sh"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 777 *.sh"
 }
 
 function f_execute_wait() {
@@ -37,7 +37,7 @@ function f_execute_wait() {
 	echo waiting $P_CMDWAIT ...
 	sleep 5
 	while [ "1" = "1" ]; do
-		f_execute_cmdres "pgrep -f $P_CMDWAIT | tr \" \" \"\n\" | grep -v \$\$"
+		f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "pgrep -f $P_CMDWAIT | tr \" \" \"\n\" | grep -v \$\$"
 		if [ "$S_RUNCMDRES" = "" ]; then
 			return 0
 		fi
@@ -49,12 +49,12 @@ function f_execute_wait() {
 function f_execute_copydata() {
 	# export
 	echo execute export source schema
-	f_execute_cmd "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN exportdatasimple $P_SCHEMA_SRC > export.log 2>&1&"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN exportdatasimple $P_SCHEMA_SRC > export.log 2>&1&"
 	f_execute_wait exportdatasimple
 
 	# import
 	echo execute import target schema
-	f_execute_cmd "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN importdatasimple $P_SCHEMA_DST $P_SCHEMA_SRC > import.log 2>&1&"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN importdatasimple $P_SCHEMA_DST $P_SCHEMA_SRC > import.log 2>&1&"
 	f_execute_wait importdatasimple
 }
 
