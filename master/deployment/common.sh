@@ -17,6 +17,11 @@ function f_run_cmd() {
 		echo "$P_COMMON_HOSTLOGIN cmd: $P_CMD ..."
 	fi
 
+	local F_KEY=$C_ENV_PROPERTY_KEYNAME
+	if [ "$GETOPT_KEY" != "" ]; then
+		F_KEY=$GETOPT_KEY
+	fi
+
 	RUN_CMD_RES=
 	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
 		RUN_CMD_RES=`(eval $P_CMD) 2>&1`
@@ -24,8 +29,8 @@ function f_run_cmd() {
 			return 1
 		fi
 	else
-		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			RUN_CMD_RES=`ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+		if [ "$F_KEY" != "" ]; then
+			RUN_CMD_RES=`ssh -i $F_KEY -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
@@ -44,9 +49,11 @@ function f_run_cmdcheck() {
 	local P_CMD="$2"
 
 	f_run_cmd "$P_COMMON_HOSTLOGIN" "$P_CMD"
-	if [ "$RUN_CMD_RES" != "" ]; then
-		echo $P_COMMON_HOSTLOGIN: failed execute "$P_CMD" - $RUN_CMD_RES. Exiting
-		exit 1
+	if [ "$GETOPT_SKIPERRORS" != "yes" ]; then
+		if [ "$RUN_CMD_RES" != "" ]; then
+			echo $P_COMMON_HOSTLOGIN: failed execute "$P_CMD" - $RUN_CMD_RES. Exiting
+			exit 1
+		fi
 	fi
 }
 
@@ -56,8 +63,13 @@ function f_download_file() {
 	local P_REMOTENAME=$2
 	local P_LOCALFILE=$3
 
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_COMMON_HOSTLOGIN:$P_REMOTENAME $P_LOCALFILE
+	local F_KEY=$C_ENV_PROPERTY_KEYNAME
+	if [ "$GETOPT_KEY" != "" ]; then
+		F_KEY=$GETOPT_KEY
+	fi
+
+	if [ "$F_KEY" != "" ]; then
+		scp -q -B -p -i $F_KEY $P_COMMON_HOSTLOGIN:$P_REMOTENAME $P_LOCALFILE
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
@@ -77,8 +89,13 @@ function f_download_dir() {
 	local P_REMOTEDIR=$2
 	local P_LOCALDIR=$3
 
-	if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-		scp -q -r -B -p -i $C_ENV_PROPERTY_KEYNAME $P_COMMON_HOSTLOGIN:$P_REMOTEDIR $P_LOCALDIR
+	local F_KEY=$C_ENV_PROPERTY_KEYNAME
+	if [ "$GETOPT_KEY" != "" ]; then
+		F_KEY=$GETOPT_KEY
+	fi
+
+	if [ "$F_KEY" != "" ]; then
+		scp -q -r -B -p -i $F_KEY $P_COMMON_HOSTLOGIN:$P_REMOTEDIR $P_LOCALDIR
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
@@ -159,8 +176,13 @@ function f_upload_file() {
 	if [ "$P_HOSTLOGIN" = "local" ]; then
 		cp $P_LOCALFILE $P_REMOTENAME
 	else
-		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
+		local F_KEY=$C_ENV_PROPERTY_KEYNAME
+		if [ "$GETOPT_KEY" != "" ]; then
+			F_KEY=$GETOPT_KEY
+		fi
+
+		if [ "$F_KEY" != "" ]; then
+			scp -q -B -p -i $F_KEY $P_LOCALFILE $P_HOSTLOGIN:$P_REMOTENAME
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
@@ -250,8 +272,13 @@ function f_upload_releasefile() {
 			return 1
 		fi
 
-		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
+		local F_KEY=$C_ENV_PROPERTY_KEYNAME
+		if [ "$GETOPT_KEY" != "" ]; then
+			F_KEY=$GETOPT_KEY
+		fi
+
+		if [ "$F_KEY" != "" ]; then
+			scp -q -B -p -i $F_KEY $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
 		else
 			scp -q -B -p $F_LOCALNAME $P_DST_HOSTLOGIN:$P_DSTFILE
 		fi
@@ -287,9 +314,14 @@ function f_upload_script() {
 		cp $P_SCRIPT $P_SCRIPTNAME
 		chmod 700 $P_SCRIPTNAME
 	else
-		if [ "$C_ENV_PROPERTY_KEYNAME" != "" ]; then
-			scp -q -B -p -i $C_ENV_PROPERTY_KEYNAME $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
-			ssh -i $C_ENV_PROPERTY_KEYNAME -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
+		local F_KEY=$C_ENV_PROPERTY_KEYNAME
+		if [ "$GETOPT_KEY" != "" ]; then
+			F_KEY=$GETOPT_KEY
+		fi
+
+		if [ "$F_KEY" != "" ]; then
+			scp -q -B -p -i $F_KEY $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
+			ssh -i $F_KEY -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
 		else
 			scp -q -B -p $P_SCRIPT $P_COMMON_HOSTLOGIN:$P_SCRIPTNAME
 			ssh -n $P_COMMON_HOSTLOGIN "chmod 700 $P_SCRIPTNAME"
