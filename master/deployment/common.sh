@@ -9,6 +9,41 @@ if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
 fi
 
 # run any command
+function f_run_cmdout() {
+	local P_COMMON_HOSTLOGIN="$1"
+	local P_CMD="$2"
+
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "$P_COMMON_HOSTLOGIN cmd: $P_CMD ..."
+	fi
+
+	local F_KEY=$C_ENV_PROPERTY_KEYNAME
+	if [ "$GETOPT_KEY" != "" ]; then
+		F_KEY=$GETOPT_KEY
+	fi
+
+	RUN_CMD_RES=
+	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
+		`(eval $P_CMD) 2>&1`
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+	else
+		if [ "$F_KEY" != "" ]; then
+			`ssh -i $F_KEY -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		else
+			`ssh -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			if [ $? -ne 0 ]; then
+				return 1
+			fi
+		fi
+	fi
+	return 0
+}
+
 function f_run_cmd() {
 	local P_COMMON_HOSTLOGIN="$1"
 	local P_CMD="$2"
