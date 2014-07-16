@@ -14,7 +14,7 @@ function f_local_execute() {
 
 		local F_LOGCMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): $P_RUNCMD_CMD\" >> ~/execute.log"
 		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_LOGCMD"
-		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$P_RUNCMD_CMD"
+		f_run_cmd $P_EXECUTE_HOSTLOGIN "$P_RUNCMD_CMD"
 	else
 		echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD (showonly)"
 	fi
