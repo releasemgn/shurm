@@ -24,18 +24,18 @@ function f_run_cmdout() {
 
 	RUN_CMD_RES=
 	if [ "$P_COMMON_HOSTLOGIN" = "local" ]; then
-		`(eval $P_CMD) 2>&1`
+		(eval $P_CMD) 2>&1
 		if [ $? -ne 0 ]; then
 			return 1
 		fi
 	else
 		if [ "$F_KEY" != "" ]; then
-			`ssh -i $F_KEY -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			ssh -i $F_KEY -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
 		else
-			`ssh -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1`
+			ssh -n $P_COMMON_HOSTLOGIN "$P_CMD" 2>&1
 			if [ $? -ne 0 ]; then
 				return 1
 			fi
