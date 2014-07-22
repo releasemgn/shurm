@@ -69,6 +69,8 @@ function f_execute_all() {
 	if [ "$GETOPT_RELEASE" != "" ]; then
 		if [[ "$GETOPT_RELEASE" =~ ^[0-9]+\.[0-9]+$ ]]; then
 			F_RELEASE_FOLDER=major-release-$GETOPT_RELEASE
+		elif [[ "$GETOPT_RELEASE" =~ "-demo-" ]]; then
+			F_RELEASE_FOLDER=${GETOPT_RELEASE#*-}-${GETOPT_RELEASE%%-*}
 		else
 			F_RELEASE_FOLDER=prod-patch-$GETOPT_RELEASE
 		fi
