@@ -80,7 +80,7 @@ function f_admindb_beginscriptstatus() {
 
 	f_admindb_parsereleasenumber $P_RELEASE
 
-	local F_CTLSQL=`f_admindb_add_beginscriptstatus $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`
+	local F_CTLSQL="`f_admindb_add_beginscriptstatus $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`"
 
 	f_get_db_password $P_DB_TNS_NAME $P_SCHEMA
 	f_exec_limited 60 "(
