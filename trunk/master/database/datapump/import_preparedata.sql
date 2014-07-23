@@ -3,28 +3,27 @@
 declare
 	l_schema_one varchar2(30) := '@SCHEMAONE@';
 
+	procedure p_execute_immediate( p_sql varchar2 ) is
+	begin
+		execute immediate p_sql;
+	exception when others then
+		NULL;
+	end;
+
 	procedure p_prepare_table( p_schema varchar2 , p_table varchar2 ) is
 	begin
-		execute immediate 'ALTER TABLE ' || p_schema || '.' || p_table || ' NOLOGGING';
-		execute immediate 'ALTER TABLE ' || p_schema || '.' || p_table || ' DISABLE ALL TRIGGERS';
+		p_execute_immediate( 'ALTER TABLE ' || p_schema || '.' || p_table || ' NOLOGGING' );
+		p_execute_immediate( 'ALTER TABLE ' || p_schema || '.' || p_table || ' DISABLE ALL TRIGGERS' );
 
 		-- disable all constraints
 		for rec in ( select CONSTRAINT_NAME from dba_constraints WHERE owner = p_schema and table_name = p_table ) loop
-			begin
-	  			execute immediate 'alter table ' || p_schema || '.' || p_table || ' disable constraint ' || rec.CONSTRAINT_NAME || ' cascade';
-			exception when others then
-				NULL;
-			end;
+  			p_execute_immediate( 'alter table ' || p_schema || '.' || p_table || ' disable constraint ' || rec.CONSTRAINT_NAME || ' cascade' );
 		end loop;
 
 		-- disable all indexes
 		for rec in ( select index_name from dba_indexes where table_owner = p_schema and table_name = p_table 
 				and index_type <> 'LOB' ) loop
-			begin
-				execute immediate 'alter index ' || p_schema || '.' || rec.index_name || ' NOLOGGING';
-			exception when others then
-				NULL;
-			end;
+			p_execute_immediate( 'alter index ' || p_schema || '.' || rec.index_name || ' NOLOGGING' );
 		end loop;
 	end;
 begin
