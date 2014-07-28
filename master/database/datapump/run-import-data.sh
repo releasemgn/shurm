@@ -117,15 +117,19 @@ function f_execute_importdump() {
 		return 1
 	fi
 
+	f_common_getdumpschemas $P_DUMP "$S_SCHEMALIST"
+	local F_SCHEMASET="$C_DUMP_SCHEMALIST"
+	local F_LOGSET=
+	for schema in $F_SCHEMASET; do
+		F_LOGSET="$F_LOGSET $schema.impdp.log"
+	done
+
 	# copy dumps
 	echo copy data...
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf import.status.log"
-	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $S_LOAD_ORACLEDIR/$P_DUMP $S_LOAD_ORACLEDIR/$P_SCHEMA.log"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "cd $S_LOAD_ORACLEDIR; rm -rf $P_DUMP $F_LOGSET"
 
 	scp $S_DATADIR/$P_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
-
-	f_common_getdumpschemas $P_DUMP "$S_SCHEMALIST"
-	local F_SCHEMASET="$C_DUMP_SCHEMALIST"
 
 	for schema in $F_SCHEMASET; do
 		f_execute_importdata_schema $P_LOADMODE $schema
