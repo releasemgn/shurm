@@ -166,7 +166,7 @@ function f_execute_all_importdatafull() {
 				F_REMAP=""
 			fi
 
-			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_DUMP LOGFILE=$schema.log $F_REMAP $F_TRANSFORM" ignoreerrors
+			f_impdp $S_CONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR SCHEMAS=$F_SCHEMA_UPPER DUMPFILE=$F_DUMP LOGFILE=$schema.log $F_REMAP $F_TRANSFORM" ignoreerrors
 		fi
 	done
 
