@@ -68,13 +68,13 @@ function f_local_executeconfcomp() {
 
 	svn co $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" "$F_SVNSAVE_LOCALDIRCO" > /dev/null
 	if [ $? != 0 ]; then
-		echo "unable to checkout live configuration state. Exiting
+		echo "unable to checkout live configuration state. Exiting"
 		exit 1
 	fi
 
 	svn export $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" "$F_SVNSAVE_LOCALDIREXP" > /dev/null
 	if [ $? != 0 ]; then
-		echo "unable to export live configuration state. Exiting
+		echo "unable to export live configuration state. Exiting"
 		exit 1
 	fi
 
