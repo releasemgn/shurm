@@ -69,7 +69,7 @@ function f_execute_exportmeta() {
 }
 
 function f_execute_getexportdatastatus() {
-	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata-status"
+	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportdata-status"
 	S_RUNCMDRES=`echo $S_RUNCMDRES | tr -d "\n"`
 	if [[ "$S_RUNCMDRES" =~ "STATUS=RUNNING" ]]; then
 		S_EXPORTDATA_STATUS=RUNNING
