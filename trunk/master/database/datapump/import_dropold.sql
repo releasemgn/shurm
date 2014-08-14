@@ -79,10 +79,17 @@ end;
 -- save tablespaces
 drop table tmp_savetablespaceinfo;
 create table tmp_savetablespaceinfo as
-SELECT 	u.username as OWNER , d.TABLESPACE_NAME as TABLESPACE_NAME , min( FILE_NAME ) as FILE_NAME
-FROM 	sys.all_users u , sys.dba_data_files d
-WHERE 	d.TABLESPACE_NAME like u.username || '!_%' escape '!' and u.username in ( @SCHEMA_LIST@ )
-GROUP BY u.username , d.TABLESPACE_NAME;
+SELECT a.TABLESPACE_NAME , c.FILE_NAME
+FROM 
+	( SELECT DISTINCT TABLESPACE_NAME AS TABLESPACE_NAME FROM dba_extents a WHERE owner IN ( @SCHEMA_LIST@ ) ) a ,
+	DBA_DATA_FILES c 
+WHERE
+	a.TABLESPACE_NAME = c.TABLESPACE_NAME and  
+	NOT EXISTS ( 
+		SELECT * 
+		FROM dba_extents b 
+		WHERE b.TABLESPACE_NAME = a.TABLESPACE_NAME AND b.owner NOT IN ( @SCHEMA_LIST@ )
+	);
 
 -- drop users
 begin
