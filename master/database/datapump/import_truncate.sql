@@ -7,6 +7,8 @@ declare
 	begin
 		-- ensure no data in the table
 		execute immediate 'TRUNCATE TABLE ' || p_schema || '.' || p_table;
+	exception when others then
+		NULL;
 	end;
 begin
 	if l_schema_one = 'all' then
