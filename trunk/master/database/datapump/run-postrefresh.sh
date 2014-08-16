@@ -37,7 +37,7 @@ function f_execute_all() {
 	# copy scripts and helper
 	F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
 	echo download postrefresh files from $F_SVNPATH ...
-	svn export $C_CONFIG_SVNAUTH $F_SVNPATH $F_SQLDIR
+	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $F_SQLDIR
 	scp -r $F_SQLDIR $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE
 	scp datapump-config.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
