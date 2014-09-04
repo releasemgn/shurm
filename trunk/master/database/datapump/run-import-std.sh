@@ -10,7 +10,25 @@ F_DBCONN_MAIN=$C_ENV_CONFIG_DB
 F_LOGDIR_MAIN="import-log"
 F_LOGDIR_POSTREFRESH="import-postrefresh"
 
+if [ "$C_ENV_CONFIG_ENV" = "" ]; then
+	echo C_ENV_CONFIG_ENV is not set. Exiting
+	exit 1
+fi
+if [ "$C_ENV_CONFIG_DC" = "" ]; then
+	echo P_DC=$C_ENV_CONFIG_DC is not set. Exiting
+	exit 1
+fi
+if [ "$C_ENV_CONFIG_DB" = "" ]; then
+	echo C_ENV_CONFIG_DB is not set. Exiting
+	exit 1
+fi
+if [ "$C_ENV_CONFIG_POSTREFRESH" = "" ]; then
+	echo C_ENV_CONFIG_POSTREFRESH is not set. Exiting
+	exit 1
+fi
+
 P_ENV=$C_ENV_CONFIG_ENV
+P_DC=$C_ENV_CONFIG_DC
 P_DB=$C_ENV_CONFIG_DB
 P_POSTREFRESH=$C_ENV_CONFIG_POSTREFRESH
 
@@ -71,7 +89,7 @@ function f_local_postrefresh() {
 	# main db - post-refresh
 	if [ "$P_CMD" = "all" ] || [ "$P_CMD" = "post-refresh" ]; then
 		echo execute - post-refresh ...
-		./run-postrefresh.sh $P_ENV $P_DB $P_POSTREFRESH $F_DBCONN_MAIN $F_LOGDIR_POSTREFRESH
+		./run-postrefresh.sh $P_ENV $P_DC $P_DB $P_POSTREFRESH $F_DBCONN_MAIN $F_LOGDIR_POSTREFRESH
 		if [ "$?" != "0" ]; then
 			echo unsuccessfull call run-postrefresh.sh. Exiting
 			exit 1
