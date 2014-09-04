@@ -48,6 +48,44 @@ S_CONFIGURE_PROPLIST_ENV=
 S_CONFIGURE_PROPLIST_DC=
 S_CONFIGURE_PROPLIST_SERVER=
 
+function f_local_runawk() {
+	local P_DIR_FROM=$1
+	local P_DIR_TO=$2
+
+	local F_COMPSAVEDIR=`pwd`
+
+	rm -rf $P_DIR_TO
+	mkdir -p $P_DIR_TO
+
+	cd $P_DIR_FROM
+
+	local fname
+	local fname_dst
+	for fname in `find . -type d`; do
+		fname_dst=$P_DIR_TO/$fname
+		mkdir -p $fname_dst
+	done
+
+	for fname in `find . -type f`; do
+		fname_dst=$P_DIR_TO/$fname
+		mkdir -p `dirname $fname_dst`
+
+		local F_BASENAME=`basename $fname`
+		local F_EXT=${F_BASENAME##*.}
+
+		if [[ " $S_COMMON_EXTLIST " =~ " $F_EXT " ]]; then
+			# copy and process parameters
+			awk -f $S_CONFIGURE_AWKPROGRAM $fname > $fname_dst
+		else
+			# copy binary as is
+			cp $fname $fname_dst
+		fi
+
+	done
+
+	cd $F_COMPSAVEDIR
+}
+
 function f_local_generatenodecomponentfiles() {
 	local P_SERVER=$1
 	local P_NODEHOSTLOGIN=$2
@@ -79,37 +117,7 @@ function f_local_generatenodecomponentfiles() {
 		echo generate component=$P_CONFCOMPNAME to $F_LOCAL_DIR_TO ...
 	fi
 
-	rm -rf $F_LOCAL_DIR_TO
-	mkdir -p $F_LOCAL_DIR_TO
-
-	local F_COMPSAVEDIR=`pwd`
-	cd $F_LOCAL_DIR_FROM
-
-	local fname
-	local fname_dst
-	for fname in `find . -type d`; do
-		fname_dst=$F_LOCAL_DIR_TO/$fname
-		mkdir -p $fname_dst
-	done
-
-	for fname in `find . -type f`; do
-		fname_dst=$F_LOCAL_DIR_TO/$fname
-		mkdir -p `dirname $fname_dst`
-
-		local F_BASENAME=`basename $fname`
-		local F_EXT=${F_BASENAME##*.}
-
-		if [[ " $S_COMMON_EXTLIST " =~ " $F_EXT " ]]; then
-			# copy and process parameters
-			awk -f $S_CONFIGURE_AWKPROGRAM $fname > $fname_dst
-		else
-			# copy binary as is
-			cp $fname $fname_dst
-		fi
-
-	done
-
-	cd $F_COMPSAVEDIR
+	f_local_runawk $F_LOCAL_DIR_FROM $F_LOCAL_DIR_TO
 }
 
 function f_local_generatenodefiles() {
@@ -262,14 +270,17 @@ function f_local_prepare_templates() {
 function f_local_execute_server() {
 	local P_SERVER=$1
 
-	f_env_getserverconflist $DC $P_SERVER
-	local F_CONFCOMPLIST="$C_ENV_SERVER_CONFLIST"
+	local F_CONFCOMPLIST
+	if [ "$GETOPT_DEPLOYRAW" != "yes" ]; then
+		f_env_getserverconflist $DC $P_SERVER
+		F_CONFCOMPLIST="$C_ENV_SERVER_CONFLIST"
 
-	if [ "$F_CONFCOMPLIST" = "" ]; then
-		if [ "$GETOPT_SHOWALL" = "yes" ]; then
-			echo server $P_SERVER: no configuration components defined. Skipped.
+		if [ "$F_CONFCOMPLIST" = "" ]; then
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo server $P_SERVER: no configuration components defined. Skipped.
+			fi
+			return 1
 		fi
-		return 1
 	fi
 	
 	# read server info
@@ -285,6 +296,19 @@ function f_local_execute_server() {
 
 	# construct awk string to handle properties
 	f_local_construct_awk $P_SERVER
+
+	# execute direct for the server only
+	if [ "$GETOPT_DEPLOYRAW" = "yes" ]; then
+		local F_LOCAL_DIR_FROM=$S_CONFIGURE_PREPAREDTEMPLATES
+		local F_LOCAL_DIR_TO=$P_DIR_LIVE/$DC/$P_SERVER
+
+		if [ "$GETOPT_SHOWALL" = "yes" ]; then
+			echo generate raw files to $F_LOCAL_DIR_TO ...
+		fi
+
+		f_local_runawk $F_LOCAL_DIR_FROM $F_LOCAL_DIR_TO
+		return 0
+	fi
 
 	# prepare templates
 	f_local_prepare_templates $P_SERVER "$F_CONFCOMPLIST"
