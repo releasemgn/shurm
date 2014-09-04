@@ -2,9 +2,10 @@
 
 P_ENV=$1
 P_DB=$2
-P_REFRESHDIR=$3
-P_DBCONN="$4"
-P_LOGDIR=$5
+P_DC=$3
+P_REFRESHDIR=$4
+P_DBCONN="$5"
+P_LOGDIR=$6
 
 # load common and env params
 . ./common.sh
