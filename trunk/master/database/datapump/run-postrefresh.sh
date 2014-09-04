@@ -12,11 +12,49 @@ P_LOGDIR=$5
 S_REMOTE_HOSTLOGIN=
 S_REMOTE_ROOT=
 S_LOGDIR=
+R_RUNDIR=
 
-function f_execute_all() {
-	S_REMOTE_HOSTLOGIN=$C_ENV_CONFIG_REMOTE_HOSTLOGIN
-	S_REMOTE_ROOT=$C_ENV_CONFIG_REMOTE_ROOT
-	S_LOGDIR=$P_LOGDIR
+function f_execute_preparepostrefresh() {
+	local P_SQLDIR=$1
+	local P_LIVEDIR=$2
+
+	local F_PWD=`pwd`
+	local F_ENVDIR=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment
+	cd $F_ENVDIR
+	. ./setenv.sh $P_ENV.xml
+
+	# generate configuration files using environment parameters
+	./configure.sh -raw -dc $P_DC $F_PWD/$P_SQLDIR $F_PWD/$P_LIVEDIR $P_DB
+	if [ "$?" != "0" ]; then
+		echo error executing configure.sh. Exiting
+		exit 1
+	fi
+
+	S_RUNDIR=$F_PWD/$P_LIVEDIR/$P_DC/$P_DB
+
+	cd $F_PWD
+}
+
+function f_execute_getpostrefresh() {
+	local P_SQLDIR=$1
+	local P_LIVEDIR=$2
+
+	# cleanup
+	rm -rf ./$S_LOGDIR
+	mkdir -p ./$S_LOGDIR
+
+	rm -rf ./$P_SQLDIR
+
+	# copy scripts and helper
+	local F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
+	echo download postrefresh files from $F_SVNPATH ...
+	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $P_SQLDIR
+
+	f_execute_preparepostrefresh $P_SQLDIR $P_LIVEDIR
+}
+
+function f_execute_runpostrefresh() {
+	local P_SQLDIR=$1
 
 	f_execute_cmdres $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "if [ -d $S_REMOTE_ROOT ]; then date > laststartdate.txt; echo ok; fi"
 	if [ "$S_RUNCMDRES" != "ok" ]; then
@@ -24,21 +62,10 @@ function f_execute_all() {
 		exit 1
 	fi
 
-	# cleanup
-	rm -rf ./$S_LOGDIR
-	mkdir -p ./$S_LOGDIR
-
-	F_SQLDIR=postrefresh-sql-$P_DB
-	rm -rf ./$F_SQLDIR
-
-	F_SQLDIR_REMOTE=postrefresh
+	local F_SQLDIR_REMOTE=postrefresh
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $F_SQLDIR_REMOTE"
 
-	# copy scripts and helper
-	F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
-	echo download postrefresh files from $F_SVNPATH ...
-	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $F_SQLDIR
-	scp -r $F_SQLDIR $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE
+	scp -r $R_RUNDIR $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE
 	scp datapump-config.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp import_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
@@ -52,6 +79,18 @@ function f_execute_all() {
 	echo download log files to $F_SQLDIR_REMOTE ...
 	mkdir -p ./$S_LOGDIR
 	scp -r $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE ./$S_LOGDIR
+}
+
+function f_execute_all() {
+	S_REMOTE_HOSTLOGIN=$C_ENV_CONFIG_REMOTE_HOSTLOGIN
+	S_REMOTE_ROOT=$C_ENV_CONFIG_REMOTE_ROOT
+	S_LOGDIR=$P_LOGDIR
+
+	F_SQLDIR=postrefresh-sql-$P_DB
+
+	# copy, setup params, upload and apply
+	f_execute_getpostrefresh $F_SQLDIR/templates $F_SQLDIR/live
+	f_execute_runpostrefresh $F_SQLDIR/live
 }
 
 f_execute_all
