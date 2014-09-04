@@ -299,7 +299,7 @@ function f_local_execute_server() {
 
 	# execute direct for the server only
 	if [ "$GETOPT_DEPLOYRAW" = "yes" ]; then
-		local F_LOCAL_DIR_FROM=$S_CONFIGURE_PREPAREDTEMPLATES
+		local F_LOCAL_DIR_FROM=$P_DIR_TEMPLATES
 		local F_LOCAL_DIR_TO=$P_DIR_LIVE/$DC/$P_SERVER
 
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
