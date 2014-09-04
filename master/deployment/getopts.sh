@@ -67,6 +67,10 @@ while [ "$#" -gt "0" ] && [[ "$1" =~ ^-[a-z] ]]; do
 			export GETOPT_DEPLOYHOT=yes
 			shift 1
 			;;
+		'-raw')
+			export GETOPT_DEPLOYRAW=yes
+			shift 1
+			;;
 		'-cold')
 			export GETOPT_DEPLOYHOT=no
 			shift 1
