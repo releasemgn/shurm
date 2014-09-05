@@ -1,8 +1,8 @@
 #!/bin/sh
 
 P_ENV=$1
-P_DB=$2
-P_DC=$3
+P_DC=$2
+P_DB=$3
 P_REFRESHDIR=$4
 P_DBCONN="$5"
 P_LOGDIR=$6
