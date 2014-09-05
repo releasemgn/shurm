@@ -30,7 +30,7 @@ function f_execute_preparepostrefresh() {
 	mkdir -p $P_LIVEDIR
 
 	# generate configuration files using environment parameters
-	./configure.sh -raw -dc templates $P_DC $P_SQLDIR $P_LIVEDIR $P_DB
+	./configure.sh -raw -dc $P_DC templates $P_SQLDIR $P_LIVEDIR $P_DB
 	if [ "$?" != "0" ]; then
 		echo error executing configure.sh. Exiting
 		exit 1
