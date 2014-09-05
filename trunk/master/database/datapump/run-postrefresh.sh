@@ -26,6 +26,9 @@ function f_execute_preparepostrefresh() {
 	cd $F_ENVDIR
 	. ./setenv.sh $P_ENV.xml
 
+	rm -rf $P_LIVEDIR
+	mkdir -p $P_LIVEDIR
+
 	# generate configuration files using environment parameters
 	./configure.sh -raw -dc $P_DC $F_PWD/$P_SQLDIR $F_PWD/$P_LIVEDIR $P_DB
 	if [ "$?" != "0" ]; then
@@ -43,8 +46,7 @@ function f_execute_getpostrefresh() {
 	local P_LIVEDIR=$2
 
 	# cleanup
-	rm -rf ./$S_LOGDIR
-	mkdir -p ./$S_LOGDIR
+	rm -rf ./$P_SQLDIR
 
 	# copy scripts and helper
 	local F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
@@ -90,7 +92,6 @@ function f_execute_all() {
 	S_LOGDIR=$P_LOGDIR
 
 	F_SQLDIR=postrefresh-sql-$P_DB
-	rm -rf $F_SQLDIR
 	mkdir -p $F_SQLDIR
 
 	# copy, setup params, upload and apply
