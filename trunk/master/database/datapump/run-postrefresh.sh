@@ -30,13 +30,13 @@ function f_execute_preparepostrefresh() {
 	mkdir -p $P_LIVEDIR
 
 	# generate configuration files using environment parameters
-	./configure.sh -raw -dc $P_DC $F_PWD/$P_SQLDIR $F_PWD/$P_LIVEDIR $P_DB
+	./configure.sh -raw -dc $P_DC $P_SQLDIR $P_LIVEDIR $P_DB
 	if [ "$?" != "0" ]; then
 		echo error executing configure.sh. Exiting
 		exit 1
 	fi
 
-	S_RUNDIR=$F_PWD/$P_LIVEDIR/$P_DC/$P_DB
+	S_RUNDIR=$P_LIVEDIR/$P_DC/$P_DB
 	echo S_RUNDIR=$S_RUNDIR
 
 	cd $F_PWD
