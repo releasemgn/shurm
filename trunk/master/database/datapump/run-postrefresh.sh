@@ -37,6 +37,7 @@ function f_execute_preparepostrefresh() {
 	fi
 
 	S_RUNDIR=$F_PWD/$P_LIVEDIR/$P_DC/$P_DB
+	echo S_RUNDIR=$S_RUNDIR
 
 	cd $F_PWD
 }
@@ -91,7 +92,8 @@ function f_execute_all() {
 	S_REMOTE_ROOT=$C_ENV_CONFIG_REMOTE_ROOT
 	S_LOGDIR=$P_LOGDIR
 
-	F_SQLDIR=postrefresh-sql-$P_DB
+	local F_PWD=`pwd`
+	local F_SQLDIR=$F_PWD/postrefresh-sql-$P_DB
 	mkdir -p $F_SQLDIR
 
 	# copy, setup params, upload and apply
