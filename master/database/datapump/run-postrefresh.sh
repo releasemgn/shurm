@@ -7,6 +7,8 @@ P_REFRESHDIR=$4
 P_DBCONN="$5"
 P_LOGDIR=$6
 
+. ../../../etc/config.sh
+
 # load common and env params
 . ./common.sh
 
