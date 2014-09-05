@@ -76,9 +76,10 @@ function f_execute_runpostrefresh() {
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN postrefresh"
 
 	# copy log files
-	echo download log files to $F_SQLDIR_REMOTE ...
+	echo download log files to $S_LOGDIR/$P_REFRESHDIR ...
 	mkdir -p ./$S_LOGDIR
-	scp -r $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE ./$S_LOGDIR
+	rm -rf ./$S_LOGDIR/$P_REFRESHDIR
+	scp -r $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE ./$S_LOGDIR/$P_REFRESHDIR
 }
 
 function f_execute_all() {
@@ -93,6 +94,8 @@ function f_execute_all() {
 	# copy, setup params, upload and apply
 	f_execute_getpostrefresh $F_SQLDIR/templates $F_SQLDIR/live
 	f_execute_runpostrefresh $S_RUNDIR
+
+	rm -rf $F_SQLDIR
 }
 
 f_execute_all
