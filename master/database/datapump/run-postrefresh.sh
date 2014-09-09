@@ -49,7 +49,7 @@ function f_execute_preparefile() {
 		echo -- standard script header
 		echo set define off
 		echo set echo on
-		echo spool $P_FILE.spool append
+		echo spool `basename $P_FILE`.spool append
 		echo select sysdate from dual\;
 		echo ""
 		cat $P_FILE
