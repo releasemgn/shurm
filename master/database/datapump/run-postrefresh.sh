@@ -42,6 +42,23 @@ function f_execute_preparepostrefresh() {
 	cd $F_PWD
 }
 
+function f_execute_preparefile() {
+	local P_FILE=$1
+
+	(
+		echo -- standard script header
+		echo set define off
+		echo set echo on
+		echo spool $P_FILE.spool append
+		echo select sysdate from dual\;
+		echo ""
+		cat $P_FILE
+	) > $P_FILE.copy
+
+	rm -rf $P_FILE
+	mv $P_FILE.copy $P_FILE
+}
+
 function f_execute_getpostrefresh() {
 	local P_SQLDIR=$1
 	local P_LIVEDIR=$2
@@ -53,6 +70,11 @@ function f_execute_getpostrefresh() {
 	local F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
 	echo download postrefresh files from $F_SVNPATH ...
 	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $P_SQLDIR
+
+	local fname
+	for fname in `find $P_SQLDIR -name "*.sql"`; do
+		f_execute_preparefile $fname
+	done
 
 	mkdir -p $P_LIVEDIR
 	f_execute_preparepostrefresh $P_SQLDIR $P_LIVEDIR
