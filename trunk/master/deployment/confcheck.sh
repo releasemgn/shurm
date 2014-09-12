@@ -39,6 +39,10 @@ function f_local_checklists() {
 				echo unexpected variable=$var in $P_CONTEXT. Exiting
 				exit 1
 			fi
+		else
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo variable=$var in $P_CONTEXT - ok
+			fi
 		fi
 	done
 
@@ -51,6 +55,10 @@ function f_local_checklists() {
 			else
 				echo missing variable=$var in $P_CONTEXT. Exiting
 				exit 1
+			fi
+		else
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo variable=$var in $P_CONTEXT - ok
 			fi
 		fi
 	done
