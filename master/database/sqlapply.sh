@@ -103,7 +103,7 @@ function f_local_createrundir() {
 
 	echo sqlapply.sh: copy distributive from $P_SRCDIR to $P_RUNDIR ...
 	if [ "$EXECUTE_LIST" = "" ]; then
-		f_release_runcmd "cd $P_SRCDIR; find . -type f | egrep -v \"(^\\./aligned|^\\./manual)\""
+		f_release_runcmd "if [ -d $P_SRCDIR ]; then cd $P_SRCDIR; find . -type f | egrep -v \"(^\\./aligned|^\\./manual)\"; fi"
 		local F_LIST="$C_RELEASE_CMD_RES"
 
 		for fname in $F_LIST; do
@@ -114,7 +114,7 @@ function f_local_createrundir() {
 		f_sqlidx_getegrepmask "$EXECUTE_LIST" $P_ALIGNEDID
 		local F_GREP="$S_SQL_LISTMASK"
 
-		f_release_runcmd "cd $P_SRCDIR; find . -type f -printf \"%P\\n\" | egrep \"$F_GREP\" | tr \"\\n\" \" \""
+		f_release_runcmd "if [ -d $P_SRCDIR ]; then cd $P_SRCDIR; find . -type f -printf \"%P\\n\" | egrep \"$F_GREP\" | tr \"\\n\" \" \"; fi"
 		F_FILES="$C_RELEASE_CMD_RES"
 
 		if [ "$F_FILES" != "" ]; then
