@@ -113,6 +113,19 @@ function f_execute_all() {
 	S_LOAD_ORACLEDIR=`echo $C_ENV_CONFIG_LOADDIR | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
 	S_LOAD_STAGINGDIR=$C_ENV_CONFIG_STAGINGDIR
 
+	if [ "$S_LOADCONNECTION" = "" ]; then
+		echo "export_helper.sh: invalid C_ENV_CONFIG_CONNECTION. Exiting..."
+		exit 1
+	fi
+	if [ "$S_LOAD_ORACLEDIR" = "" ]; then
+		echo "export_helper.sh: invalid C_ENV_CONFIG_LOADDIR. Exiting..."
+		exit 1
+	fi
+	if [ "$S_LOAD_STAGINGDIR" = "" ]; then
+		echo "export_helper.sh: invalid C_ENV_CONFIG_STAGINGDIR. Exiting..."
+		exit 1
+	fi
+
 	echo "export_helper.sh: execute P_DBCONN=$P_DBCONN, P_CMD=$P_CMD, P_SCHEMA_SET=$P_SCHEMA_SET, S_LOADCONNECTION=$S_LOADCONNECTION, S_LOAD_ORACLEDIR=$S_LOAD_ORACLEDIR, S_LOAD_STAGINGDIR=$S_LOAD_STAGINGDIR ..."
 
 	if [ "$P_CMD" = "exportmeta" ]; then
