@@ -289,6 +289,15 @@ function f_execute_all() {
 	S_CONNECTION=`echo $C_ENV_CONFIG_CONNECTION | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
 	S_LOAD_ORACLEDIR=`echo $C_ENV_CONFIG_LOADDIR | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
 
+	if [ "$S_CONNECTION" = "" ]; then
+		echo "import_helper.sh: invalid C_ENV_CONFIG_CONNECTION. Exiting..."
+		exit 1
+	fi
+	if [ "$S_LOAD_ORACLEDIR" = "" ]; then
+		echo "import_helper.sh: invalid C_ENV_CONFIG_LOADDIR. Exiting..."
+		exit 1
+	fi
+
 	echo "import_helper.sh: execute P_DBCONN=$P_DBCONN, cmd=$P_CMD, P_SCHEMALIST=$P_SCHEMALIST using connection=$S_CONNECTION, S_LOAD_ORACLEDIR=$S_LOAD_ORACLEDIR ..."
 
 	#----------------- import ORACLE METADATA
