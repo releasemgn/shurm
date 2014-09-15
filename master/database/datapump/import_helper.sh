@@ -215,11 +215,15 @@ function f_execute_all_importdatatables() {
 }
 
 function f_execute_all_postrefresh() {
+	echo "`date` - STARTED" > postrefresh.status.log
+
 	local script
 	for script in `find postrefresh -name "*.sql" | sort`; do
 		echo apply script $script ...
 		f_sqlexec $S_CONNECTION $script $script.out
 	done
+
+	echo "`date` - FINISHED" >> postrefresh.status.log
 }
 
 function f_execute_all_executesql() {

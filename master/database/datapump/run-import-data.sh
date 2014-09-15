@@ -45,7 +45,7 @@ function f_wait_finishimportdata() {
 	sleep 5
 	while [ "1" = "1" ]; do
 		F_STATUS=`ssh $S_REMOTE_HOSTLOGIN "cat $S_REMOTE_ROOT/import.status.log | grep FINISHED"`
-		if [ "$F_STATUS" != "" ]; then
+		if [[ "$F_STATUS" =~ "FINISHED" ]]; then
 			echo load process successfully finished
 			return 0
 		fi

@@ -80,6 +80,20 @@ function f_execute_getpostrefresh() {
 	f_execute_preparepostrefresh $P_SQLDIR $P_LIVEDIR
 }
 
+function f_wait_finishpostrefresh() {
+	echo waiting for finish post-refresh process ...
+	sleep 5
+	while [ "1" = "1" ]; do
+		F_STATUS=`ssh $S_REMOTE_HOSTLOGIN "cat $S_REMOTE_ROOT/postrefresh.status.log | grep FINISHED"`
+		if [[ "$F_STATUS" =~ "FINISHED" ]]; then
+			echo post-refresh process successfully finished
+			return 0
+		fi
+
+		sleep 10
+	done
+}
+
 function f_execute_runpostrefresh() {
 	local P_SQLDIR=$1
 
@@ -100,7 +114,10 @@ function f_execute_runpostrefresh() {
 
 	# execute remotedly
 	echo execute post-refresh scripts ...
-	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./import_helper.sh $P_ENV $P_DB $P_DBCONN postrefresh"
+	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "/usr/bin/nohup ./import_helper.sh $P_ENV $P_DB $P_DBCONN postrefresh > import.postrefresh.log 2>&1&"
+
+	# wait postrefresh to finish
+	f_wait_finishpostrefresh
 
 	# copy log files
 	echo download log files to $S_LOGDIR/$P_REFRESHDIR ...
