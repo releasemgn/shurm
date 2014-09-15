@@ -90,10 +90,12 @@ function f_local_postrefresh() {
 	if [ "$P_CMD" = "all" ] || [ "$P_CMD" = "post-refresh" ]; then
 		echo execute - post-refresh ...
 		for pr in $P_POSTREFRESH; do
-			./run-postrefresh.sh $P_ENV $P_DC $P_DB $pr $F_DBCONN_MAIN $F_LOGDIR_POSTREFRESH
-			if [ "$?" != "0" ]; then
-				echo refresh folder $pr - unsuccessfull call run-postrefresh.sh. Exiting
-				exit 1
+			if [ "$GETOPT_SCRIPTFOLDER" = "" ] || [ "$GETOPT_SCRIPTFOLDER" = "$pr" ]; then
+				./run-postrefresh.sh $P_ENV $P_DC $P_DB $pr $F_DBCONN_MAIN $F_LOGDIR_POSTREFRESH
+				if [ "$?" != "0" ]; then
+					echo refresh folder $pr - unsuccessfull call run-postrefresh.sh. Exiting
+					exit 1
+				fi
 			fi
 		done
 	fi
