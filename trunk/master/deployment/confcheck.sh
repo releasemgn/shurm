@@ -92,12 +92,13 @@ function f_local_checkconf_dc() {
 			exit 1
 		fi
 
-		f_env_getdcpropertylist $S_CONFCHECK_BASELINE_DC
-		if [ "$?" != "0" ]; then
+		f_env_getdcstatus $S_CONFCHECK_BASELINE_DC
+		if [ "$C_ENV_STATUS" != "valid" ]; then
 			echo invalid baseline environment=$S_CONFCHECK_BASELINE_ENV dc=$S_CONFCHECK_BASELINE_DC. Exiting
 			exit 1
 		fi
 
+		f_env_getdcpropertylist $S_CONFCHECK_BASELINE_DC
 		echo "$C_ENV_XMLVALUE"
 		exit 0
 	)
@@ -119,12 +120,13 @@ function f_local_checkconf_server() {
 			exit 1
 		fi
 
-		f_env_getserverpropertylist $S_CONFCHECK_BASELINE_DC $S_CONFCHECK_BASELINE_SERVER
-		if [ "$?" != "0" ]; then
+		f_env_getserverstatus $S_CONFCHECK_BASELINE_DC $S_CONFCHECK_BASELINE_SERVER
+		if [ "$C_ENV_STATUS" != "valid" ]; then
 			echo invalid baseline environment=$S_CONFCHECK_BASELINE_ENV dc=$S_CONFCHECK_BASELINE_DC server=$S_CONFCHECK_BASELINE_SERVER. Exiting
 			exit 1
 		fi
 
+		f_env_getserverpropertylist $S_CONFCHECK_BASELINE_DC $S_CONFCHECK_BASELINE_SERVER
 		echo "$C_ENV_XMLVALUE"
 		exit 0
 	)
