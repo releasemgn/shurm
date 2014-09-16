@@ -76,7 +76,7 @@ function f_local_checkconf_env() {
 		echo "$C_ENV_XMLVALUE"
 		exit 0
 	)
-	if [ "$?" != "0" ]; then
+	if [[ "$F_CONFCHECK_PROPLIST" =~ "invalid baseline" ]]; then
 		echo $F_CONFCHECK_PROPLIST
 		exit 1
 	fi
@@ -103,7 +103,7 @@ function f_local_checkconf_dc() {
 		exit 0
 	)
 
-	if [ "$?" != "0" ]; then
+	if [[ "$F_CONFCHECK_PROPLIST" =~ "invalid baseline" ]]; then
 		echo $F_CONFCHECK_PROPLIST
 		exit 1
 	fi
@@ -116,7 +116,7 @@ function f_local_checkconf_server() {
 	local F_CONFCHECK_PROPLIST=$( 
 		. ./setenv.sh $S_CONFCHECK_BASELINE_ENV
 		if [ "$?" != "0" ]; then
-			echo invalid environment=$S_CONFCHECK_BASELINE_ENV. Exiting
+			echo invalid baseline environment=$S_CONFCHECK_BASELINE_ENV. Exiting
 			exit 1
 		fi
 
@@ -131,7 +131,7 @@ function f_local_checkconf_server() {
 		exit 0
 	)
 
-	if [ "$?" != "0" ]; then
+	if [[ "$F_CONFCHECK_PROPLIST" =~ "invalid baseline" ]]; then
 		echo $F_CONFCHECK_PROPLIST
 		exit 1
 	fi
