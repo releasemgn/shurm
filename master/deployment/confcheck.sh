@@ -153,9 +153,9 @@ function f_local_execute_env() {
 		done
 	else
 		if [[ " $S_CONFCHECK_PROPLIST_ENV " =~ " configuration-baseline " ]]; then
-			echo ============================================ check env properties...
 			f_env_getenvpropertyvalue "configuration-baseline"
 			S_CONFCHECK_BASELINE_ENV=$C_ENV_XMLVALUE
+			echo ============================================ check env properties baseline=$S_CONFCHECK_BASELINE_ENV ...
 			f_local_checkconf_env
 		fi
 	fi
@@ -177,9 +177,9 @@ function f_local_execute_dc() {
 	else
 		if [[ " $S_CONFCHECK_PROPLIST_ENV " =~ " configuration-baseline " ]] &&
 		   [[ " $S_CONFCHECK_PROPLIST_DC " =~ " configuration-baseline " ]]; then
-			echo ============================================ check dc=$DC properties...
 			f_env_getdcpropertyvalue $DC "configuration-baseline"
 			S_CONFCHECK_BASELINE_DC=$C_ENV_XMLVALUE
+			echo ============================================ check dc=$DC properties baseline=$S_CONFCHECK_BASELINE_DC ...
 			f_local_checkconf_dc
 		fi
 	fi
@@ -204,9 +204,9 @@ function f_local_execute_server() {
 		if [[ " $S_CONFCHECK_PROPLIST_ENV " =~ " configuration-baseline " ]] &&
 		   [[ " $S_CONFCHECK_PROPLIST_DC " =~ " configuration-baseline " ]] &&
 		   [[ " $S_CONFCHECK_PROPLIST_SERVER " =~ " configuration-baseline " ]]; then
-			echo ============================================ check dc=$DC server=$P_SERVER properties...
 			f_env_getserverpropertyvalue $DC $P_SERVER "configuration-baseline"
 			S_CONFCHECK_BASELINE_SERVER=$C_ENV_XMLVALUE
+			echo ============================================ check dc=$DC server=$P_SERVER properties baseline=$S_CONFCHECK_BASELINE_SERVER...
 			f_local_checkconf_server $P_SERVER
 		fi
 	fi
