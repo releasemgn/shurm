@@ -211,7 +211,7 @@ function f_local_execute_server() {
 		for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
 			if [ "$EXECUTE_NODE" = "" ] || [ "$EXECUTE_NODE" = "$NODE" ]; then
 				echo execute server=$P_SRVNAME node=$NODE...
-				f_local_executenode $P_SRVNAME $F_SERVERTYPE "$hostlogin" $NODE $F_REDIST_ROOTDIR $F_REDIST_DEPLOYDIR "$F_REDIST_CONFLIST"
+				f_local_executenode $P_SRVNAME $F_SERVERTYPE "$hostlogin" $NODE "$F_REDIST_ROOTDIR" "$F_REDIST_DEPLOYDIR" "$F_REDIST_CONFLIST"
 			fi
 			NODE=$(expr $NODE + 1)
 
