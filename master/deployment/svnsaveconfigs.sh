@@ -216,7 +216,7 @@ function f_local_execute_server() {
 			NODE=$(expr $NODE + 1)
 
 			hostloginsvn=${hostlogin/@/-}
-			hostloginsvnconf=`echo "$F_REDIST_CONFLIST " | sed "s/ /$hostloginsvn/g"`
+			hostloginsvnconf=`echo "$F_REDIST_CONFLIST " | sed "s/ /$hostloginsvn /g"`
 			F_REDIST_SAVEITEMS="$F_REDIST_SAVEITEMS $hostloginsvnconf"
 		done
 	fi
