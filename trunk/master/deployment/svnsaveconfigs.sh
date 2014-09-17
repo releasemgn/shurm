@@ -43,9 +43,9 @@ function f_local_executeconfcomp() {
 	echo extract configuraton component=$P_CONFCOMP...
 
 	# define save path
-	local F_SVNSAVE_HOST=`echo $P_HOSTLOGIN | cut -d "@" -f2`
+	local F_HOSTLOGINSVN=${P_HOSTLOGIN/@/-}
 	local F_SVNSAVE_SVNROOT=$C_CONFIG_SOURCE_CFG_LIVEROOTDIR/$C_ENV_ID
-	local F_SVNSAVE_SVNDIR=$DC/$P_SERVER/$P_CONFCOMP@$F_SVNSAVE_HOST
+	local F_SVNSAVE_SVNDIR=$DC/$P_SERVER/$P_CONFCOMP-$F_HOSTLOGINSVN
 
 	local F_SVNSAVE_LOCALDIRLIVE=$S_SVNSAVE_STGPATH/config.live
 	local F_SVNSAVE_LOCALDIRCO=$S_SVNSAVE_STGPATH/config.svn
@@ -63,16 +63,16 @@ function f_local_executeconfcomp() {
 	local F_SVNSTATUS=`svn info $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" 2>&1 | grep -c 'Not a valid URL'`
 	if [ "$F_SVNSTATUS" != "0" ]; then
 		# create directory in svn first
-		svn mkdir --parents $C_CONFIG_SVNOLD_AUTH -m "$C_CONFIG_ADM_TRACKER-0000: create configuration" "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" > /dev/null
+		svn mkdir --parents $C_CONFIG_SVNOLD_AUTH -m "$C_CONFIG_ADM_TRACKER-0000: create configuration" "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR" > /dev/null
 	fi
 
-	svn co $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" "$F_SVNSAVE_LOCALDIRCO" > /dev/null
+	svn co $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR" "$F_SVNSAVE_LOCALDIRCO" > /dev/null
 	if [ $? != 0 ]; then
 		echo "unable to checkout live configuration state. Exiting"
 		exit 1
 	fi
 
-	svn export $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" "$F_SVNSAVE_LOCALDIREXP" > /dev/null
+	svn export $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR" "$F_SVNSAVE_LOCALDIREXP" > /dev/null
 	if [ $? != 0 ]; then
 		echo "unable to export live configuration state. Exiting"
 		exit 1
@@ -89,7 +89,7 @@ function f_local_executeconfcomp() {
 	local fname
 	for fname in $F_SVNSAVE_FLIST; do
 		if [ ! -f "$F_SVNSAVE_LOCALDIRLIVE/$fname" ]; then
-			svn delete $F_SVNSAVE_LOCALDIRCO/$fname@ > /dev/null
+			svn delete $F_SVNSAVE_LOCALDIRCO/$fname > /dev/null
 			rm -rf $F_SVNSAVE_LOCALDIREXP/$fname
 		fi
 	done
@@ -107,7 +107,7 @@ function f_local_executeconfcomp() {
 		f_unix2dos_file $F_SVNSAVE_LOCALDIRCO/$fname
 
 		if [ ! -f "$F_SVNSAVE_LOCALDIREXP/$fname" ]; then
-			svn add --parents $F_SVNSAVE_LOCALDIRCO/$fname@ > /dev/null
+			svn add --parents $F_SVNSAVE_LOCALDIRCO/$fname > /dev/null
 		fi
 	done
 
