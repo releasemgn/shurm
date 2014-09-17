@@ -140,6 +140,10 @@ function f_local_deleteold() {
 	for item in $F_SVNSAVE_EXISTING; do
 		if [[ ! " $P_SAVEITEMS " =~ " $item " ]]; then
 			echo delete obsolete configuration item - $item ...
+			if [[ "$item" =~ "@" ]]; then
+				item="$item@"
+			fi
+
 			svn delete $C_CONFIG_SVNOLD_AUTH $F_SVNSAVE_SVNPATH/$item -m "delete by svnsaveconfigs.sh" > /dev/null
 			if [ "$?" != "0" ]; then
 				echo svn delete failed. Exiting
