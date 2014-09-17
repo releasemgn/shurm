@@ -130,6 +130,25 @@ function f_local_executeconfcomp() {
 	fi
 }
 
+function f_local_deleteold() {
+	local P_PATH=$1
+	local P_SAVEITEMS="$2"
+
+	local F_SVNSAVE_SVNPATH=$C_CONFIG_SOURCE_CFG_LIVEROOTDIR/$C_ENV_ID/$P_PATH
+	local F_SVNSAVE_EXISTING=`svn list $C_CONFIG_SVNOLD_AUTH $F_SVNSAVE_SVNPATH | tr -d "/"`
+	
+	for item in $F_SVNSAVE_EXISTING; do
+		if [[ ! " $P_SAVEITEMS " =~ " $item " ]]; then
+			echo delete obsolete configuration item - $item ...
+			svn delete $C_CONFIG_SVNOLD_AUTH $F_SVNSAVE_SVNPATH/$item > /dev/null
+			if [ "$?" != "0" ]; then
+				echo svn delete failed. Exiting
+				exit 1
+			fi
+		fi
+	done
+}
+
 function f_local_executenode() {
 	local P_SERVER=$1
 	local P_SERVERTYPE=$2
@@ -137,13 +156,10 @@ function f_local_executenode() {
 	local P_NODE=$4
 	local P_ROOTDIR=$5
 	local P_DEPLOYDIR=$6
-
-	# check server has configuration
-	f_env_getserverconflist $DC $P_SERVER
-	local F_REDIST_CONFLIST=$C_ENV_SERVER_CONFLIST
+	local P_REDIST_CONFLIST="$7"
 
 	local confcomp
-	for confcomp in $F_REDIST_CONFLIST; do
+	for confcomp in $P_REDIST_CONFLIST; do
 		if [ "$EXECUTE_COMPONENT_LIST" = "" ] || [[ " $EXECUTE_COMPONENT_LIST " =~ " $confcomp " ]]; then
 			# get destination directory
 			f_env_getserverconfinfo $DC $P_SERVER $confcomp
@@ -177,16 +193,34 @@ function f_local_execute_server() {
 
 	echo ============================================ execute server=$P_SRVNAME...
 
+	# check server has configuration
+	f_env_getserverconflist $DC $P_SRVNAME
+	local F_REDIST_CONFLIST=$C_ENV_SERVER_CONFLIST
+	local F_REDIST_SAVEITEMS=
+
 	# iterate by nodes
-	local NODE=1
-	local hostlogin
-	for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
-		if [ "$EXECUTE_NODE" = "" ] || [ "$EXECUTE_NODE" = "$NODE" ]; then
-			echo execute server=$P_SRVNAME node=$NODE...
-			f_local_executenode $P_SRVNAME $F_SERVERTYPE "$hostlogin" $NODE $F_REDIST_ROOTDIR $F_REDIST_DEPLOYDIR
-		fi
-		NODE=$(expr $NODE + 1)
-	done
+	if [ "$F_REDIST_CONFLIST" != "" ]; then
+		local NODE=1
+		local hostlogin
+		local hostloginsvn
+		local hostloginsvnconf
+		for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
+			if [ "$EXECUTE_NODE" = "" ] || [ "$EXECUTE_NODE" = "$NODE" ]; then
+				echo execute server=$P_SRVNAME node=$NODE...
+				f_local_executenode $P_SRVNAME $F_SERVERTYPE "$hostlogin" $NODE $F_REDIST_ROOTDIR $F_REDIST_DEPLOYDIR "$F_REDIST_CONFLIST"
+			fi
+			NODE=$(expr $NODE + 1)
+
+			hostloginsvn=${hostlogin/@/-}
+			hostloginsvnconf=`echo "$F_REDIST_CONFLIST " | sed "s/ /$hostloginsvn/g"`
+			F_REDIST_SAVEITEMS="$F_REDIST_SAVEITEMS $hostloginsvnconf"
+		done
+	fi
+
+	# delete old
+	if [ "$GETOPT_FORCE" = "yes" ] && [ "$EXECUTE_NODE" = "" ]; then
+		f_local_deleteold $DC/$P_SRVNAME "$F_REDIST_SAVEITEMS"
+	fi
 }
 
 # get server list
@@ -204,6 +238,11 @@ function f_local_executedc() {
 	for server in $F_SERVER_LIST; do
 		f_local_execute_server $server
 	done
+
+	# delete old
+	if [ "$GETOPT_FORCE" = "yes" ] && [ "$SRVNAME_LIST" = "" ]; then
+		f_local_deleteold $DC "$F_SERVER_LIST"
+	fi
 
 	# delete tmp
 	rm -rf $S_SVNSAVE_STGPATH
