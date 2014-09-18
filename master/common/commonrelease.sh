@@ -80,6 +80,7 @@ function f_release_getprojects() {
 
 	# use specific build branch
 	C_RELEASE_PROJECTSET_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildbranch" $C_RELEASE_FNAME`
+	C_RELEASE_PROJECT_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildversion" $C_RELEASE_FNAME`
 }
 
 function f_release_getprojectitems() {
