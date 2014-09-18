@@ -186,10 +186,16 @@ function f_buildall_release() {
 	f_release_getprojects core
 	local F_RELEASE_CORE_TARGETS=$C_RELEASE_TARGETS
 	local F_RELEASE_CORE_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
+	if [ "$F_RELEASE_CORE_BRANCH" = "" ]; then
+		F_RELEASE_CORE_BRANCH=$C_CONFIG_BRANCHNAME
+	fi
 
 	f_release_getprojects war
 	local F_RELEASE_WAR_TARGETS=$C_RELEASE_TARGETS
 	local F_RELEASE_WAR_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
+	if [ "$F_RELEASE_WAR_BRANCH" = "" ]; then
+		F_RELEASE_WAR_BRANCH=$C_CONFIG_BRANCHNAME
+	fi
 
 	mkdir -p $OUTDIR
 	echo FINAL STATUS: > $OUTDIR/build.final.out
