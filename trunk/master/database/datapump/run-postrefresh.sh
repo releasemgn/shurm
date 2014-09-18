@@ -70,6 +70,10 @@ function f_execute_getpostrefresh() {
 	local F_SVNPATH=$C_CONFIG_SVNPATH/releases/$C_CONFIG_PRODUCT/database/refresh/$P_REFRESHDIR
 	echo download postrefresh files from $F_SVNPATH ...
 	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $P_SQLDIR
+	if [ "$?" != "0" ]; then
+		echo "svn export $C_CONFIG_SVNAUTH - unable to export. Exiting"
+		exit 1
+	fi
 
 	local fname
 	for fname in `find $P_SQLDIR -name "*.sql"`; do
