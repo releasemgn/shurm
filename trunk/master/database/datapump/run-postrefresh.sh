@@ -71,7 +71,7 @@ function f_execute_getpostrefresh() {
 	echo download postrefresh files from $F_SVNPATH ...
 	svn export $C_CONFIG_SVNAUTH --no-auth-cache $F_SVNPATH $P_SQLDIR
 	if [ "$?" != "0" ]; then
-		echo "svn export $C_CONFIG_SVNAUTH - unable to export. Exiting"
+		echo "svn export $F_SVNPATH - unable to export. Exiting"
 		exit 1
 	fi
 
