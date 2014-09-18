@@ -29,6 +29,7 @@ mkdir -p $OUTDIR
 function f_local_get_projectitems() {
 	local P_MODULETYPE=$1
 	local P_MODULELIST="$2"
+	local P_USEVERSION=$3
 
 	local module
 	local F_DEFAULTMODULELIST=
@@ -47,6 +48,10 @@ function f_local_get_projectitems() {
 		# get module dist items in release.xml if any
 		f_release_getprojectinfo $P_MODULETYPE $module
 		F_MODULEVERSION=$C_RELEASE_PROJECT_VERSION
+
+		if [ "$F_MODULEVERSION" = "" ]; then
+			F_MODULEVERSION=$P_USEVERSION
+		fi
 
 		f_release_getprojectitems $P_MODULETYPE $module
 		F_MODULEITEMS="$C_RELEASE_ITEMS"
@@ -94,6 +99,7 @@ function f_local_getall_release() {
 	if [ "$MODULE" = "core" ] || [ "$MODULE" = "" ]; then
 		f_release_getprojects core
 		local F_RELEASE_CORE_TARGETS=$C_RELEASE_TARGETS
+		local F_RELEASE_CORE_VERSION=$C_RELEASE_PROJECT_VERSION
 
 		if [ "$F_RELEASE_CORE_TARGETS" != "" ]; then
 			echo GET RELEASE CORE TARGETS=$F_RELEASE_CORE_TARGETS, processid=$$...
@@ -103,7 +109,7 @@ function f_local_getall_release() {
 				MODULELIST=$MODULEPROJECTS
 			fi
 
-			f_local_get_projectitems core "$MODULELIST"
+			f_local_get_projectitems core "$MODULELIST" $F_RELEASE_CORE_VERSION
 		fi
 	fi
 
