@@ -81,7 +81,7 @@ function f_local_get_projectitems() {
 
 	if [ "$F_DEFAULTMODULELIST" != "" ] || [ "$P_MODULELIST" = "all" ]; then		
 		echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"...
-		./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS"
+		./getall.sh $VERSIONDIR $TAG_GETALL $P_MODULETYPE "$F_DEFAULTMODULELIST" "$F_DEFAULTDISTITEMS" $P_USEVERSION
 	fi
 }
 
