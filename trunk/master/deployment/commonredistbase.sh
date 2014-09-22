@@ -191,11 +191,8 @@ function f_redist_getdiritems() {
 
 		else
 			C_REDIST_DIRITEMS_BINARY="$C_REDIST_DIRITEMS_BINARY $x"
-			if [[ "$x" =~ ^[0-9] ]]; then
-				x=`echo $x | sed "s/^[0-9.]*-//"`
-				y=`echo $x | sed -r "s/([^.]*)/\\1-[0-9]*[0-9]/"`
-			fi
-			C_REDIST_DIRITEMS_MASKEDBINARY="$C_REDIST_DIRITEMS_MASKEDBINARY $x *[0-9]-$x $y"
+			f_splititem $x
+			C_REDIST_DIRITEMS_MASKEDBINARY="$C_REDIST_DIRITEMS_MASKEDBINARY $S_COMMON_ITEMMASKS"
 			C_REDIST_DIRITEMS_ISEMPTY=false
 		fi
 	done
@@ -225,11 +222,8 @@ function f_redist_getdeployfilename() {
 		if [ "$P_DEPLOYTYPE" = "links-multidir" ]; then
 			C_DISTR_DEPLOYFINALNAME="$C_DISTR_DEPLOYBASENAME.war"
 		else
-			if [[ "$C_DISTR_OPTIONS" =~ "N" ]]; then
-				C_DISTR_DEPLOYFINALNAME="$C_DISTR_DEPLOYBASENAME.war"
-			else
-				C_DISTR_DEPLOYFINALNAME="$P_RELEASE-$C_DISTR_DEPLOYBASENAME.war"
-			fi
+			f_versionitem $C_DISTR_DEPLOYVERSION $C_DISTR_DEPLOYBASENAME ".war" $P_RELEASE 
+			C_DISTR_DEPLOYFINALNAME=$S_COMMON_ITEMFULL
 		fi
 		C_DISTR_STATICPREFIX=$S_REDIST_ARCHIVE_TYPE_CHILD
 
@@ -238,14 +232,12 @@ function f_redist_getdeployfilename() {
 		C_DISTR_STATICPREFIX=$S_REDIST_ARCHIVE_TYPE_PGUSTATIC
 
 	elif [ "$C_DISTR_TYPE" = "binary" ]; then
-		C_DISTR_DEPLOYFINALNAME="$C_DISTR_DEPLOYBASENAME$C_DISTR_EXT"
-
 		if [ "$P_DEPLOYTYPE" = "links-multidir" ]; then
+			C_DISTR_DEPLOYFINALNAME="$C_DISTR_DEPLOYBASENAME$C_DISTR_EXT"
 			C_DISTR_DEPLOYFINALNAME="$C_DISTR_DEPLOYFINALNAME"
 		else
-			if [[ ! "$C_DISTR_OPTIONS" =~ "N" ]]; then
-				C_DISTR_DEPLOYFINALNAME=$P_RELEASE-$C_DISTR_DEPLOYFINALNAME
-			fi
+			f_versionitem $C_DISTR_DEPLOYVERSION $C_DISTR_DEPLOYBASENAME "$C_DISTR_EXT" $P_RELEASE 
+			C_DISTR_DEPLOYFINALNAME=$S_COMMON_ITEMFULL
 		fi
 	else
 		echo f_redist_getdeployfilename: unknown C_DISTR_TYPE=$C_DISTR_TYPE. Exiting
