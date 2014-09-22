@@ -61,7 +61,7 @@ function f_local_executenode() {
 	local P_HOSTLOGIN="$2"
 	local P_NODE=$3
 
-	echo redist info app=$P_SERVER node=$P_NODE, host=$P_HOSTLOGIN...
+	echo redist info app=$P_SERVER node=$P_NODE, host=$P_HOSTLOGIN, release=$SRCVERSIONDIR ...
 	echo $P_HOSTLOGIN: ============================================ redist info
 
 	f_local_executenode_redisttype $P_SERVER $P_HOSTLOGIN "deploy" "deploy.backup"
