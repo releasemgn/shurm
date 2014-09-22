@@ -396,7 +396,7 @@ function f_splititem() {
 	elif [[ "$P_NAME" =~ -[0-9.]+\. ]]; then
 		F_NAME=`echo $P_NAME | sed "s/-[0-9.]*\././"`
 
-	elif [[ "$P_NAME" =~ ##[0-9.]+\. ]]; then
+	elif [[ "$P_NAME" =~ \#\#[0-9.]+\. ]]; then
 		F_NAME=`echo $P_NAME | sed "s/##[0-9.]*\././"`
 
 	else
