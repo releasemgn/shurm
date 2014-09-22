@@ -428,7 +428,7 @@ function f_versionitem() {
 		S_COMMON_ITEMFULL="$P_BASE##$P_VERSION$P_EXT"
 
 	else
-		echo "f_versionitem: unknown version type=$P_VTYPE. Exiting
+		echo "f_versionitem: unknown version type=$P_VTYPE. Exiting"
 		exit 1
 	fi
 }
