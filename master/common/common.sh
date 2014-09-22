@@ -381,3 +381,29 @@ function f_aligned_getidbyname() {
 		fi
 	fi
 }
+
+S_COMMON_ITEMBASE=
+S_COMMON_ITEMEXT=
+S_COMMON_ITEMMASKS=
+
+function f_splititem() {
+	local P_NAME=$1
+
+	local F_NAME	
+	if [[ "$P_NAME" =~ ^[0-9.]+- ]]; then
+		F_NAME=`echo $P_NAME | sed "s/[0-9.]*-//"`
+
+	elif [[ "$P_NAME" =~ -[0-9.]+. ]]; then
+		F_NAME=`echo $P_NAME | sed "s/-[0-9.]*\././"`
+
+	elif [[ "$P_NAME" =~ ##[0-9.]+. ]]; then
+		F_NAME=`echo $P_NAME | sed "s/##[0-9.]*\././"`
+
+	else
+		F_NAME=$P_NAME
+	fi
+
+	S_COMMON_ITEMBASE=${F_NAME%.*}
+	S_COMMON_ITEMEXT=${F_NAME##*.}
+	S_COMMON_ITEMMASKS="$S_COMMON_ITEMBASE.$S_COMMON_ITEMEXT [0-9]*[0-9]-$S_COMMON_ITEMBASE.$S_COMMON_ITEMEXT $S_COMMON_ITEMBASE-[0-9]*[0-9].$S_COMMON_ITEMEXT $S_COMMON_ITEMBASE##[0-9]*[0-9].$S_COMMON_ITEMEXT"
+}
