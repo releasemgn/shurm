@@ -407,3 +407,28 @@ function f_splititem() {
 	S_COMMON_ITEMEXT=${F_NAME##*.}
 	S_COMMON_ITEMMASKS="$S_COMMON_ITEMBASE.$S_COMMON_ITEMEXT [0-9]*[0-9]-$S_COMMON_ITEMBASE.$S_COMMON_ITEMEXT $S_COMMON_ITEMBASE-[0-9]*[0-9].$S_COMMON_ITEMEXT $S_COMMON_ITEMBASE##[0-9]*[0-9].$S_COMMON_ITEMEXT"
 }
+
+S_COMMON_ITEMFULL=
+function f_versionitem() {
+	local P_VTYPE=$1
+	local P_BASE=$2
+	local P_EXT=$3
+	local P_VERSION=$4
+
+	if [ "$P_VTYPE" = "default" ] || [ "$P_VTYPE" = "prefix" ]; then
+		S_COMMON_ITEMFULL="$P_VERSION-$P_BASE$P_EXT"
+
+	elif [ "$P_VTYPE" = "none" ]; then
+		S_COMMON_ITEMFULL="$P_BASE$P_EXT"
+
+	elif [ "$P_VTYPE" = "middash" ]; then
+		S_COMMON_ITEMFULL="$P_BASE-$P_VERSION$P_EXT"
+
+	elif [ "$P_VTYPE" = "midpound" ]; then
+		S_COMMON_ITEMFULL="$P_BASE##$P_VERSION$P_EXT"
+
+	else
+		echo "f_versionitem: unknown version type=$P_VTYPE. Exiting
+		exit 1
+	fi
+}
