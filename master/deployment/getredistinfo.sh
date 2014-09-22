@@ -111,7 +111,7 @@ function f_local_execute_all() {
 	SRCVERSIONDIR=$C_RELEASE_DISTRID
 
 	# resdist all std binaries (except for windows-based)
-	echo getredistinfo.sh: check distribution package in staging area...
+	echo getredistinfo.sh: check distribution package in staging area release=$SRCVERSIONDIR ...
 
 	# execute datacenter
 	f_local_executedc
