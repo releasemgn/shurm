@@ -347,7 +347,7 @@ function f_release_findfile() {
 	local P_XBASENAME=$2
 	local P_XEXTENTION=$3
 
-	f_release_runcmd "if [ -d "$P_SRCDIR" ]; then cd $P_SRCDIR; find . -maxdepth 1 -type f -name \"*$P_XEXTENTION\" | egrep \"./$P_XBASENAME$P_XEXTENTION|./.*[0-9]-$P_XBASENAME$P_XEXTENTION|./$P_XBASENAME-[0-9].*$P_XEXTENTION||./$P_XBASENAME##[0-9].*$P_XEXTENTION\"; fi"
+	f_release_runcmd "if [ -d "$P_SRCDIR" ]; then cd $P_SRCDIR; find . -maxdepth 1 -type f -name \"*$P_XEXTENTION\" | egrep \"./$P_XBASENAME$P_XEXTENTION|./.*[0-9]-$P_XBASENAME$P_XEXTENTION|./$P_XBASENAME-[0-9].*$P_XEXTENTION|./$P_XBASENAME##[0-9].*$P_XEXTENTION\"; fi"
 	C_RELEASE_FINDFILE_NAME=$C_RELEASE_CMD_RES
 
 	local F_LOCAL_COUNT=`echo "$C_RELEASE_FINDFILE_NAME" | wc -l`
