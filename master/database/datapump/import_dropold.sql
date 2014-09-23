@@ -81,7 +81,8 @@ drop table tmp_savetablespaceinfo;
 create table tmp_savetablespaceinfo as
 SELECT a.TABLESPACE_NAME , c.FILE_NAME
 FROM 
-	( SELECT DISTINCT TABLESPACE_NAME AS TABLESPACE_NAME FROM dba_extents a WHERE owner IN ( @SCHEMA_LIST@ ) ) a ,
+	( SELECT DISTINCT TABLESPACE_NAME AS TABLESPACE_NAME FROM dba_extents a WHERE owner IN ( @SCHEMA_LIST@ ) union 
+		SELECT TABLESPACE_NAME FROM DBA_TABLESPACES WHERE REPLACE( TABLESPACE_NAME , '_DB' , '' ) in ( @SCHEMA_LIST@ ) ) a ,
 	DBA_DATA_FILES c 
 WHERE
 	a.TABLESPACE_NAME = c.TABLESPACE_NAME and  
@@ -90,6 +91,10 @@ WHERE
 		FROM dba_extents b 
 		WHERE b.TABLESPACE_NAME = a.TABLESPACE_NAME AND b.owner NOT IN ( @SCHEMA_LIST@ )
 	);
+
+union
+
+
 
 -- drop users
 begin
