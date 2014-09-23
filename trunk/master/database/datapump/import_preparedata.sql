@@ -17,7 +17,7 @@ declare
 
 		-- disable all constraints
 		for rec in ( select CONSTRAINT_NAME from dba_constraints WHERE owner = p_schema and table_name = p_table ) loop
-  			p_execute_immediate( 'alter table ' || p_schema || '.' || p_table || ' disable constraint ' || rec.CONSTRAINT_NAME || ' cascade' );
+  			p_execute_immediate( 'alter table ' || p_schema || '.' || p_table || ' disable constraint "' || rec.CONSTRAINT_NAME || '" cascade' );
 		end loop;
 
 		-- disable all indexes

@@ -41,7 +41,7 @@ declare
 				order by 4 ) loop
 			begin
 				execute immediate 'alter table ' || p_schema || '.' || rec.table_name || 
-					' modify constraint ' || rec.constraint_name || ' enable novalidate';
+					' modify constraint "' || rec.constraint_name || '" enable novalidate';
 				insert into system.admindb_finishobj ( oschema , otype , oname , status ) values ( p_schema , 'CONSTRAINT' , rec.table_name || '.' || rec.constraint_name , 'Y' );
 			exception when others then
 				l_emesg := SQLERRM;
