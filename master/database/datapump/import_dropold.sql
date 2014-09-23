@@ -92,10 +92,6 @@ WHERE
 		WHERE b.TABLESPACE_NAME = a.TABLESPACE_NAME AND b.owner NOT IN ( @SCHEMA_LIST@ )
 	);
 
-union
-
-
-
 -- drop users
 begin
 	for rec in (
