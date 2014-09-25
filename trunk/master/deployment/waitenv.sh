@@ -38,7 +38,8 @@ function f_local_execute_server() {
 	if [ "$C_ENV_SERVER_TYPE" = "service" ]; then
 		f_process_waitall_service $DC $P_SRVNAME $C_ENV_SERVER_SERVICENAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$NODE_LIST"
 		
-	elif [ "$C_ENV_SERVER_TYPE" = "generic" ] || [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ]; then
+	elif [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
+		[ "$C_ENV_SERVER_TYPE" = "generic.command" ]; then
 		f_process_waitall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST"
 
 	fi
