@@ -73,8 +73,8 @@ function f_local_move_errors() {
 
 	echo "moving $P_PATH to errors folder ..."
 
-	local F_ITEMBASE=`basename $P_PATH`
-	local F_ITEMDIR=`dirname $P_PATH`
+	local F_ITEMBASE=`basename "$P_PATH"`
+	local F_ITEMDIR=`dirname "$P_PATH"`
 
 	local F_SVNPATH=$P_PATH
 	if [ "$P_ALIGNEDNAME" != "common" ]; then
