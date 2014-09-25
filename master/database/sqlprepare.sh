@@ -63,7 +63,7 @@ function f_local_cp_sql() {
 function f_local_move_errors() {
 	local P_ALIGNEDNAME=$1
 	local P_ALIGNEDID=$2
-	local P_PATH=$3
+	local P_PATH="$3"
 	local P_COMMENT=$4
 	
 	if [ "$GETOPT_MOVE_ERRORS" != "yes" ] || [ "$SQL_SVNRELEASEURL" = "" ]; then
@@ -78,23 +78,23 @@ function f_local_move_errors() {
 
 	local F_SVNPATH=$P_PATH
 	if [ "$P_ALIGNEDNAME" != "common" ]; then
-		F_SVNPATH=$P_ALIGNEDNAME/$P_PATH
+		F_SVNPATH="$P_ALIGNEDNAME/$P_PATH"
 	fi
 
 	# drop old in svn if any
 	F_SVNSTATUS=`svn info $C_CONFIG_SVNOLD_AUTH "$SQL_SVNRELEASEURL/errors/$F_SVNPATH" 2>&1 | grep -c 'Not a valid URL'`
 	if [ "$F_SVNSTATUS" = "0" ]; then
-		svn delete $C_CONFIG_SVNOLD_AUTH -m "delete before adding the same" $SQL_SVNRELEASEURL/errors/$F_SVNPATH > /dev/null
+		svn delete $C_CONFIG_SVNOLD_AUTH -m "delete before adding the same" "$SQL_SVNRELEASEURL/errors/$F_SVNPATH" > /dev/null
 	fi
 
 	# ensure dir created
 	F_SVNSTATUS=`svn info $C_CONFIG_SVNOLD_AUTH "$SQL_SVNRELEASEURL/errors/$F_ITEMDIR" 2>&1 | grep -c 'Not a valid URL'`
 	if [ "$F_SVNSTATUS" != "0" ]; then
-		svn mkdir $C_CONFIG_SVNOLD_AUTH -m "create parent dir before move" --parents $SQL_SVNRELEASEURL/errors/$F_ITEMDIR > /dev/null
+		svn mkdir $C_CONFIG_SVNOLD_AUTH -m "create parent dir before move" --parents "$SQL_SVNRELEASEURL/errors/$F_ITEMDIR" > /dev/null
 	fi
 
 	# move item
-	svn rename $C_CONFIG_SVNOLD_AUTH -m "$P_COMMENT" $SQL_SVNRELEASEURL/sql/$F_SVNPATH $SQL_SVNRELEASEURL/errors/$F_SVNPATH > /dev/null
+	svn rename $C_CONFIG_SVNOLD_AUTH -m "$P_COMMENT" "$SQL_SVNRELEASEURL/sql/$F_SVNPATH" "$SQL_SVNRELEASEURL/errors/$F_SVNPATH" > /dev/null
 }
 
 function f_local_cp_dir() {
@@ -319,8 +319,8 @@ function f_local_check_dir() {
 		fi
 
 		if [ "$F_ONEFAILED" = "yes" ]; then
-			F_ONEFAILED_MSG=${F_ONEFAILED_MSG:2}
-			f_local_move_errors $P_ALIGNEDNAME $P_ALIGNEDID $x "$F_ONEFAILED_MSG"
+			F_ONEFAILED_MSG="${F_ONEFAILED_MSG#; }"
+			f_local_move_errors $P_ALIGNEDNAME $P_ALIGNEDID "$x" "$F_ONEFAILED_MSG"
 			S_CHECK_FAILED=yes
 		fi
 	done
