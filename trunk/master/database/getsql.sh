@@ -39,7 +39,7 @@ function f_execute_checkparams() {
 		APP_VERSION_SQL_MAJOR=$C_CONFIG_RELEASE_GROUPFOLDER
 	fi
 
-	if [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+	if [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 		if [[ "$APP_VERSION_SQL" =~ ^major-release- ]] || [[ "$APP_VERSION_SQL" =~ ^prod-patch- ]]; then
 			S_RELEASE=`echo $APP_VERSION_SQL | cut -d "-" -f3`
 
@@ -63,10 +63,9 @@ function f_execute_checkparams() {
 			exit 1
 		fi
 
-		# including subfolders: sql, errors, pending...
-		S_SQL_SRCDIR=$C_CONFIG_SOURCE_RELEASEROOTDIR/$APP_VERSION_SQL_MAJOR/$APP_VERSION_SQL 
+		S_SQL_SRCDIR=$C_CONFIG_SOURCE_RELEASEROOTDIR/$APP_VERSION_SQL_MAJOR/$APP_VERSION_SQL
 	else
-		S_RELEASE=$GETOPT_EXECUTEPENDING
+		S_RELEASE=$GETOPT_SCRIPTFOLDER
 		S_SQL_SRCDIR=$C_CONFIG_SOURCE_SQL_GLOBALPENDING/$APP_VERSION_SQL
 	fi
 }
@@ -79,7 +78,7 @@ function f_execute_all() {
 	rm -rf $S_GETSQL_TMP
 	mkdir -p $S_GETSQL_TMP
 
-	svn export $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR $S_GETSQL_TMP/$APP_VERSION_SQL > /dev/null
+	svn export $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR/sql $S_GETSQL_TMP/$APP_VERSION_SQL > /dev/null
 	if [ $? -ne 0 ]; then
 		echo getsql.sh: unsuccessful svn export. Exiting
 		exit 1
