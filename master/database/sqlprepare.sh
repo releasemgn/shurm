@@ -522,7 +522,7 @@ function f_local_split_uddi_comment() {
 
 # Check if endpoints are specified
 function f_local_check_uddi_endpoints() {
-	if [ "$UDDI_UAT" = "" ] || ([ "$UDDI_PROD" = "" ] && [ "$GETOPT_EXECUTEPENDING" = "" ]); then
+	if [ "$UDDI_UAT" = "" ] || ([ "$UDDI_PROD" = "" ] && [ "$GETOPT_SCRIPTFOLDER" = "" ]); then
 		return 1 # error
 	fi
 	return 0
@@ -567,11 +567,11 @@ function f_local_process_uddi_endpoints() {
 				echo "sqlprepare.sh: invalid UDDI data: key=$UDDI_KEY, UDDI_UAT=$UDDI_UAT, UDDI_PROD=$UDDI_PROD"
 			fi
 
-			if [ "$UDDI_UAT" != "" ] || [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+			if [ "$UDDI_UAT" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 				echo 	juddi.j3_setup.set_endpoint\( \'$UDDI_KEY\' , \'$UDDI_UAT\' \)\; >> $FNAME_UAT
 			fi
 
-			if [ "$UDDI_PROD" != "" ] || [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+			if [ "$UDDI_PROD" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 				echo 	juddi.j3_setup.set_endpoint\( \'$UDDI_KEY\' , \'$UDDI_PROD\' \)\; >> $FNAME_PROD
 			fi
 		fi
@@ -584,7 +584,7 @@ function f_local_process_uddi_endpoints() {
 		return 1
 	fi
 
-	if [ `cat $FNAME_PROD | grep -c "''"` -ne 0 ] && [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+	if [ `cat $FNAME_PROD | grep -c "''"` -ne 0 ] && [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 		echo $FNAME_PROD: not all PROD endpoints are filled in...
 		S_CHECK_FAILED=yes
 		return 1
@@ -649,7 +649,7 @@ function f_local_process_uddi_smevattrs() {
 		return 1
 	fi
 
-	if [ `cat $FNAME_PROD | grep set_endpoint_smev_attributes | grep -c "''"` -ne 0 ] && [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+	if [ `cat $FNAME_PROD | grep set_endpoint_smev_attributes | grep -c "''"` -ne 0 ] && [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 		echo $FNAME_PROD: not all PROD attrs are filled in...
 		S_CHECK_FAILED=yes
 		return 1
@@ -929,12 +929,12 @@ function f_local_execute_all() {
 	SQL_VERSION_PREPARED=`pwd`
 	cd $F_PREPARE_SAVEDIR
 
-	if [ ! -d "$SQL_VERSION_ORIGINAL/sql" ]; then
-		echo sql folder does not exist - $SQL_VERSION_ORIGINAL/sql. Exiting
+	if [ ! -d "$SQL_VERSION_ORIGINAL" ]; then
+		echo sql folder does not exist - $SQL_VERSION_ORIGINAL. Exiting
 		exit 1
 	fi
 
-	cd $SQL_VERSION_ORIGINAL/sql
+	cd $SQL_VERSION_ORIGINAL
 
 	# get aligned
 	local F_ALIGNEDDIRLIST=

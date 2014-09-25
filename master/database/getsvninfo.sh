@@ -25,7 +25,7 @@ function f_execute_checkparams() {
 		APP_VERSION_SQL_MAJOR=$C_CONFIG_RELEASE_GROUPFOLDER
 	fi
 
-	if [ "$GETOPT_EXECUTEPENDING" = "" ]; then
+	if [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
 		S_RELEASE=`echo $APP_VERSION_SQL | cut -d "-" -f3`
 		if [ "$S_RELEASE" = "" ]; then
 			echo getsql.sh: invalid APP_VERSION_SQL parameter format
@@ -35,7 +35,7 @@ function f_execute_checkparams() {
 		# including subfolders: sql, errors, pending...
 		S_SQL_SRCDIR=$C_CONFIG_SOURCE_RELEASEROOTDIR/$APP_VERSION_SQL_MAJOR/$APP_VERSION_SQL 
 	else
-		S_RELEASE=$GETOPT_EXECUTEPENDING
+		S_RELEASE=$GETOPT_SCRIPTFOLDER
 		S_SQL_SRCDIR=$C_CONFIG_SOURCE_SQL_GLOBALPENDING/$APP_VERSION_SQL
 	fi
 }
