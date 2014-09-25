@@ -153,7 +153,8 @@ function f_local_execute_server() {
 	local F_REDIST_DEPLOYDIR=$C_ENV_SERVER_DEPLOYPATH
 
 	local F_SERVERTYPE
-	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "service" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ]; then
+	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "service" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
+		[ "$C_ENV_SERVER_TYPE" = "generic.command" ]; then
 		F_SERVERTYPE=generic
 	else
 		echo ignore server=$P_SERVER, type=$C_ENV_SERVER_TYPE

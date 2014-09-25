@@ -39,7 +39,8 @@ function f_local_execute_server_single() {
 
 	# do not start normally
 	local F_START_RESULT=1
-	if [ "$C_ENV_SERVER_TYPE" = "generic" ] || [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ]; then
+	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
+		( [ "$C_ENV_SERVER_TYPE" = "generic.command" ] && [ "$GETOPT_FORCE" = "yes" ] ); then
 		f_cluster_startall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST" $C_ENV_SERVER_STARTTIME
 		F_START_RESULT=$?
 

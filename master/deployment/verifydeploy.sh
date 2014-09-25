@@ -49,11 +49,10 @@ function f_local_getdeployitems() {
 }
 
 function f_local_check_fileset() {
-	local P_SERVERTYPE=$1
-	local P_HOSTLOGIN=$2
-	local P_DIST_ACTIVE_ITEMS="$3"
-	local P_DIST_OBSOLETE_ITEMS="$4"
-	local P_DSTPATH=$5
+	local P_HOSTLOGIN=$1
+	local P_DIST_ACTIVE_ITEMS="$2"
+	local P_DIST_OBSOLETE_ITEMS="$3"
+	local P_DSTPATH=$4
 
 	# get current set
 	f_run_cmd $P_HOSTLOGIN "ls $P_DSTPATH | tr \" \" \"\n\" | grep \"[1-9]\.[1-9]\" | tr \"\n\" \" \""
@@ -127,11 +126,10 @@ function f_local_check_fileset() {
 
 function f_local_executelocation() {
 	local P_SERVER=$1
-	local P_SERVERTYPE=$2
-	local P_HOSTLOGIN=$3
-	local P_NODE=$4
-	local P_ROOTDIR=$5
-	local P_LOCATION=$6
+	local P_HOSTLOGIN=$2
+	local P_NODE=$3
+	local P_ROOTDIR=$4
+	local P_LOCATION=$5
 
 	# get components by location
 	f_env_getlocationinfo $DC $P_SERVER $P_LOCATION
@@ -161,21 +159,15 @@ function f_local_executelocation() {
 		DIST_ITEMS=`echo "$DIST_ITEMS" | tr " " "\n" | sort -u | tr "\n" " "`
 		DIST_OBSOLETE_ITEMS=`echo "$DIST_OBSOLETE_ITEMS" | tr " " "\n" | sort -u | tr "\n" " "`
 
-		f_local_check_fileset $P_SERVERTYPE $P_HOSTLOGIN "$DIST_ITEMS" "$DIST_OBSOLETE_ITEMS" $F_FINALPATH
+		f_local_check_fileset $P_HOSTLOGIN "$DIST_ITEMS" "$DIST_OBSOLETE_ITEMS" $F_FINALPATH
 	fi
 }
 
 function f_local_executenode() {
 	local P_SERVER=$1
-	local P_SERVERTYPE=$2
-	local P_HOSTLOGIN=$3
-	local P_NODE=$4
-	local P_ROOTDIR=$5
-
-	if [ "$P_SERVERTYPE" != "generic" ]; then
-		echo "verifydeploy.sh: P_SERVERTYPE=$P_SERVERTYPE is not supported currently"
-		return 0
-	fi
+	local P_HOSTLOGIN=$2
+	local P_NODE=$3
+	local P_ROOTDIR=$4
 
 	echo "============================================ verify app=$P_SERVER node=$P_NODE, host=$P_HOSTLOGIN..."
 
@@ -187,7 +179,7 @@ function f_local_executenode() {
 	local location
 	for location in $F_ENV_LOCATIONS; do
 		echo execute location=$location...
-		f_local_executelocation $P_SERVER $P_SERVERTYPE $P_HOSTLOGIN $P_NODE $P_ROOTDIR $location
+		f_local_executelocation $P_SERVER $P_HOSTLOGIN $P_NODE $P_ROOTDIR $location
 	done
 }
 
@@ -200,15 +192,17 @@ function f_local_execute_server() {
 	echo verify server=$P_SRVNAME...
 
 	# iterate by nodes
-	if [ "$C_ENV_SERVER_DEPLOYTYPE" != "manual" ]; then
-		local NODE=1
-		local hostlogin
-		for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
-			echo verify server=$P_SRVNAME node=$NODE...
-			f_local_executenode $P_SRVNAME generic "$hostlogin" $NODE $F_REDIST_ROOTDIR
-			NODE=$(expr $NODE + 1)
-		done
+	if [ "$C_ENV_SERVER_DEPLOYTYPE" = "manual" ]; then
+		return 0
 	fi
+
+	local NODE=1
+	local hostlogin
+	for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
+		echo verify server=$P_SRVNAME node=$NODE...
+		f_local_executenode $P_SRVNAME "$hostlogin" $NODE $F_REDIST_ROOTDIR
+		NODE=$(expr $NODE + 1)
+	done
 }
 
 # get server list
