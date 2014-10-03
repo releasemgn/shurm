@@ -172,7 +172,7 @@ function f_local_addenvfolder() {
 
 	cd $F_SAVEDIR
 
-	S_FOLDERLIST="$S_FOLDERLIST $F_LIVEDIR"
+	S_FOLDERLIST="$S_FOLDERLIST $F_LIVEDIR/$DC/$DB"
 }
 
 function f_local_getenvinfo() {
