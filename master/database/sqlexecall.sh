@@ -161,7 +161,7 @@ function f_local_addenvfolder() {
 
 	# go to environment
 	local F_SAVEDIR=`pwd`
-	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$C_ENV_ID
+	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment
 
 	# generate configuration files using environment parameters
 	./configure.sh -raw -dc $P_DC templates $P_SQLDIR/$F_ENVFOLDER $F_LIVEDIR $DB
