@@ -130,6 +130,51 @@ function f_local_getrelschemalist() {
 	S_RELSCHEMALIST=`echo $F_USESCHEMALIST | tr " " "\n" | sort -u | tr "\n" " "`
 }
 
+function f_local_addenvfolder() {
+	local P_SQLDIR=$1
+
+	if [[ ! "$P_SQLDIR" =~ ^/ ]]; then
+		echo "f_local_addenvfolder: script folder $P_SQLDIR should be absolute path. Exiting"
+		exit 1
+	fi
+
+	local F_ENVFOLDER=
+
+	# never configure prod
+	if [ "$GETOPT_PROD" = "yes" ]; then
+		F_ENVFOLDER=prodonly
+		if [ -d $P_SQLDIR/$F_ENVFOLDER ]; then
+			S_FOLDERLIST="$S_FOLDERLIST $P_SQLDIR/$F_ENVFOLDER"
+		fi
+
+		return 0
+	fi
+
+	# configure uat if any
+	F_ENVFOLDER=uatonly
+	if [ ! -d $P_SQLDIR/$F_ENVFOLDER ]; then
+		return 0
+	fi
+
+	local F_LIVEDIR=$P_SQLDIR/$F_ENVFOLDER.run.$DC.$DB
+	mkdir -p $F_LIVEDIR
+
+	# go to environment
+	local F_SAVEDIR=`pwd`
+	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment/$C_ENV_ID
+
+	# generate configuration files using environment parameters
+	./configure.sh -raw -dc $P_DC templates $P_SQLDIR/$F_ENVFOLDER $F_LIVEDIR $DB
+	if [ "$?" != "0" ]; then
+		echo error executing configure.sh. Exiting
+		exit 1
+	fi
+
+	cd $F_SAVEDIR
+
+	S_FOLDERLIST="$S_FOLDERLIST $F_LIVEDIR"
+}
+
 function f_local_getenvinfo() {
 	S_FOLDERLIST=
 	S_RELSCHEMALIST=
@@ -152,9 +197,11 @@ function f_local_getenvinfo() {
 	S_FOLDERLIST=$SQLDIRECTORY
 
 	if [ -d $SQLDIRECTORY/$F_ENVFOLDER ]; then
-		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/$F_ENVFOLDER"
+		f_local_addenvfolder $SQLDIRECTORY
+		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/$S_ENVFOLDER"
 	fi
 	if [ -d $SQLDIRECTORY/svcrun/$F_ENVFOLDER ]; then
+		f_local_configurefolder $SQLDIRECTORY/$F_ENVFOLDER $SQLDIRECTORY/$F_ENVFOLDER.run
 		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/svcrun/$F_ENVFOLDER"
 	fi
 	if [ -d $SQLDIRECTORY/svcrun ]; then
