@@ -164,7 +164,7 @@ function f_local_addenvfolder() {
 	cd $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/deployment
 
 	# generate configuration files using environment parameters
-	./configure.sh -raw -dc $P_DC templates $P_SQLDIR/$F_ENVFOLDER $F_LIVEDIR $DB
+	./configure.sh -raw -dc $DC templates $P_SQLDIR/$F_ENVFOLDER $F_LIVEDIR $DB
 	if [ "$?" != "0" ]; then
 		echo error executing configure.sh. Exiting
 		exit 1
