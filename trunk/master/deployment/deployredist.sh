@@ -176,7 +176,7 @@ function f_local_executesrvlist() {
 	echo deploy group=$P_DEPLOYGROUP type=$P_TYPE ...
 
 	if [ "$P_TYPE" = "cold" ]; then
-		./stopenv.sh -nomsg -deploygroup $P_DEPLOYGROUP -dc $DC $P_SRVNAME_LIST
+		./stopenv.sh -noforce -nomsg -deploygroup $P_DEPLOYGROUP -dc $DC $P_SRVNAME_LIST
 		if [ $? -ne 0 ]; then
 			echo "deployredist.sh: stopenv.sh failed. Exiting"
 			exit 1
@@ -191,7 +191,7 @@ function f_local_executesrvlist() {
 	fi
 
 	if [ "$P_TYPE" = "cold" ]; then
-		./startenv.sh -nomsg -deploygroup $P_DEPLOYGROUP -dc $DC $P_SRVNAME_LIST
+		./startenv.sh -noforce -nomsg -deploygroup $P_DEPLOYGROUP -dc $DC $P_SRVNAME_LIST
 		if [ $? -ne 0 ]; then
 			echo "deployredist.sh: startenv.sh failed. Exiting"
 			exit 1
