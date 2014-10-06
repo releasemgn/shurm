@@ -389,7 +389,7 @@ function f_local_execute_server_single() {
 		f_local_checkenv_generic $P_SRVNAME "$C_ENV_SERVER_COMPONENT_LIST" "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH"
 
 	elif [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "generic.command" ]; then
-		if [ "$GETOPT_FORCE" = "no" ] && [ "$F_SERVER_TYPE" = "generic.command" ]; then
+		if ( [ "$GETOPT_FORCE" = "no" ] || [ "$SRVNAME_LIST" = "" ] ) && [ "$F_SERVER_TYPE" = "generic.command" ]; then
 			return 1
 		fi
 
