@@ -40,6 +40,10 @@ function f_local_execute_server() {
 		f_process_waitall_service $DC $P_SRVNAME $C_ENV_SERVER_SERVICENAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$NODE_LIST"
 		
 	elif [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "generic.web" ] || [ "$F_SERVER_TYPE" = "generic.command" ]; then
+		if ( [ "$GETOPT_FORCE" = "no" ] || [ "$SRVNAME_LIST" = "" ] ) && [ "$F_SERVER_TYPE" = "generic.command" ]; then
+			return 1
+		fi
+
 		f_process_waitall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST"
 
 	fi

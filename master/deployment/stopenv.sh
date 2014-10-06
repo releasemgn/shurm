@@ -37,7 +37,7 @@ function f_local_execute_server_single() {
 
 	local F_SERVER_TYPE=$C_ENV_SERVER_TYPE
 	if [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "generic.web" ] || [ "$F_SERVER_TYPE" = "generic.command" ]; then
-		if [ "$GETOPT_FORCE" = "no" ] && [ "$F_SERVER_TYPE" = "generic.command" ]; then
+		if ( [ "$GETOPT_FORCE" = "no" ] || [ "$SRVNAME_LIST" = "" ] ) && [ "$F_SERVER_TYPE" = "generic.command" ]; then
 			return 1
 		fi
 
