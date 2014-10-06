@@ -99,11 +99,10 @@ function f_local_executeconfcomp() {
 
 function f_local_executenode() {
 	local P_SERVER=$1
-	local P_SERVERTYPE=$2
-	local P_HOSTLOGIN=$3
-	local P_NODE=$4
-	local P_ROOTDIR=$5
-	local P_DEPLOYDIR=$6
+	local P_HOSTLOGIN=$2
+	local P_NODE=$3
+	local P_ROOTDIR=$4
+	local P_DEPLOYDIR=$5
 
 	# check server has configuration
 	f_env_getserverconflist $DC $P_SERVER
@@ -152,12 +151,13 @@ function f_local_execute_server() {
 	local F_REDIST_ROOTDIR=$C_ENV_SERVER_ROOTPATH
 	local F_REDIST_DEPLOYDIR=$C_ENV_SERVER_DEPLOYPATH
 
-	local F_SERVERTYPE
-	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "service" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
-		[ "$C_ENV_SERVER_TYPE" = "generic.command" ]; then
-		F_SERVERTYPE=generic
+	local F_SERVER_TYPE=$C_ENV_SERVER_TYPE
+	local F_SERVER_CATEGORY=
+	if [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "service" ] || [ "$F_SERVER_TYPE" = "generic.web" ] ||
+		[ "$F_SERVER_TYPE" = "generic.command" ]; then
+		F_SERVER_CATEGORY=generic
 	else
-		echo ignore server=$P_SERVER, type=$C_ENV_SERVER_TYPE
+		echo ignore server=$P_SERVER, type=$F_SERVER_TYPE
 		return 1
 	fi
 
@@ -173,7 +173,7 @@ function f_local_execute_server() {
 	for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
 		if [ "$EXECUTE_NODE" = "" ] || [ "$EXECUTE_NODE" = "$NODE" ]; then
 			echo execute server=$P_SERVER node=$NODE...
-			f_local_executenode $P_SERVER $F_SERVERTYPE "$hostlogin" $NODE $F_REDIST_ROOTDIR $F_REDIST_DEPLOYDIR
+			f_local_executenode $P_SERVER "$hostlogin" $NODE $F_REDIST_ROOTDIR $F_REDIST_DEPLOYDIR
 		fi
 		NODE=$(expr $NODE + 1)
 	done

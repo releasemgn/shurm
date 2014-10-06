@@ -35,15 +35,19 @@ function f_local_execute_server_single() {
 		return 1
 	fi
 
-	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
-		( [ "$C_ENV_SERVER_TYPE" = "generic.command" ] && [ "$GETOPT_FORCE" = "yes" ] ); then
+	local F_SERVER_TYPE=$C_ENV_SERVER_TYPE
+	if [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "generic.web" ] || [ "$F_SERVER_TYPE" = "generic.command" ]; then
+		if [ "$GETOPT_FORCE" = "no" ] && [ "$F_SERVER_TYPE" = "generic.command" ]; then
+			return 1
+		fi
+
 		f_cluster_stopall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST"
 
 	elif [ "$C_ENV_SERVER_TYPE" = "service" ]; then
 		f_cluster_stopall_service $DC $P_SRVNAME "$C_ENV_SERVER_SERVICENAME" "$C_ENV_SERVER_HOSTLOGIN_LIST" "$NODE_LIST"
 
 	else
-		echo server type=$C_ENV_SERVER_TYPE is not supported. Skipped.
+		echo server type=$F_SERVER_TYPE is not supported. Skipped.
 	fi
 }
 
