@@ -155,12 +155,11 @@ function f_local_deleteold() {
 
 function f_local_executenode() {
 	local P_SERVER=$1
-	local P_SERVERTYPE=$2
-	local P_HOSTLOGIN=$3
-	local P_NODE=$4
-	local P_ROOTDIR=$5
-	local P_DEPLOYDIR=$6
-	local P_REDIST_CONFLIST="$7"
+	local P_HOSTLOGIN=$2
+	local P_NODE=$3
+	local P_ROOTDIR=$4
+	local P_DEPLOYDIR=$5
+	local P_REDIST_CONFLIST="$6"
 
 	local confcomp
 	for confcomp in $P_REDIST_CONFLIST; do
@@ -187,12 +186,13 @@ function f_local_execute_server() {
 	local F_REDIST_ROOTDIR=$C_ENV_SERVER_ROOTPATH
 	local F_REDIST_DEPLOYDIR=$C_ENV_SERVER_DEPLOYPATH
 
-	local F_SERVERTYPE
-	if [ "$C_ENV_SERVER_TYPE" = "generic.server" ] || [ "$C_ENV_SERVER_TYPE" = "service" ] || [ "$C_ENV_SERVER_TYPE" = "generic.web" ] ||
+	local F_SERVER_TYPE=$C_ENV_SERVER_TYPE
+	local F_SERVERCATEGORY
+	if [ "$F_SERVER_TYPE" = "generic.server" ] || [ "$F_SERVER_TYPE" = "service" ] || [ "$F_SERVER_TYPE" = "generic.web" ] ||
 		[ "$C_ENV_SERVER_TYPE" = "generic.command" ]; then
-		F_SERVERTYPE=generic
+		F_SERVERCATEGORY=generic
 	else
-		echo ignore server=$P_SRVNAME, type=$C_ENV_SERVER_TYPE
+		echo ignore server=$P_SRVNAME, type=$F_SERVER_TYPE
 		return 1
 	fi
 
@@ -212,7 +212,7 @@ function f_local_execute_server() {
 		for hostlogin in $C_ENV_SERVER_HOSTLOGIN_LIST; do
 			if [ "$EXECUTE_NODE" = "" ] || [ "$EXECUTE_NODE" = "$NODE" ]; then
 				echo execute server=$P_SRVNAME node=$NODE...
-				f_local_executenode $P_SRVNAME $F_SERVERTYPE "$hostlogin" $NODE "$F_REDIST_ROOTDIR" "$F_REDIST_DEPLOYDIR" "$F_REDIST_CONFLIST"
+				f_local_executenode $P_SRVNAME "$hostlogin" $NODE "$F_REDIST_ROOTDIR" "$F_REDIST_DEPLOYDIR" "$F_REDIST_CONFLIST"
 			fi
 			NODE=$(expr $NODE + 1)
 
