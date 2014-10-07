@@ -45,6 +45,49 @@ function f_common_execute_runcmd() {
 	fi
 }
 
+function f_common_execute_runlocal() {
+	local P_SUB=$1
+	local P_DC=$2
+	local P_FUNCTION=$3
+	local P_SERVER_LIST="$4"
+	local P_NODE_LIST="$5"
+	local P_GROUP=$6
+	local P_SERVER=$7
+	local P_NODE=$8
+	local P_HOSTLOGIN=$9
+
+	if [ "$C_EXECUTE_CMD" = "" ]; then
+		echo C_EXECUTE_CMD is not set. Exiting
+		exit 1
+	fi
+
+	if [ "$P_SUB" = "getgroups" ]; then
+		S_EXECUTE_GROUPS=all
+
+	elif [ "$P_SUB" = "getservers" ]; then
+		S_EXECUTE_SERVERS=$P_SERVER_LIST
+
+	elif [ "$P_SUB" = "startserver" ]; then
+		if [ "$C_ENV_SERVER_TYPE" = "generic.windows" ]; then
+			echo "ignore server=$P_EXECUTE_SRVNAME, type=$C_ENV_SERVER_TYPE (windows)"
+			S_EXECUTE_ENABLED=no
+			return 1
+		fi
+
+	elif [ "$P_SUB" = "executenode" ]; then
+		local F_EXECUTE_CMD=${C_EXECUTE_CMD/@hostlogin@/$P_HOSTLOGIN}
+		echo "$F_EXECUTE_CMD..."
+		$F_EXECUTE_CMD
+
+		if [ "$?" != "0" ]; then
+			if [ "$GETOPT_SKIPERRORS" != "yes" ]; then
+				echo "f_common_execute_runlocal: unsuccessful execution. Exiting"
+				exit 1
+			fi
+		fi
+	fi
+}
+
 function f_common_execute_key() {
 	local P_SUB=$1
 	local P_DC=$2
@@ -104,6 +147,9 @@ function f_common_execute_function() {
 # build operations
 		RUNCMD)
 			f_common_execute_runcmd $P_SUB $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
+			;;
+		RUNLOCAL)
+			f_common_execute_runlocal $P_SUB $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
 			;;
 		KEY)
 			f_common_execute_key $P_SUB $P_DC $P_FUNCTION "$P_SERVER_LIST" "$P_NODE_LIST" $P_GROUP $P_SERVER $P_NODE $P_HOSTLOGIN
