@@ -38,12 +38,8 @@ SRVNAME_LIST=$*
 function f_local_executeall() {
 	local F_CMD="scp"
 
-	if [ -d "$P_SRC" ]; then
+	if [ ! -f "$P_SRC" ]; then
 		F_CMD="$F_CMD -r"
-
-	elif [ ! -f "$P_SRC" ]; then
-		echo "scp.sh: cannot find source at $P_SRC. Exiting"
-		exit 1
 	fi
 
 	F_CMD="$F_CMD $P_SRC @hostlogin@:$P_DST"
