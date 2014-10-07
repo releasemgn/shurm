@@ -42,7 +42,8 @@ function f_local_executeall() {
 		F_CMD="$F_CMD -r"
 	fi
 
-	F_CMD="$F_CMD $P_SRC @hostlogin@:$P_DST"
+	local F_SRC=${P_SRC//\\/}
+	F_CMD="$F_CMD $F_SRC @hostlogin@:$P_DST"
 
 	export C_EXECUTE_CMD="$F_CMD"
 	f_common_execute_unique "RUNLOCAL" $DC "$SRVNAME_LIST"
