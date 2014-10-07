@@ -35,7 +35,7 @@ function f_common_execute_runcmd() {
 
 	elif [ "$P_SUB" = "startserver" ]; then
 		if [ "$C_ENV_SERVER_TYPE" = "generic.windows" ]; then
-			echo "ignore server=$P_EXECUTE_SRVNAME, type=$C_ENV_SERVER_TYPE (windows)"
+			echo "ignore server=$P_SERVER, type=$C_ENV_SERVER_TYPE (windows)"
 			S_EXECUTE_ENABLED=no
 			return 1
 		fi
