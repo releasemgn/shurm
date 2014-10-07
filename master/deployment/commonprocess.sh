@@ -66,7 +66,7 @@ function f_process_generic_started_status() {
 	fi
 
 	# check process status
-	f_run_cmd $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.status.sh $P_PROGRAMNAME"
+	f_run_cmd $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.status.sh $P_PROGRAMNAME $GETOPT_ARGS"
 	if [[ "$RUN_CMD_RES" =~ "Started=true" ]] || [[ "$RUN_CMD_RES" =~ "RUNNING" ]] || [[ "$RUN_CMD_RES" =~ "is running" ]]; then
 		C_PROCESS_STATUS="STARTED"
 		return 0

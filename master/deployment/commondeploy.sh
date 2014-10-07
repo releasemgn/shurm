@@ -39,7 +39,7 @@ function f_deploy_stop_generic() {
 	fi
 
 	# stop kindly
-	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.stop.sh $C_PROCESS_PID > /dev/null"
+	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.stop.sh $C_PROCESS_PID $GETOPT_ARGS > /dev/null"
 
 	if [ "$C_DEPLOY_EXECUTE_ECHO_ONLY" = "true" ]; then
 		return 1
@@ -150,7 +150,7 @@ function f_deploy_start_generic() {
 	fi
 
 	# proceed with startup
-	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.start.sh $P_PROGRAMNAME"
+	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "cd $P_FULLBINPATH; ./server.start.sh $P_PROGRAMNAME $GETOPT_ARGS"
 	return 0
 }
 
