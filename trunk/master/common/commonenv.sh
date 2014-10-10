@@ -654,11 +654,73 @@ function f_env_getsecretpropertyvalue() {
 	C_ENV_XMLVALUE=`cat $C_ENV_PROPERTY_SECRETFILE | grep "^$P_PROPNAME=" | cut -d "=" -f2 | tr -d "\n"`
 }
 
+function f_env_getsecretpropertyfinalvalue() {
+	local P_XMLATTRNAME=$1
+
+	C_ENV_XMLVALUE=
+
+	f_env_getsecretpropertylist
+	local F_PROPLIST=$C_ENV_XMLVALUE
+
+	local F_VAR=$P_XMLATTRNAME
+	while [[ " $F_PROPLIST " =~ " $F_VAR " ]]; do
+		f_env_getsecretpropertyvalue $F_VAR
+
+		# check if another variable
+		if [[ ! "$C_ENV_XMLVALUE" =~ ^@.*@$ ]]; then
+			return 0
+		fi
+
+		F_VAR=$C_ENV_XMLVALUE
+		F_VAR=${F_VAR%@}
+		F_VAR=${F_VAR#@}
+
+		if [ "$F_VAR" = "$P_XMLATTRNAME" ]; then
+			echo "f_env_getsecretpropertyfinalvalue: cycle detected in var=$F_VAR. Exiting"
+			exit 1
+		fi
+	done
+
+	# no such variable
+	return 1
+}
+
 function f_env_getenvpropertyvalue() {
 	local P_PROPNAME=$1
 
 	# extract from property element
 	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/property[@name='$P_PROPNAME']" -v "@value" $C_ENV_PATH | xmlstarlet unesc`
+}
+
+function f_env_getenvpropertyfinalvalue() {
+	local P_XMLATTRNAME=$1
+
+	C_ENV_XMLVALUE=
+
+	f_env_getenvpropertylist
+	local F_PROPLIST=$C_ENV_XMLVALUE
+
+	local F_VAR=$P_XMLATTRNAME
+	while [[ " $F_PROPLIST " =~ " $F_VAR " ]]; do
+		f_env_getenvpropertyvalue $F_VAR
+
+		# check if another variable
+		if [[ ! "$C_ENV_XMLVALUE" =~ ^@.*@$ ]]; then
+			return 0
+		fi
+
+		F_VAR=$C_ENV_XMLVALUE
+		F_VAR=${F_VAR%@}
+		F_VAR=${F_VAR#@}
+
+		if [ "$F_VAR" = "$P_XMLATTRNAME" ]; then
+			echo "f_env_getenvpropertyfinalvalue: cycle detected in var=$F_VAR. Exiting"
+			exit 1
+		fi
+	done
+
+	# check env variable
+	f_env_getsecretpropertyfinalvalue $F_VAR
 }
 
 function f_env_getdcpropertyvalue() {
@@ -669,12 +731,77 @@ function f_env_getdcpropertyvalue() {
 	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/datacenter[@name='$P_DC']/property[@name='$P_PROPNAME']" -v "@value" $C_ENV_PATH | xmlstarlet unesc`
 }
 
+function f_env_getdcpropertyfinalvalue() {
+	local P_DC=$1
+	local P_XMLATTRNAME=$2
+
+	C_ENV_XMLVALUE=
+
+	f_env_getdcpropertylist $P_DC
+	local F_PROPLIST=$C_ENV_XMLVALUE
+
+	local F_VAR=$P_XMLATTRNAME
+	while [[ " $F_PROPLIST " =~ " $F_VAR " ]]; do
+		f_env_getdcpropertyvalue $P_DC $F_VAR
+
+		# check if another variable
+		if [[ ! "$C_ENV_XMLVALUE" =~ ^@.*@$ ]]; then
+			return 0
+		fi
+
+		F_VAR=$C_ENV_XMLVALUE
+		F_VAR=${F_VAR%@}
+		F_VAR=${F_VAR#@}
+
+		if [ "$F_VAR" = "$P_XMLATTRNAME" ]; then
+			echo "f_env_getdcpropertyfinalvalue: cycle detected in var=$F_VAR. Exiting"
+			exit 1
+		fi
+	done
+
+	# check env variable
+	f_env_getenvpropertyfinalvalue $F_VAR
+}
+
 function f_env_getserverpropertyvalue() {
 	local P_DC=$1
 	local P_SERVER=$2
 	local P_XMLATTRNAME=$3
 
 	C_ENV_XMLVALUE=`xmlstarlet sel -t -m "module/datacenter[@name='$P_DC']/server[@name='$P_SERVER']" -v "@$P_XMLATTRNAME" $C_ENV_PATH | xmlstarlet unesc`
+}
+
+function f_env_getserverpropertyfinalvalue() {
+	local P_DC=$1
+	local P_SERVER=$2
+	local P_XMLATTRNAME=$3
+
+	C_ENV_XMLVALUE=
+
+	f_env_getserverpropertylist $P_DC $P_SERVER
+	local F_PROPLIST=$C_ENV_XMLVALUE
+
+	local F_VAR=$P_XMLATTRNAME
+	while [[ " $F_PROPLIST " =~ " $F_VAR " ]]; do
+		f_env_getserverpropertyvalue $P_DC $P_SERVER $F_VAR
+
+		# check if another variable
+		if [[ ! "$C_ENV_XMLVALUE" =~ ^@.*@$ ]]; then
+			return 0
+		fi
+
+		F_VAR=$C_ENV_XMLVALUE
+		F_VAR=${F_VAR%@}
+		F_VAR=${F_VAR#@}
+
+		if [ "$F_VAR" = "$P_XMLATTRNAME" ]; then
+			echo "f_env_getserverpropertyfinalvalue: cycle detected in var=$F_VAR. Exiting"
+			exit 1
+		fi
+	done
+
+	# check dc variable
+	f_env_getdcpropertyfinalvalue $P_DC $F_VAR
 }
 
 function f_env_getstartsequence() {
