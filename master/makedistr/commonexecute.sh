@@ -364,7 +364,8 @@ function f_execute_export() {
 	fi
 
 	local F_PATH=$C_TARGETDIR/$P_PROJECT
-	mkdir -p $F_PATH
+	rm -rf $F_PATH
+	mkdir -p $C_TARGETDIR
 	if [ $? != 0 ]; then
 		echo unable to create $F_PATH. Exiting
 		exit 1
