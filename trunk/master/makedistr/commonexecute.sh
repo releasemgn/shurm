@@ -351,6 +351,28 @@ function f_execute_checkout() {
 	./vcscheckout.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
 }
 
+function f_execute_export() {
+	local P_VCSTYPE=$1
+	local P_EXECUTE_SET=$2
+	local P_PROJECT=$3
+	local P_VCSPATH=$4
+	local P_PROD_BRANCH=$5
+
+	F_BRANCH=$P_PROD_BRANCH
+	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
+		F_BRANCH=$C_CONFIG_BRANCHNAME
+	fi
+
+	local F_PATH=$C_TARGETDIR/$P_PROJECT
+	mkdir -p $F_PATH
+	if [ $? != 0 ]; then
+		echo unable to create $F_PATH. Exiting
+		exit 1
+	fi
+
+	./vcsexport.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
+}
+
 function f_execute_commit() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
@@ -517,6 +539,9 @@ function f_execute_one() {
 			;;
 		VCSCHECKOUT)
 			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			;;
+		VCSEXPORT)
+			f_execute_export $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSCOMMIT)
 			f_execute_commit $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
