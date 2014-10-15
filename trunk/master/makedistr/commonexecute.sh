@@ -371,7 +371,7 @@ function f_execute_export() {
 		exit 1
 	fi
 
-	./vcsexport.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
+	./vcsexport.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$GETOPT_TAG"
 }
 
 function f_execute_commit() {
