@@ -116,6 +116,7 @@ function f_local_getall_release() {
 	if [ "$MODULE" = "war" ] || [ "$MODULE" = "" ]; then
 		f_release_getprojects war
 		local F_RELEASE_WAR_TARGETS=$C_RELEASE_TARGETS
+		local F_RELEASE_WAR_VERSION=$C_RELEASE_PROJECT_VERSION
 
 		if [ "$F_RELEASE_WAR_TARGETS" != "" ]; then
 
@@ -132,7 +133,7 @@ function f_local_getall_release() {
 			echo RELEASE WAR TARGETS: $F_RELEASE_WAR_TARGETS, processid=$$...
 
 			echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST"
-			./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST"
+			./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST" $F_RELEASE_WAR_VERSION
 		fi
 	fi
 
