@@ -133,7 +133,7 @@ function f_local_getall_release() {
 			echo RELEASE WAR TARGETS: $F_RELEASE_WAR_TARGETS, processid=$$...
 
 			echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST"
-			./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST" $F_RELEASE_WAR_VERSION
+			./getall.sh $VERSIONDIR $TAG_GETALL war "$MODULELIST" "" $F_RELEASE_WAR_VERSION
 		fi
 	fi
 
