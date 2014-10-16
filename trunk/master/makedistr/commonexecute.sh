@@ -4,7 +4,12 @@ C_TAG=
 C_PGUWARNEXUSGROUPID="com.nvision.pgu.service"
 
 function f_execute_getversionmode_defaulttag() {
-	export C_TAG=$C_CONFIG_APPVERSION_TAG
+	if [ "$GETOPT_TAG" != "" ]; then
+		C_TAG=$GETOPT_TAG
+	else
+		C_TAG=$C_CONFIG_APPVERSION_TAG
+	fi
+	export C_TAG
 }
 
 function f_execute_buildone_core_tags() {
