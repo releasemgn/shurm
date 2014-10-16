@@ -57,12 +57,13 @@ function f_release_getprojectinfo() {
 	local F_CHECKALL=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@all" $C_RELEASE_FNAME`
 	if [ "$F_CHECKALL" = "true" ]; then
 		C_RELEASE_PROJECT_TAG=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildtag" $C_RELEASE_FNAME`
+		C_RELEASE_PROJECT_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildbranch" $C_RELEASE_FNAME`
+		C_RELEASE_PROJECT_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildversion" $C_RELEASE_FNAME`
 	else	
 		C_RELEASE_PROJECT_TAG=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECT']" -v "@buildtag" $C_RELEASE_FNAME`
+		C_RELEASE_PROJECT_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECT']" -v "@buildbranch" $C_RELEASE_FNAME`
+		C_RELEASE_PROJECT_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECT']" -v "@buildversion" $C_RELEASE_FNAME`
 	fi
-
-	C_RELEASE_PROJECT_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECT']" -v "@buildbranch" $C_RELEASE_FNAME`
-	C_RELEASE_PROJECT_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']/project[@name='$P_PROJECT']" -v "@buildversion" $C_RELEASE_FNAME`
 }
 
 function f_release_getprojects() {
