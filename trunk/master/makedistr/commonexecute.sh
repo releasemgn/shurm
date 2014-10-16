@@ -309,7 +309,10 @@ function f_execute_update_settag() {
 		F_BRANCH=branches/$F_BRANCH
 	fi
 
-	f_execute_getversionmode_defaulttag
+	if [ "$C_TAG" = "" ]; then
+		f_execute_getversionmode_defaulttag
+	fi
+
 	local F_TAG=$C_TAG
 	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCH $F_TAG
 }
