@@ -89,7 +89,7 @@ function f_execute_download_wardistr() {
 	fi
 
 	# download versioninfo
-	local VERSION_FILENAME=$P_PROJECT-$C_CONFIG_APPVERSION-version.txt
+	local VERSION_FILENAME=$P_PROJECT-$C_VERSION-version.txt
 	f_downloadnexus $P_PROJECT $C_CONFIG_NEXUS_REPO release $P_PROJECT $C_VERSION "txt" "version"
 	local VERSION_TAGNAME=`cat $VERSION_FILENAME`
 
