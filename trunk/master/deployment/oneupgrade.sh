@@ -6,11 +6,14 @@ P_EXECUTE_HOSTLOGIN=$2
 
 . ./common.sh
 
+S_DATAFILE="upgrade.data"
+S_LOGFILE="upgrade.log"
+
 function f_local_before() {
 	local F_ACTION="initial"
 
 	# check upgrade status
-	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "grep \"id=$P_UPGRADE_ID:\" ~/uprade.data"
+	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "touch ~/$S_DATAFILE; grep \"id=$P_UPGRADE_ID:\" ~/$S_DATAFILE"
 	local F_STATUS=$RUN_CMD_RES
 
 	if [ "$F_STATUS" != "" ]; then
@@ -33,11 +36,11 @@ function f_local_before() {
 	fi
 
 	# add before record to log
-	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): start $F_ACTION upgrade P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/upgrade.log"
+	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): start $F_ACTION upgrade P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/$S_LOGFILE"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_CMD"
 
 	# add before record to data
-	local F_CMD="cat ~/upgrade.data | grep -v \"id=$P_UPGRADE_ID:\" > upgrade.data.copy; mv ~/upgrade.data.copy ~/upgrade.data; echo \"id=$P_UPGRADE_ID:incomlete\" >> ~/upgrade.data"
+	local F_CMD="cat ~/$S_DATAFILE | grep -v \"id=$P_UPGRADE_ID:\" > ~/$S_DATAFILE.copy; mv ~/$S_DATAFILE.copy ~/$S_DATAFILE; echo \"id=$P_UPGRADE_ID:incomlete\" >> ~/$S_DATAFILE"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_CMD"
 
 	echo "$P_EXECUTE_HOSTLOGIN: $F_ACTION upgrade P_UPGRADE_ID=$P_UPGRADE_ID (execute) ..."
@@ -47,11 +50,11 @@ function f_local_after() {
 	local P_STATUS=$1
 
 	# add after record to log
-	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): start upgrade P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/upgrade.log"
+	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): start upgrade P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/$S_LOGFILE"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_CMD"
 
 	# replace record in data
-	local F_CMD="cat ~/upgrade.data | grep -v \"id=$P_UPGRADE_ID:\" > upgrade.data.copy; mv ~/upgrade.data.copy ~/upgrade.data; echo \"id=$P_UPGRADE_ID:$P_STATUS\" >> ~/upgrade.data"
+	local F_CMD="cat ~/$S_DATAFILE | grep -v \"id=$P_UPGRADE_ID:\" > $S_DATAFILE.copy; mv ~/$S_DATAFILE.copy ~/$S_DATAFILE; echo \"id=$P_UPGRADE_ID:$P_STATUS\" >> ~/$S_DATAFILE"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_CMD"
 }
 
