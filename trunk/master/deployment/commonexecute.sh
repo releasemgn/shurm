@@ -163,6 +163,10 @@ function f_common_execute_upgrade() {
 
 	elif [ "$P_SUB" = "executenode" ]; then
 		./oneupgrade.sh $C_EXECUTE_UPGRADE $P_HOSTLOGIN
+		if [ "$?" = "2" ]; then
+			# fatal error
+			exit 2
+		fi
 	fi
 }
 

@@ -65,7 +65,15 @@ function f_local_execute() {
 	# execute upgrade script
 	local F_STATUS=ok
 	$C_CONFIG_UPGRADEPATH/upgrade-$P_UPGRADE_ID.sh $P_EXECUTE_HOSTLOGIN
-	if [ "$?" != 0 ]; then
+	local F_STATUS=$?
+
+	if [ "$F_STATUS" != 0 ]; then
+		# check fatal
+		if [ "$F_STATUS" = "2" ]; then
+			echo fatal error. Exiting
+			exit 2
+		fi
+
 		F_STATUS=errors
 	fi
 
@@ -74,3 +82,5 @@ function f_local_execute() {
 }
 
 f_local_execute
+
+exit 0
