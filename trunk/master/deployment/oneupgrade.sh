@@ -13,7 +13,7 @@ function f_local_before() {
 	local F_ACTION="initial"
 
 	# check upgrade status
-	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "touch ~/$S_DATAFILE; grep \"id=$P_UPGRADE_ID:\" ~/$S_DATAFILE"
+	f_run_cmd $P_EXECUTE_HOSTLOGIN "touch ~/$S_DATAFILE; grep \"id=$P_UPGRADE_ID:\" ~/$S_DATAFILE"
 	local F_STATUS=$RUN_CMD_RES
 
 	if [ "$F_STATUS" != "" ]; then
