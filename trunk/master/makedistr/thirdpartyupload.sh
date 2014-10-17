@@ -86,8 +86,8 @@ function f_local_uploadthirdparty_all() {
 	done
 }
 
-echo uploadthirdparty.sh VERSIONDIR=$VERSIONDIR
+echo thirdpartyupload.sh VERSIONDIR=$VERSIONDIR
 
 f_local_uploadthirdparty_all
 
-echo uploadthirdparty.sh: successfully done.
+echo thirdpartyupload.sh: successfully done.
