@@ -50,7 +50,7 @@ function f_local_after() {
 	local P_STATUS=$1
 
 	# add after record to log
-	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): start upgrade P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/$S_LOGFILE"
+	local F_CMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): upgrade done P_UPGRADE_ID=$P_UPGRADE_ID\" >> ~/$S_LOGFILE"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_CMD"
 
 	# replace record in data
