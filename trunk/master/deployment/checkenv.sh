@@ -56,11 +56,11 @@ function f_local_getnode() {
 
 function f_local_check_wsdl() {
 	local P_PROGRAMNAME=$1
-	local P_NLBHOST=$2
+	local P_DNS=$2
 	local P_COMPONENT=$3
 	local P_ENDPOINT=$4
 
-	f_info_check_wsdl $P_NLBHOST $P_COMPONENT $P_ENDPOINT $S_CHECKENV_TMP/$C_ENV_ID/wsdl.$P_PROGRAMNAME
+	f_info_check_wsdl $P_DNS $P_COMPONENT $P_ENDPOINT $S_CHECKENV_TMP/$C_ENV_ID/wsdl.$P_PROGRAMNAME
 	if [ $? -ne 0 ]; then
 		S_CHECKENV_WSDL_FAILED=yes
 		return 1
@@ -71,7 +71,7 @@ function f_local_check_wsdl() {
 
 function f_local_checkcomponent_endpoints() {
 	local P_PROGRAMNAME=$1
-	local P_NLBHOST=$2
+	local P_DNS=$2
 	local P_COMPONENT=$3
 
 	# get deployment components
@@ -81,7 +81,7 @@ function f_local_checkcomponent_endpoints() {
 
 	S_URLLIST="$C_DISTR_WSITEMS"
 	for url in $S_URLLIST; do
-		f_local_check_wsdl $P_PROGRAMNAME $P_NLBHOST $P_COMPONENT $url
+		f_local_check_wsdl $P_PROGRAMNAME $P_DNS $P_COMPONENT $url
 	done
 
 	if [ "$S_CHECKENV_WSDL_FAILED" = "yes" ]; then
@@ -93,14 +93,14 @@ function f_local_checkcomponent_endpoints() {
 
 function f_local_checkone_endpoints() {
 	local P_PROGRAMNAME=$1
-	local P_NLBHOST=$2
+	local P_DNS=$2
 	local P_COMPONENT_LIST="$3"
 
 	S_CHECKENV_COMPONENTLIST_FAILED=
 	local component
 	for component in $P_COMPONENT_LIST; do
 		echo component=$component:
-		f_local_checkcomponent_endpoints $P_PROGRAMNAME $P_NLBHOST $component
+		f_local_checkcomponent_endpoints $P_PROGRAMNAME $P_DNS $component
 		if [ $? -ne 0 ]; then
 			S_CHECKENV_COMPONENTLIST_FAILED="$S_CHECKENV_COMPONENTLIST_FAILED $component"
 		fi
@@ -115,29 +115,19 @@ function f_local_checkone_endpoints() {
 
 function f_local_check_endpoints_nlb() {
 	local P_PROGRAMNAME=$1
-	local P_NLBHOSTLIST="$2"
+	local P_NLB_WEBDOMAIN="$2"
 	local P_COMPONENT_LIST="$3"
 
 	# iterate nlb nodes
-	local KNLB=1
-	local F_NLBN=`echo "$P_NLBHOSTLIST" | tr " " "\n" | grep -c "@"`
 	S_CHECKENV_NODELIST_FAILED=
 	local F_CHECKENV_COMPONENTLIST_FAILED=
-	while [ ! "$KNLB" -gt $F_NLBN ]; do
-		f_local_getnode "$P_NLBHOSTLIST" $KNLB
-		S_ENV_HOST=`echo $S_ENV_HOST | cut -d "@" -f2 | sed "s/ //g"`
 
-		echo nlb node$KNLB=$S_ENV_HOST:
-		f_local_checkone_endpoints $P_PROGRAMNAME $S_ENV_HOST "$P_COMPONENT_LIST"
-		if [ $? -ne 0 ]; then
-			S_CHECKENV_NODELIST_FAILED="$S_CHECKENV_NODELIST_FAILED $KNLB"
-			F_CHECKENV_COMPONENTLIST_FAILED="$F_CHECKENV_COMPONENTLIST_FAILED $S_CHECKENV_COMPONENTLIST_FAILED"
-		fi
-	        KNLB=$(expr $KNLB + 1)
-	done
+	f_local_checkone_endpoints $P_PROGRAMNAME "$P_NLB_WEBDOMAIN" "$P_COMPONENT_LIST"
+	if [ $? -ne 0 ]; then
+		F_CHECKENV_COMPONENTLIST_FAILED="$F_CHECKENV_COMPONENTLIST_FAILED $S_CHECKENV_COMPONENTLIST_FAILED"
+	fi
 
 	S_CHECKENV_COMPONENTLIST_FAILED=`echo $F_CHECKENV_COMPONENTLIST_FAILED | tr " " "\n" | sort -u | tr "\n" " "`
-
 	if [ "$S_CHECKENV_NODELIST_FAILED" != "" ]; then
 		return 1
 	fi
@@ -162,7 +152,7 @@ function f_local_check_endpoints_app() {
 			S_ENV_HOST=`echo $S_ENV_HOST | cut -d "@" -f2 | sed "s/ //g"`
 
 			echo app node$KAPP=$S_ENV_HOST:
-			f_local_checkone_endpoints $P_PROGRAMNAME $S_ENV_HOST:$P_APPPORT "$P_COMPONENT_LIST"
+			f_local_checkone_endpoints $P_PROGRAMNAME "$S_ENV_HOST:$P_APPPORT" "$P_COMPONENT_LIST"
 			if [ $? -ne 0 ]; then
 				S_CHECKENV_NODELIST_FAILED="$S_CHECKENV_NODELIST_FAILED $KAPP"
 				F_CHECKENV_COMPONENTLIST_FAILED="$F_CHECKENV_COMPONENTLIST_FAILED $S_CHECKENV_COMPONENTLIST_FAILED"
@@ -195,7 +185,7 @@ function f_local_checkone_endpoints_app() {
 
 function f_local_check_endpoints() {
 	local P_PROGRAMNAME=$1
-	local P_NLBHOSTLIST="$2"
+	local P_NLB_WEBDOMAIN="$2"
 	local P_APPHOSTLIST="$3"
 	local P_APPPORT=$4
 	local P_COMPONENT_LIST="$5"
@@ -208,13 +198,14 @@ function f_local_check_endpoints() {
 
 	echo $P_PROGRAMNAME: check endpoints
 	local F_CHECKENV_LIST_FAILED=
-	if [ "$NODE_LIST" = "" ]; then
-		f_local_check_endpoints_nlb $P_PROGRAMNAME "$P_NLBHOSTLIST" "$P_COMPONENT_LIST"
+	if [ "$NODE_LIST" = "" ] && [ "$P_NLB_WEBDOMAIN" != "" ]; then
+		f_local_check_endpoints_nlb $P_PROGRAMNAME "$P_NLB_WEBDOMAIN" "$P_COMPONENT_LIST"
 		if [ $? -ne 0 ]; then
 			S_CHECKENV_NLB_NODELIST_FAILED=$S_CHECKENV_NODELIST_FAILED
 			S_CHECKENV_NLB_COMPLIST_FAILED=$S_CHECKENV_COMPONENTLIST_FAILED
 		fi
 	fi
+
 	f_local_check_endpoints_app $P_PROGRAMNAME "$P_APPHOSTLIST" $P_APPPORT "$P_COMPONENT_LIST"
 	if [ $? -ne 0 ]; then
 		S_CHECKENV_APP_NODELIST_FAILED=$S_CHECKENV_NODELIST_FAILED
@@ -234,7 +225,7 @@ function f_local_checkenv_generic() {
 	local P_ENV_HOSTLOGINLIST="$3"
 	local P_ENV_ROOTDIR=$4
 	local P_ENV_BINPATH=$5
-	local P_NLBHOSTLIST="$6"
+	local P_NLB_WEBDOMAIN="$6"
 	local P_APPPORT=$7
 
 	S_CHECKENV_SERVER_FAILED=
@@ -245,8 +236,8 @@ function f_local_checkenv_generic() {
 
 	echo check $P_PROGRAMNAME...
 
-	if [ "$P_NLBHOSTLIST" != "" ] && [ "$NODE_LIST" = "" ]; then
-		f_local_check_endpoints_nlb $P_PROGRAMNAME "$P_NLBHOSTLIST" "$P_COMPONENT_LIST"
+	if [ "$P_NLB_WEBDOMAIN" != "" ] && [ "$NODE_LIST" = "" ]; then
+		f_local_check_endpoints_nlb $P_PROGRAMNAME "$P_NLB_WEBDOMAIN" "$P_COMPONENT_LIST"
 		if [ $? -ne 0 ]; then
 			S_CHECKENV_NLB_NODELIST_FAILED=$S_CHECKENV_NODELIST_FAILED
 			S_CHECKENV_NLB_COMPLIST_FAILED=$S_CHECKENV_COMPONENTLIST_FAILED
@@ -293,8 +284,17 @@ function f_local_checkenv_service() {
 	local P_SERVICENAME=$2
 	local P_COMPONENT_LIST="$3"
 	local P_ENV_HOSTLOGINLIST="$4"
+	local P_NLB_WEBDOMAIN=$5
 
 	echo check $P_PROGRAMNAME...
+
+	if [ "$P_NLB_WEBDOMAIN" != "" ] && [ "$NODE_LIST" = "" ]; then
+		f_local_check_endpoints_nlb $P_PROGRAMNAME "$P_NLB_WEBDOMAIN" "$P_COMPONENT_LIST"
+		if [ $? -ne 0 ]; then
+			S_CHECKENV_APP_NODELIST_FAILED=$S_CHECKENV_NODELIST_FAILED
+			S_CHECKENV_APP_COMPLIST_FAILED=$S_CHECKENV_COMPONENTLIST_FAILED
+		fi
+	fi
 
 	# iterate nodes
 	local KJ=1
@@ -401,22 +401,26 @@ function f_local_execute_server_single() {
 		local F_GENERIC_PORT=$C_ENV_SERVER_PORT
 		local F_GENERIC_COMPONENT_LIST=$C_ENV_SERVER_COMPONENT_LIST
 
-		local F_NLB_HOSTLOGIN_LIST
+		local F_NLB_WEBDOMAIN=
 		if [ "$F_GENERIC_NLBSERVER" != "" ]; then
 			f_env_getxmlserverinfo $DC $F_GENERIC_NLBSERVER $GETOPT_DEPLOYGROUP
-			F_NLB_HOSTLOGIN_LIST=$C_ENV_SERVER_HOSTLOGIN_LIST
-		else
-			F_NLB_HOSTLOGIN_LIST=
+			F_NLB_WEBDOMAIN=$C_ENV_SERVER_WEBDOMAIN
 		fi
-		f_local_checkenv_generic $F_GENERIC_PROGRAMNAME "$F_GENERIC_COMPONENT_LIST" "$F_GENERIC_HOSTLOGIN_LIST" "$F_GENERIC_SERVER_ROOTPATH" "$F_GENERIC_SERVER_BINPATH" "$F_NLB_HOSTLOGIN_LIST" $F_GENERIC_PORT
+		f_local_checkenv_generic $F_GENERIC_PROGRAMNAME "$F_GENERIC_COMPONENT_LIST" "$F_GENERIC_HOSTLOGIN_LIST" "$F_GENERIC_SERVER_ROOTPATH" "$F_GENERIC_SERVER_BINPATH" "$F_NLB_WEBDOMAIN" $F_GENERIC_PORT
 
 	elif [ "$F_SERVER_TYPE" = "service" ]; then
 		local F_GENERIC_PROGRAMNAME=$P_SRVNAME
 		local F_GENERIC_SERVICENAME=$C_ENV_SERVER_SERVICENAME
 		local F_GENERIC_HOSTLOGIN_LIST=$C_ENV_SERVER_HOSTLOGIN_LIST
 		local F_GENERIC_COMPONENT_LIST=$C_ENV_SERVER_COMPONENT_LIST
+		local F_GENERIC_NLBSERVER=$C_ENV_SERVER_NLBSERVER
 
-		f_local_checkenv_service $F_GENERIC_PROGRAMNAME $F_GENERIC_SERVICENAME "$F_GENERIC_COMPONENT_LIST" "$F_GENERIC_HOSTLOGIN_LIST"
+		local F_NLB_WEBDOMAIN=
+		if [ "$F_GENERIC_NLBSERVER" != "" ]; then
+			f_env_getxmlserverinfo $DC $F_GENERIC_NLBSERVER $GETOPT_DEPLOYGROUP
+			F_NLB_WEBDOMAIN=$C_ENV_SERVER_WEBDOMAIN
+		fi
+		f_local_checkenv_service $F_GENERIC_PROGRAMNAME $F_GENERIC_SERVICENAME "$F_GENERIC_COMPONENT_LIST" "$F_GENERIC_HOSTLOGIN_LIST" "$F_NLB_WEBDOMAIN" 
 
 	elif [ "$F_SERVER_TYPE" = "generic.windows" ]; then
 		local F_GENERIC_PROGRAMNAME=$P_SRVNAME
@@ -426,8 +430,8 @@ function f_local_execute_server_single() {
 		local F_GENERIC_COMPONENT_LIST=$C_ENV_SERVER_COMPONENT_LIST
 
 		f_env_getxmlserverinfo $DC $F_GENERIC_NLBSERVER $GETOPT_DEPLOYGROUP
-		local F_NLB_HOSTLOGIN_LIST=$C_ENV_SERVER_HOSTLOGIN_LIST
-		f_local_check_endpoints $F_GENERIC_PROGRAMNAME "$F_NLB_HOSTLOGIN_LIST" "$F_GENERIC_HOSTLOGIN_LIST" $F_GENERIC_PORT "$F_GENERIC_COMPONENT_LIST"
+		local F_NLB_WEBDOMAIN=$C_ENV_SERVER_WEBDOMAIN
+		f_local_check_endpoints $F_GENERIC_PROGRAMNAME "$F_NLB_WEBDOMAIN" "$F_GENERIC_HOSTLOGIN_LIST" $F_GENERIC_PORT "$F_GENERIC_COMPONENT_LIST"
 
 	elif [ "$F_SERVER_TYPE" = "database" ]; then
 		f_local_checkenv_database $P_SRVNAME $C_ENV_SERVER_DBTNSNAME "$C_ENV_SERVER_HOSTLOGIN_LIST"
