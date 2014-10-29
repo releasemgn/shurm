@@ -88,6 +88,12 @@ force upgrade given env hosts even if uprade was already performed
 ./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
 }}}
 
+== Configuring of Database Scripts ==
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
+
 = Build and Codebase Maintenance Changes =
 
 == Export Codebase ==
