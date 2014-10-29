@@ -50,7 +50,8 @@ fi
 
 exit 0
 }}}
-  * interface script can be called directly to patch specific host from administration host, change can be anything - using yum install or rpm provided or custom updates
+  * interface script may contain anything - yum install or rpm provided or custom updates
+  * can be called directly without using shurm to patch specific host from administration host
   * upgradeenv.sh calls interface script from preconfigured directory for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
   * accounting allows to skip duplicated upgrades and know about patches applied to host:
 
