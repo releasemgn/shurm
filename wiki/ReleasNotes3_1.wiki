@@ -11,10 +11,6 @@ Release 3.1 notes.
 || ID || *Change* || *Documentation updated* ||
 || 1 || || ||
 
-= Common Changes =
-
-== TBD ==
-
 = Deployment Changes =
 
 == Upgrading Environment ==
@@ -86,6 +82,16 @@ upgrade env hosts of given servers under root user
 
 force upgrade given env hosts even if uprade was already performed
 ./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
+}}}
+
+== Copy Files and Directories to Environment ==
+
+  * add new script scp.sh for environment maintenance tasks
+  * scp.sh allows to copy specific local files to all environment hosts corresponding to given server list
+  * examples
+{{{
+./scp.sh -root /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar /usr/java
+./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
 }}}
 
 == Configuring of Database Scripts ==
