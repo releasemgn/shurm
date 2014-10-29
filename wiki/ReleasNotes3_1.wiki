@@ -20,7 +20,7 @@ Release 3.0 notes.
 == Upgrading Environment ==
 
   * add upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
-  * rely on interface patch scripts, e.g. upgrade-001-JDK7.67.sh:
+  * rely on interface patch scripts, e.g. upgrade-002-TZ.2014.APP.EL6.sh:
 {{{
 P_HOSTLOGIN=$1
 
@@ -79,13 +79,13 @@ id=002-TZ.2014.APP.EL6:ok
   * examples:
 {{{
 upgrade all env hosts
-./upgradeenv.sh 001-JDK7.67
+./upgradeenv.sh 002-TZ.2014.APP.EL6
 
 upgrade env hosts of given servers under root user
-./upgradeenv.sh -root 001-JDK7.67 pguapp commapp
+./upgradeenv.sh -root 002-TZ.2014.APP.EL6 pguapp commapp
 
 force upgrade given env hosts even if uprade was already performed
-./upgradeenv.sh -force 001-JDK7.67 pguapp commapp
+./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
 }}}
 
 = Minors =
