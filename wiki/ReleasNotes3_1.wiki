@@ -1,7 +1,7 @@
 #summary URM Releases
 [home] -> [releases] -> [ReleasNotes3_1]
 
-Release 3.0 notes.
+Release 3.1 notes.
 
 <wiki:toc max_depth="2" />
 ----
