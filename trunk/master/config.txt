@@ -46,6 +46,7 @@ C_CONFIG_SVNNEW_AUTH				new sql auth (e.g. "--username=myuser --password=mypassw
 C_CONFIG_SVNNEW_PATH				new svn path (e.g. "http://mynewsvn-hostport/svn")
 C_CONFIG_SVNOLD_AUTH				old sql auth (e.g. "--username=myuser --password=mypassword")
 C_CONFIG_SVNOLD_PATH				old sql path (e.g. "http://myoldsvn-hostport/svn")
+C_CONFIG_UPGRADEPATH				path to upgrade interface scripts (e.g. "/distr/common/upgrade")
 C_CONFIG_USE_TEMPLATES				option to use templates (yes/no)
 C_CONFIG_USE_WAR				option to use wars (yes/no)
 C_CONFIG_VERSION_LAST_FULL			current prod full version (e.g. "1.4.5")
