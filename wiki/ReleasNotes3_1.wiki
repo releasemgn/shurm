@@ -15,11 +15,11 @@ Release 3.1 notes.
 
 == Command Servers ==
 
-  * add new server type - generic.command
+  * add new server type "generic.command" to allow to run parameterized command which stops after performing its activities
 {{{
 <server name="pig" type="generic.command" deploytype="default"
 }}}
-  * command server is affected by start only if executed by direct referencing it in startenv.sh
+  * command server is affected by start/stop only if executed by direct referencing it in startenv.sh, stopenv.sh, restartenv.sh
   * deployredist.sh will not stop or start command server, but will rollout distributive items there
   * command server is controlled like a generic.server via start/stop/status scripts
   * command server can be started with different argumments using new option:
@@ -29,6 +29,7 @@ Release 3.1 notes.
 This will result in calling start script in below way
 server.start.sh pig myargs
 }}}
+  * command server start script should run server in async mode, and checkenv.sh and stopenv.sh can be applicable there
 
 == Upgrading Environment ==
 
