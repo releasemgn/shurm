@@ -15,7 +15,7 @@ Page is intended to hold information about URM stable releases and new features.
 
 = Release Information =
 
-  * [ReleasNotes3_0 notes] - [https://code.google.com/p/shurm/source/browse/releases/3.0 3.0]
+  * [ReleasNotes3_1 notes] - [https://code.google.com/p/shurm/source/browse/releases/3.1 3.1]
   * [ReleasNotes1_44 notes] - [https://code.google.com/p/shurm/source/browse/releases/1.44 1.44]
   * first available stable release - [https://code.google.com/p/shurm/source/browse/releases/1.20 1.20]
 
