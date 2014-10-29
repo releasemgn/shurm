@@ -75,6 +75,8 @@ function f_local_execute() {
 		fi
 
 		F_STATUS=errors
+	else
+		F_STATUS=ok
 	fi
 
 	# finish status
