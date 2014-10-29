@@ -94,4 +94,4 @@ force upgrade given env hosts even if uprade was already performed
 
 = Bugfixes =
 
-  * TBD
+  * export from given tag
