@@ -27,6 +27,12 @@ SRVNAME_LIST=$*
 # execute
 
 function f_local_executeall() {
+	local F_SCRIPT=$C_CONFIG_UPGRADEPATH/upgrade-$P_UPGRADE_ID.sh
+	if [ ! -f $F_SCRIPT ]; then
+		echo cannot find upgrade script $F_SCRIPT
+		exit 1
+	fi
+
 	export C_EXECUTE_UPGRADE="$P_UPGRADE_ID"
 	f_common_execute_unique "UPGRADE" $DC "$SRVNAME_LIST"
 }
