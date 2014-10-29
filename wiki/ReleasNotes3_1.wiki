@@ -112,7 +112,7 @@ force upgrade given env hosts even if uprade was already performed
 ./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
 }}}
 
-== Configuring of Database Scripts ==
+== Configuring Database Scripts ==
 
   * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
   * variables are substituted on execution
