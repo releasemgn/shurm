@@ -90,7 +90,7 @@ force upgrade given env hosts even if uprade was already performed
 
 = Minors =
 
-  * TBD
+  * added ability to use specific branch (buildbranch) and version (buildversion) on both projectset or project in release.xml
 
 = Bugfixes =
 
