@@ -55,11 +55,15 @@ exit 0
   * accounting allows to skip duplicated upgrades
   * examples:
 {{{
-upgrade all env hosts under root user
-./upgradeenv.sh -root 
+upgrade all env hosts
+./upgradeenv.sh 001-JDK7.67
+
+upgrade env hosts of given servers under root user
+./upgradeenv.sh -root 001-JDK7.67 pguapp commapp
+
+force upgrade given env hosts even if uprade was already performed
+./upgradeenv.sh -force 001-JDK7.67 pguapp commapp
 }}}
-
-
 
 = Minors =
 
