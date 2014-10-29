@@ -17,7 +17,48 @@ Release 3.0 notes.
 
 = Deployment Changes =
 
-== TBD ==
+== Upgrading Environment ==
+
+  * add upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
+  * rely on interface patch scripts, e.g. upgrade-001-JDK7.67.sh:
+{{{
+P_HOSTLOGIN=$1
+
+# get root hostlogin
+P_HOSTROOT=root@${P_HOSTLOGIN#*@}
+
+# upgrade java
+x=`ssh $P_HOSTROOT "mkdir -p /usr/java; ls /usr/java | grep jdk1.7.0_67"`
+if [ "$x" = "" ] || [ "$GETOPT_FORCE" = "yes" ]; then
+	scp /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar $P_HOSTROOT:~/
+	if [ "$?" != "0" ]; then
+		exit 1
+	fi
+
+	ssh $P_HOSTROOT "rm -rf /usr/java/jdk1.7*; cd /usr/java; tar xf ~/jdk-7u67-linux-x64.tar"
+	if [ "$?" != "0" ]; then
+		exit 1
+	fi
+fi
+
+# change java version
+ssh $P_HOSTLOGIN "sed -i \"s/export JAVA_HOME=\/usr\/java\/jdk1\.7.*/export JAVA_HOME=\/usr\/java\/jdk1.7.0_67/\" .profile"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+exit 0
+}}}
+  * interface script can be called directly to patch specific host from administration host, change can be anything - using yum install or rpm provided or custom updates
+  * upgradeenv.sh calls interface script from preconfigured directory for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
+  * accounting allows to skip duplicated upgrades
+  * examples:
+{{{
+upgrade all env hosts under root user
+./upgradeenv.sh -root 
+}}}
+
+
 
 = Minors =
 
