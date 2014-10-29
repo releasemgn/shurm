@@ -27,23 +27,38 @@ P_HOSTLOGIN=$1
 # get root hostlogin
 P_HOSTROOT=root@${P_HOSTLOGIN#*@}
 
-# upgrade java
-x=`ssh $P_HOSTROOT "mkdir -p /usr/java; ls /usr/java | grep jdk1.7.0_67"`
-if [ "$x" = "" ] || [ "$GETOPT_FORCE" = "yes" ]; then
-	scp /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar $P_HOSTROOT:~/
-	if [ "$?" != "0" ]; then
-		exit 1
-	fi
-
-	ssh $P_HOSTROOT "rm -rf /usr/java/jdk1.7*; cd /usr/java; tar xf ~/jdk-7u67-linux-x64.tar"
-	if [ "$?" != "0" ]; then
-		exit 1
-	fi
+if [ "$P_HOSTLOGIN" != "$P_HOSTROOT" ]; then
+	echo should be run using root only
+	exit 2
 fi
 
-# change java version
-ssh $P_HOSTLOGIN "sed -i \"s/export JAVA_HOME=\/usr\/java\/jdk1\.7.*/export \
-JAVA_HOME=\/usr\/java\/jdk1.7.0_67/\" .profile"
+# copy tz data
+ssh $P_HOSTROOT "mkdir -p ~/tz; rm -rf ~/tz/*"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-java-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzupdater-1_4_8-2014h.zip $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+# execute
+ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
+
+ssh $P_HOSTROOT "cd ~/tz; unzip tzupdater-1_4_8-2014h.zip; \
+cd tzupdater-1.4.8-2014h; for jdir in \`ls /usr/java | grep jdk\`; \
+do echo \$jdir; /usr/java/\$jdir/bin/java -jar tzupdater.jar -u; done; exit 0"
 if [ "$?" != "0" ]; then
 	exit 1
 fi
