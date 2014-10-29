@@ -56,7 +56,10 @@ exit 0
    * can be called directly without using shurm to patch specific host from administration host
   * upgradeenv.sh executes interface script for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
   * accounting allows to skip duplicated upgrades and know about patches applied to host:
-
+{{{
+[root@u01pguapp01 ~]# cat upgrade.data
+id=002-TZ.2014.APP.EL6:ok
+}}}
   * examples:
 {{{
 upgrade all env hosts
