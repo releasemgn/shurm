@@ -54,7 +54,8 @@ if [ "$?" != "0" ]; then
 fi
 
 # execute
-ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
+ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; \
+rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
 
 ssh $P_HOSTROOT "cd ~/tz; unzip tzupdater-1_4_8-2014h.zip; \
 cd tzupdater-1.4.8-2014h; for jdir in \`ls /usr/java | grep jdk\`; \
