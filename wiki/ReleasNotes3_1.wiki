@@ -111,6 +111,20 @@ force upgrade given env hosts even if uprade was already performed
 = Minors =
 
   * added ability to use specific branch (buildbranch) and version (buildversion) on both projectset or project in release.xml
+  * added library functions to get variable value defined via another variable, to use in custom configuration, e.g.:
+{{{
+f_env_getserverpropertyfinalvalue $P_PRECONFIGURE_DC $P_PRECONFIGURE_SERVER "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getdcpropertyfinalvalue $P_PRECONFIGURE_DC "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getenvpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getsecretpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+}}}
 
 = Bugfixes =
 
