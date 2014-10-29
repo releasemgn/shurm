@@ -19,7 +19,7 @@ Release 3.1 notes.
 
 == Upgrading Environment ==
 
-  * add upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
+  * add new script upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
   * rely on interface patch scripts, e.g. upgrade-002-TZ.2014.APP.EL6.sh:
 {{{
 P_HOSTLOGIN=$1
@@ -86,6 +86,20 @@ upgrade env hosts of given servers under root user
 
 force upgrade given env hosts even if uprade was already performed
 ./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
+}}}
+
+= Build and Codebase Maintenance Changes =
+
+== Export Codebase ==
+
+  * add new script codebase-export.sh to export product projects to given localtion
+  * allows to use specific tag or branch, use default branch for specific build mode
+  * examples:
+{{{
+./codebase-export.sh dst/path/root
+./codebase-export.sh dst/path/root core IDECS pgu-portal
+./codebase-export.sh -tag prod-3.0.17 dst/path/root
+./codebase-export.sh -branch demo-3.0 dst/path/root
 }}}
 
 = Minors =
