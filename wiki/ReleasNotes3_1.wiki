@@ -13,6 +13,23 @@ Release 3.1 notes.
 
 = Deployment Changes =
 
+== Command Servers ==
+
+  * add new server type - generic.command
+{{{
+<server name="pig" type="generic.command" deploytype="default"
+}}}
+  * command server is affected by start and stop only if executed by direct referencing it in startenv, stopenv, restartenv.sh
+  * deployredist.sh will not stop or start command server, but will rollout distributive items there
+  * command server is controlled like a generic.server via start/stop/status scripts
+  * command server can be started with different argumments using new option:
+{{{
+./startenv.sh -args "myargs" pig
+
+This will result in calling start script in below way
+server.start.sh pig myargs
+}}}
+
 == Upgrading Environment ==
 
   * add new script upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
