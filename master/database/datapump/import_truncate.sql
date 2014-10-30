@@ -1,14 +1,25 @@
+drop table system.admindb_truncateobj;
+create table system.admindb_truncateobj ( oschema varchar2(128) , otype varchar2(128) , oname varchar2(128) , status char(1) , errm varchar2(250) null );
+
 -- prepare import data for specific tables
 
 declare
 	l_schema_one varchar2(30) := '@SCHEMAONE@';
 
 	procedure p_prepare_table( p_schema varchar2 , p_table varchar2 ) is
+		l_emesg varchar2(250);
 	begin
 		-- ensure no data in the table
 		execute immediate 'TRUNCATE TABLE ' || p_schema || '.' || p_table;
+
+		insert into system.admindb_truncateobj ( oschema , oname , status , errm )
+		values( p_schema , p_table , 'Y' , NULL );
+		commit;
 	exception when others then
-		NULL;
+		l_emesg := SQLERRM;
+		insert into system.admindb_truncateobj ( oschema , otype , oname , status , errm )
+		values( p_schema , p_table , 'N' , l_emesg );
+		commit;
 	end;
 begin
 	if l_schema_one = 'all' then
