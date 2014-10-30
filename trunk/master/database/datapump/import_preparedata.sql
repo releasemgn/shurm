@@ -26,9 +26,16 @@ declare
 		p_execute_immediate( p_schema , 'nologging' , p_table , 'ALTER TABLE ' || p_schema || '.' || p_table || ' NOLOGGING' );
 		p_execute_immediate( p_schema , 'triggers' , p_table , 'ALTER TABLE ' || p_schema || '.' || p_table || ' DISABLE ALL TRIGGERS' );
 
-		-- disable all constraints
+		-- disable all own constraints
 		for rec in ( select CONSTRAINT_NAME from dba_constraints WHERE owner = p_schema and table_name = p_table ) loop
   			p_execute_immediate( p_schema , 'constraint ' || rec.CONSTRAINT_NAME , p_table , 'alter table ' || p_schema || '.' || p_table || ' disable constraint "' || rec.CONSTRAINT_NAME || '" cascade' );
+		end loop;
+
+		-- disable all referenced constraints
+		for rec in ( select OWNER , CONSTRAINT_NAME , TABLE_NAME from dba_constraints WHERE r_owner = p_schema and 
+				R_CONSTRAINT_NAME in ( select CONSTRAINT_NAME from dba_constraints WHERE owner = p_schema and table_name = p_table )
+			) loop
+  			p_execute_immediate( rec.owner , 'ref constraint ' || rec.CONSTRAINT_NAME , rec.TABLE_NAME , 'alter table ' || rec.owner || '.' || rec.TABLE_NAME || ' disable constraint "' || rec.CONSTRAINT_NAME || '" cascade' );
 		end loop;
 
 		-- disable all indexes

@@ -18,6 +18,20 @@ where	c.owner = t.owner and
 declare
 	l_schema_one varchar2(30) := '@SCHEMAONE@';
 
+	procedure p_finish_constraint( p_schema varchar2 , p_table varchar2 , p_constraint varchar2 ) is
+		l_emesg varchar2(250);
+	begin
+		execute immediate 'alter table ' || p_schema || '.' || p_table || 
+			' modify constraint "' || p_constraint || '" enable novalidate';
+
+		insert into system.admindb_finishobj ( oschema , otype , oname , status ) values ( p_schema , 'CONSTRAINT' , p_table || '.' || p_constraint , 'Y' );
+		commit;
+	exception when others then
+		l_emesg := SQLERRM;
+		insert into system.admindb_finishobj ( oschema , otype , oname , status , errm ) values ( p_schema , 'CONSTRAINT' , p_table || '.' || p_constraint , 'N' , l_emesg );
+		commit;
+	end;
+
 	procedure p_finish_schema( p_schema varchar2 ) is
 		l_emesg varchar2(250);
 	begin
@@ -39,15 +53,12 @@ declare
 				from	system.admindb_finishobj_constraint 
 				where 	owner = p_schema 
 				order by 4 ) loop
-			begin
-				execute immediate 'alter table ' || p_schema || '.' || rec.table_name || 
-					' modify constraint "' || rec.constraint_name || '" enable novalidate';
-				insert into system.admindb_finishobj ( oschema , otype , oname , status ) values ( p_schema , 'CONSTRAINT' , rec.table_name || '.' || rec.constraint_name , 'Y' );
-			exception when others then
-				l_emesg := SQLERRM;
-				insert into system.admindb_finishobj ( oschema , otype , oname , status , errm ) values ( p_schema , 'CONSTRAINT' , rec.table_name || '.' || rec.constraint_name , 'N' , l_emesg );
-			end;
-			commit;
+			p_finish_constraint( p_schema , rec.table_name  , rec.constraint_name );
+		end loop;
+
+		-- enable ref constraints
+		for rec in ( select OWNER , CONSTRAINT_NAME , TABLE_NAME from dba_constraints WHERE status <> 'ENABLED' and r_owner = p_schema ) loop
+			p_finish_constraint( rec.OWNER , rec.TABLE_NAME , rec.CONSTRAINT_NAME );
 		end loop;
 
 		-- collect statistics
