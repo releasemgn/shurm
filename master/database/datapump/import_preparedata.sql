@@ -1,5 +1,5 @@
 drop table system.admindb_prepareobj;
-create table system.admindb_prepareobj ( oschema varchar2(128) , oname varchar2(128) , status char(1) , errm varchar2(250) null );
+create table system.admindb_prepareobj ( oschema varchar2(128) , otype varchar2(128) , oname varchar2(128) , status char(1) , errm varchar2(250) null );
 
 -- prepare import data for specific tables
 
