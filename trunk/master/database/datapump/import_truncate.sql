@@ -1,5 +1,5 @@
 drop table system.admindb_truncateobj;
-create table system.admindb_truncateobj ( oschema varchar2(128) , otype varchar2(128) , oname varchar2(128) , status char(1) , errm varchar2(250) null );
+create table system.admindb_truncateobj ( oschema varchar2(128) , oname varchar2(128) , status char(1) , errm varchar2(250) null );
 
 -- prepare import data for specific tables
 
@@ -17,7 +17,7 @@ declare
 		commit;
 	exception when others then
 		l_emesg := SQLERRM;
-		insert into system.admindb_truncateobj ( oschema , otype , oname , status , errm )
+		insert into system.admindb_truncateobj ( oschema , oname , status , errm )
 		values( p_schema , p_table , 'N' , l_emesg );
 		commit;
 	end;
