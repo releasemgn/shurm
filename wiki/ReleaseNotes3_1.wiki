@@ -1,5 +1,5 @@
 #summary URM Releases
-[home] -> [releases] -> [ReleasNotes3_1]
+[home] -> [releases] -> [ReleaseNotes3_1]
 
 Release 3.1 notes.
 
