@@ -1,0 +1,155 @@
+#summary URM Releases
+[home] -> [releases] -> [ReleasNotes3_1]
+
+Release 3.1 notes.
+
+<wiki:toc max_depth="2" />
+----
+
+= Change List =
+
+|| ID || *Change* || *Documentation updated* ||
+|| 1 || || ||
+
+= Deployment Changes =
+
+== Command Servers ==
+
+  * add new server type "generic.command" to allow to run parameterized command which stops after performing its activities
+{{{
+<server name="pig" type="generic.command" deploytype="default"
+}}}
+  * command server is affected by start/stop only if executed by direct referencing it in startenv.sh, stopenv.sh, restartenv.sh
+  * deployredist.sh will not stop or start command server, but will rollout distributive items there
+  * command server is controlled like a generic.server via start/stop/status scripts
+  * command server can be started with different argumments using new option:
+{{{
+./startenv.sh -args "myargs" pig
+
+This will result in calling start script in below way
+server.start.sh pig myargs
+}}}
+  * command server start script should run server in async mode, and checkenv.sh and stopenv.sh can be applicable there
+
+== Upgrading Environment ==
+
+  * add new script upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
+  * rely on interface patch scripts, e.g. upgrade-002-TZ.2014.APP.EL6.sh:
+{{{
+P_HOSTLOGIN=$1
+
+# get root hostlogin
+P_HOSTROOT=root@${P_HOSTLOGIN#*@}
+
+if [ "$P_HOSTLOGIN" != "$P_HOSTROOT" ]; then
+	echo should be run using root only
+	exit 2
+fi
+
+# copy tz data
+ssh $P_HOSTROOT "mkdir -p ~/tz; rm -rf ~/tz/*"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-java-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzupdater-1_4_8-2014h.zip $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+# execute
+ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; \
+rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
+
+ssh $P_HOSTROOT "cd ~/tz; unzip tzupdater-1_4_8-2014h.zip; \
+cd tzupdater-1.4.8-2014h; for jdir in \`ls /usr/java | grep jdk\`; \
+do echo \$jdir; /usr/java/\$jdir/bin/java -jar tzupdater.jar -u; done; exit 0"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+exit 0
+}}}
+  * interface script
+   * is located in directory $C_CONFIG_UPGRADEPATH
+   * may contain anything - yum install or rpm provided or custom updates
+   * can be called directly without using shurm to patch specific host from administration host
+  * upgradeenv.sh executes interface script for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
+  * accounting allows to skip duplicated upgrades and know about patches applied to host:
+{{{
+[root@u01pguapp01 ~]# cat upgrade.data
+id=002-TZ.2014.APP.EL6:ok
+}}}
+  * examples:
+{{{
+upgrade all env hosts
+./upgradeenv.sh 002-TZ.2014.APP.EL6
+
+upgrade env hosts of given servers under root user
+./upgradeenv.sh -root 002-TZ.2014.APP.EL6 pguapp commapp
+
+force upgrade given env hosts even if uprade was already performed
+./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
+}}}
+
+== Copy Files and Directories to Environment ==
+
+  * add new script scp.sh for environment maintenance tasks
+  * scp.sh allows to copy specific local files to all environment hosts corresponding to given server list
+  * examples
+{{{
+./scp.sh -root /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar /usr/java
+./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
+}}}
+
+== Configuring Database Scripts ==
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
+
+= Build and Codebase Maintenance Changes =
+
+== Export Codebase ==
+
+  * add new script codebase-export.sh to export product projects to given localtion
+  * allows to use specific tag or branch, use default branch for specific build mode
+  * examples:
+{{{
+./codebase-export.sh dst/path/root
+./codebase-export.sh dst/path/root core IDECS pgu-portal
+./codebase-export.sh -tag prod-3.0.17 dst/path/root
+./codebase-export.sh -branch demo-3.0 dst/path/root
+}}}
+
+= Minors =
+
+  * added ability to use specific branch (buildbranch) and version (buildversion) on both projectset or project in release.xml
+  * added library functions to get variable value defined via another variable, to use in custom configuring scripts (preconfigure.sh), e.g.:
+{{{
+f_env_getserverpropertyfinalvalue $P_PRECONFIGURE_DC $P_PRECONFIGURE_SERVER "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getdcpropertyfinalvalue $P_PRECONFIGURE_DC "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getenvpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getsecretpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+}}}
+
+= Bugfixes =
+
+  * export from given tag
