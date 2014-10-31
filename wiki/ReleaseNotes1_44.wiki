@@ -1,5 +1,5 @@
 #summary URM Releases
-[home] -> [releases] -> [ReleasNotes1_44]
+[home] -> [releases] -> [ReleaseNotes1_44]
 
 Release 1.44 notes.
 
