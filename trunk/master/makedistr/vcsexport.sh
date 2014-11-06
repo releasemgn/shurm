@@ -29,7 +29,11 @@ function f_local_vcs_export_svn() {
 	if [ "$TAG" != "" ]; then
 		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG/$DOWNLOADFILE
 	else
-		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/branches/$BRANCH/$DOWNLOADFILE
+		if [ "$BRANCH" = "trunk" ]; then
+			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/trunk/$DOWNLOADFILE
+		else
+			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/branches/$BRANCH/$DOWNLOADFILE
+		fi
 	fi
 
 	echo "vcsexport.sh: export sources from $CO_PATH to $PATCHPATH..."
