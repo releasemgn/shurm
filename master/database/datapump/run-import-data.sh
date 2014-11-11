@@ -112,7 +112,8 @@ function f_execute_importdump() {
 	local P_DUMP=$2
 
 	# check dump
-	if [ ! -f "$S_DATADIR/$P_DUMP" ]; then
+	f_execute_datadir "if [ -f "$S_DATADIR/$P_DUMP" ]; then echo ok; fi"
+	if [ "$S_CMDRES" != "ok" ]; then
 		echo schema dump file $S_DATADIR/$P_DUMP not found. Skipped.
 		return 1
 	fi
@@ -129,7 +130,7 @@ function f_execute_importdump() {
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf import.status.log"
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "cd $S_LOAD_ORACLEDIR; rm -rf $P_DUMP $F_LOGSET"
 
-	scp $S_DATADIR/$P_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
+	f_common_scpXdata $S_DATADIR/$P_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR
 
 	for schema in $F_SCHEMASET; do
 		f_execute_importdata_schema $P_LOADMODE $schema

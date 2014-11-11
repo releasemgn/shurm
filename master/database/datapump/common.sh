@@ -269,3 +269,58 @@ function f_common_getdumpschemas() {
 
 	C_DUMP_SCHEMALIST=${C_DUMP_SCHEMALIST# }
 }
+
+S_CMDRES=
+function f_common_datadir() {
+	P_CMD="$1"
+
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "execute $P_CMD ..."
+		exit 1
+	fi
+
+	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
+		S_CMDRES=`ssh $C_ENV_CONFIG_DATADIR_HOSTLOGIN "$P_CMD"`
+		if [ "$?" != "0" ]; then
+			echo "f_common_datadir: error executing remote command $P_CMD. Exiting"
+			exit 1
+		fi
+	else
+		S_CMDRES=`$P_CMD`
+		if [ "$?" != "0" ]; then
+			echo "f_common_datadir: error executing local command $P_CMD. Exiting"
+			exit 1
+		fi
+	fi
+	echo $S_CMDRES
+}
+
+function f_common_scp2data() {
+	P_SRC=$1
+	P_DSTPATH=$2
+
+	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
+		rm -rf local.file
+		scp $P_SRC local.file
+		scp local.file $C_ENV_CONFIG_DATADIR_HOSTLOGIN:$P_DSTPATH
+		rm -rf local.file
+	else
+		rm -rf $P_DSTPATH
+		scp $P_SRC $P_DSTPATH
+	fi
+}
+
+function f_common_scpXdata() {
+	P_SRCPATH=$1
+	P_DST=$2
+
+	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
+		rm -rf local.file
+		scp $C_ENV_CONFIG_DATADIR_HOSTLOGIN:$P_SRCPATH local.file
+		scp local.file $P_DST
+		rm -rf local.file
+	else
+		scp $P_SRCPATH $P_DST
+	fi
+}
+
