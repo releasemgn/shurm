@@ -276,7 +276,6 @@ function f_common_datadir() {
 
 	if [ "$GETOPT_SHOWALL" = "yes" ]; then
 		echo "execute $P_CMD ..."
-		exit 1
 	fi
 
 	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
