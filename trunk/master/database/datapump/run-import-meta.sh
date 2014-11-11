@@ -73,9 +73,9 @@ function f_execute_importmeta() {
 	f_common_getschemadump "meta"
 	local F_META_DUMP=$C_DUMP_NAME
 
-	scp $S_DATADIR/$F_ROLE_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_ROLE_DUMP
+	f_common_scpXdata $S_DATADIR/$F_ROLE_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_ROLE_DUMP
 	if [ "$F_ROLE_DUMP" != "$F_META_DUMP" ]; then
-		scp $S_DATADIR/$F_META_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_META_DUMP
+		f_common_scpXdata $S_DATADIR/$F_META_DUMP $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$S_LOAD_ORACLEDIR/$F_META_DUMP
 	fi
 
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "cd $S_LOAD_ORACLEDIR; chmod 444 $F_ROLE_DUMP $F_META_DUMP"
@@ -107,7 +107,8 @@ function f_execute_all() {
 	local F_META_DUMP=$C_DUMP_NAME
 
 	# import roles meta
-	if [ ! -f "$S_DATADIR/$F_ROLE_DUMP" ] || [ ! "$S_DATADIR/$F_META_DUMP" ]; then
+	f_common_datadir "if [ -f "$S_DATADIR/$F_ROLE_DUMP" ] && [ -f "$S_DATADIR/$F_META_DUMP" ]; then echo ok; fi"
+	if [ "$S_CMDRES" != "ok" ]; then
 		echo role and meta dumps are required in $S_DATADIR. Exiting.
 		exit 1
 	fi

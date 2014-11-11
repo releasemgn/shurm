@@ -16,49 +16,9 @@ S_REMOTE_HOSTLOGIN=
 S_REMOTE_ROOT=
 S_EXPORTDATA_STATUS=
 
-S_CMDRES=
-function f_execute_datadir() {
-	P_CMD="$1"
-
-	if [ "$GETOPT_SHOWALL" = "yes" ]; then
-		echo "execute $P_CMD ..."
-		exit 1
-	fi
-
-	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
-		S_CMDRES=`ssh $C_ENV_CONFIG_DATADIR_HOSTLOGIN "$P_CMD"`
-		if [ "$?" != "0" ]; then
-			echo "f_execute_datadir: error executing remote command $P_CMD. Exiting"
-			exit 1
-		fi
-	else
-		S_CMDRES=`$P_CMD`
-		if [ "$?" != "0" ]; then
-			echo "f_execute_datadir: error executing local command $P_CMD. Exiting"
-			exit 1
-		fi
-	fi
-	echo $S_CMDRES
-}
-
-function f_execute_scp2data() {
-	P_SRC=$1
-	P_DSTPATH=$2
-
-	if [ "$C_ENV_CONFIG_DATADIR_HOSTLOGIN" != "" ]; then
-		rm -rf local.file
-		scp $P_SRC local.file
-		scp local.file $P_DSTPATH
-		rm -rf local.file
-	else
-		rm -rf $P_DSTPATH
-		scp $P_SRC $P_DSTPATH
-	fi
-}
-
 function f_execute_cleanup() {
 	# check env
-	f_execute_datadir "mkdir -p $C_ENV_CONFIG_DATADIR $C_ENV_CONFIG_DATADIR_BACKUP; if [ -d $C_ENV_CONFIG_DATADIR_BACKUP ] && [ -d $C_ENV_CONFIG_DATADIR ]; then echo ok; done"
+	f_common_datadir "mkdir -p $C_ENV_CONFIG_DATADIR $C_ENV_CONFIG_DATADIR_BACKUP; if [ -d $C_ENV_CONFIG_DATADIR_BACKUP ] && [ -d $C_ENV_CONFIG_DATADIR ]; then echo ok; done"
 	if [ "$S_CMDRES" != "ok" ]; then
 		echo "unable to locate data/backup directory. Exiting"
 		exit 1
@@ -71,18 +31,18 @@ function f_execute_cleanup() {
 
 	if [ "$P_SINGLE_SCHEMA" = "" ]; then
 		# backup
-		f_execute_datadir "rm -rf $C_ENV_CONFIG_DATADIR_BACKUP; mkdir -p $C_ENV_CONFIG_DATADIR_BACKUP; mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/"
+		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR_BACKUP; mkdir -p $C_ENV_CONFIG_DATADIR_BACKUP; mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/"
 
 		# clear log and staging area
 		rm -rf $F_LOGDIR/*
 		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $C_ENV_CONFIG_STAGINGDIR; mkdir $C_ENV_CONFIG_STAGINGDIR"
 
 	elif [ "$P_SINGLE_SCHEMA" = "meta" ]; then
-		f_execute_datadir "rm -rf $C_ENV_CONFIG_DATADIR/meta.* $C_ENV_CONFIG_DATADIR/role.*"
+		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR/meta.* $C_ENV_CONFIG_DATADIR/role.*"
 		rm -rf $F_LOGDIR/meta.* $F_LOGDIR/role.*
 
 	else
-		f_execute_datadir "rm -rf $C_ENV_CONFIG_DATADIR/$P_SINGLE_SCHEMA.*"
+		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR/$P_SINGLE_SCHEMA.*"
 		rm -rf $F_LOGDIR/$P_SINGLE_SCHEMA.*
 	fi
 }
@@ -108,13 +68,13 @@ function f_execute_exportmeta() {
 		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportmeta $S_SCHEMALIST" > $F_LOGDIR/meta.log 2>&1
 
 		echo "copy exported metadata to $C_ENV_CONFIG_DATADIR ..."
-		f_execute_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.dmp "$C_ENV_CONFIG_DATADIR/meta.dmp"
+		f_common_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.dmp "$C_ENV_CONFIG_DATADIR/meta.dmp"
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.log $F_LOGDIR/meta.expdp.log
-		f_execute_scp2data $F_LOGDIR/meta.expdp.log "$C_ENV_CONFIG_DATADIR/meta.log"
+		f_common_scp2data $F_LOGDIR/meta.expdp.log "$C_ENV_CONFIG_DATADIR/meta.log"
 
-		f_execute_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.dmp "$C_ENV_CONFIG_DATADIR/role.dmp"
+		f_common_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.dmp "$C_ENV_CONFIG_DATADIR/role.dmp"
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.log $F_LOGDIR/role.expdp.log
-		f_execute_scp2data $F_LOGDIR/role.expdp.log "$C_ENV_CONFIG_DATADIR/role.log"
+		f_common_scp2data $F_LOGDIR/role.expdp.log "$C_ENV_CONFIG_DATADIR/role.log"
 	fi
 }
 
@@ -166,9 +126,9 @@ function f_execute_exportdata() {
 
 	echo "copy exported data to $C_ENV_CONFIG_DATADIR ..."
 	for schema in $S_SCHEMALIST; do
-		f_execute_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.dmp $C_ENV_CONFIG_DATADIR/$schema.dmp
+		f_common_scp2data $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.dmp $C_ENV_CONFIG_DATADIR/$schema.dmp
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.log $F_LOGDIR/$schema.expdp.log
-		f_execute_scp2data $F_LOGDIR/$schema.expdp.log "$C_ENV_CONFIG_DATADIR/$schema.log"
+		f_common_scp2data $F_LOGDIR/$schema.expdp.log "$C_ENV_CONFIG_DATADIR/$schema.log"
 	done
 }
 
