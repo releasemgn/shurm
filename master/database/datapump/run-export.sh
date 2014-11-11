@@ -51,6 +51,7 @@ function f_execute_scp2data() {
 		scp local.file $P_DSTPATH
 		rm -rf local.file
 	else
+		rm -rf $P_DSTPATH
 		scp $P_SRC $P_DSTPATH
 	fi
 }
