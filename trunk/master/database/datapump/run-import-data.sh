@@ -112,7 +112,7 @@ function f_execute_importdump() {
 	local P_DUMP=$2
 
 	# check dump
-	f_execute_datadir "if [ -f "$S_DATADIR/$P_DUMP" ]; then echo ok; fi"
+	f_common_datadir "if [ -f "$S_DATADIR/$P_DUMP" ]; then echo ok; fi"
 	if [ "$S_CMDRES" != "ok" ]; then
 		echo schema dump file $S_DATADIR/$P_DUMP not found. Skipped.
 		return 1
