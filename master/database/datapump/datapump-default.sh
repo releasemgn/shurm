@@ -32,8 +32,9 @@ C_CONFIG_DEFAULT_TABLESET=system.admindb_uatdata
 # C_ENV_CONFIG_STAGINGDIR=<dumpfiles dir>
 # C_ENV_CONFIG_REMOTE_HOSTLOGIN=<hostlogin>
 # C_ENV_CONFIG_REMOTE_ROOT=<remote execution dir>
-# C_ENV_CONFIG_LOCAL_DATADIR=<local export data dir>
-# C_ENV_CONFIG_LOCAL_DATADIR_BACKUP=<local export data backup dir>
+# C_ENV_CONFIG_DATADIR=<local export data dir>
+# C_ENV_CONFIG_DATADIR_BACKUP=<local export data backup dir>
+# C_ENV_CONFIG_DATADIR_HOSTLOGIN=<data dir host>
 # C_ENV_CONFIG_TABLESET=<table where table set is stored>
 # C_ENV_CONFIG_REMOTE_SETORAENV=<script to setup access to oracle sid on remote>
 # C_ENV_CONFIG_SCHMAPPING="<original schema>=<real schema> <...>=<...> ..."

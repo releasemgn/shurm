@@ -44,7 +44,7 @@ function f_local_checkdata() {
 		echo using schema list: $F_SCHEMALIST
 	fi
 
-	local F_DATADIR=`echo $C_ENV_CONFIG_LOCAL_DATADIR | tr " " "\n" | grep "$P_DB=" | cut -d "=" -f2 | tr -d "\n"`
+	local F_DATADIR=`echo $C_ENV_CONFIG_DATADIR | tr " " "\n" | grep "$P_DB=" | cut -d "=" -f2 | tr -d "\n"`
 	local F_DUMP
 	for schema in $F_SCHEMALIST; do
 		if [[ ! " $C_ENV_CONFIG_METAONLYSCHEMALIST " =~ " $schema " ]]; then
