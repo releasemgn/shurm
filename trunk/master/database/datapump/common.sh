@@ -285,7 +285,7 @@ function f_common_datadir() {
 			exit 1
 		fi
 	else
-		S_CMDRES=`$P_CMD`
+		S_CMDRES=`eval $P_CMD`
 		if [ "$?" != "0" ]; then
 			echo "f_common_datadir: error executing local command $P_CMD. Exiting"
 			exit 1
