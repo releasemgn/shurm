@@ -22,22 +22,22 @@ function f_execute_cleanup() {
 	F_LOGDIR="export-log"
 	if [ "$P_SINGLE_SCHEMA" = "" ]; then
 		# backup
-		rm -rf $C_ENV_CONFIG_LOCAL_DATADIR_BACKUP
-		mkdir -p $C_ENV_CONFIG_LOCAL_DATADIR_BACKUP
-		mv $C_ENV_CONFIG_LOCAL_DATADIR/* $C_ENV_CONFIG_LOCAL_DATADIR_BACKUP/
+		rm -rf $C_ENV_CONFIG_DATADIR_BACKUP
+		mkdir -p $C_ENV_CONFIG_DATADIR_BACKUP
+		mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/
 
 		# clear log and staging area
 		rm -rf $F_LOGDIR/*
 		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "rm -rf $C_ENV_CONFIG_STAGINGDIR; mkdir $C_ENV_CONFIG_STAGINGDIR"
 
 	elif [ "$P_SINGLE_SCHEMA" = "meta" ]; then
-		rm -rf $C_ENV_CONFIG_LOCAL_DATADIR/meta.* $C_ENV_CONFIG_LOCAL_DATADIR/role.* $F_LOGDIR/meta.* $F_LOGDIR/role.*
+		rm -rf $C_ENV_CONFIG_DATADIR/meta.* $C_ENV_CONFIG_DATADIR/role.* $F_LOGDIR/meta.* $F_LOGDIR/role.*
 
 	else
-		rm -rf $C_ENV_CONFIG_LOCAL_DATADIR/$P_SINGLE_SCHEMA.* $F_LOGDIR/$P_SINGLE_SCHEMA.*
+		rm -rf $C_ENV_CONFIG_DATADIR/$P_SINGLE_SCHEMA.* $F_LOGDIR/$P_SINGLE_SCHEMA.*
 	fi
 
-	mkdir -p $C_ENV_CONFIG_LOCAL_DATADIR $F_LOGDIR
+	mkdir -p $C_ENV_CONFIG_DATADIR $F_LOGDIR
 }
 
 function f_execute_copycorefiles() {
@@ -60,10 +60,10 @@ function f_execute_exportmeta() {
 		echo "export metadata ($S_SCHEMALIST)..."
 		f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "./export_helper.sh $P_ENV $P_DB $P_DBCONN_REMOTE exportmeta $S_SCHEMALIST" > $F_LOGDIR/meta.log 2>&1
 
-		echo "copy exported metadata to $C_ENV_CONFIG_LOCAL_DATADIR ..."
-		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.dmp $C_ENV_CONFIG_LOCAL_DATADIR/meta.dmp
+		echo "copy exported metadata to $C_ENV_CONFIG_DATADIR ..."
+		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.dmp $C_ENV_CONFIG_DATADIR/meta.dmp
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/meta.log $F_LOGDIR/meta.expdp.log
-		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.dmp $C_ENV_CONFIG_LOCAL_DATADIR/role.dmp
+		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.dmp $C_ENV_CONFIG_DATADIR/role.dmp
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/role.log $F_LOGDIR/role.expdp.log
 	fi
 }
@@ -114,9 +114,9 @@ function f_execute_exportdata() {
 		sleep 10
 	done
 
-	echo "copy exported data to $C_ENV_CONFIG_LOCAL_DATADIR ..."
+	echo "copy exported data to $C_ENV_CONFIG_DATADIR ..."
 	for schema in $S_SCHEMALIST; do
-		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.dmp $C_ENV_CONFIG_LOCAL_DATADIR/$schema.dmp
+		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.dmp $C_ENV_CONFIG_DATADIR/$schema.dmp
 		scp $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$C_ENV_CONFIG_STAGINGDIR/$schema.log $F_LOGDIR/$schema.expdp.log
 	done
 }

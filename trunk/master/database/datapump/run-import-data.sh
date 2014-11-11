@@ -164,7 +164,7 @@ function f_execute_all() {
 	S_LOAD_ORACLEDIR=`echo $C_ENV_CONFIG_LOADDIR | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
 	S_REMOTE_HOSTLOGIN=$C_ENV_CONFIG_REMOTE_HOSTLOGIN
 	S_REMOTE_ROOT=$C_ENV_CONFIG_REMOTE_ROOT
-	S_DATADIR=`echo $C_ENV_CONFIG_LOCAL_DATADIR | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
+	S_DATADIR=`echo $C_ENV_CONFIG_DATADIR | tr " " "\n" | grep "$P_DBCONN=" | cut -d "=" -f2`
 	S_SINGLE_SCHEMA=$P_SINGLE_SCHEMA
 	S_LOGDIR=$P_LOGDIR
 
