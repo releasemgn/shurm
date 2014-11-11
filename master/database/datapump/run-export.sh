@@ -31,7 +31,7 @@ function f_execute_cleanup() {
 
 	if [ "$P_SINGLE_SCHEMA" = "" ]; then
 		# backup
-		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR_BACKUP; mkdir -p $C_ENV_CONFIG_DATADIR_BACKUP; mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/"
+		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR_BACKUP/*; mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/"
 
 		# clear log and staging area
 		rm -rf $F_LOGDIR/*
