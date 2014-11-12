@@ -18,7 +18,7 @@ S_EXPORTDATA_STATUS=
 
 function f_execute_cleanup() {
 	# check env
-	f_common_datadir "mkdir -p $C_ENV_CONFIG_DATADIR $C_ENV_CONFIG_DATADIR_BACKUP; if [ -d $C_ENV_CONFIG_DATADIR_BACKUP ] && [ -d $C_ENV_CONFIG_DATADIR ]; then echo ok; done"
+	f_common_datadir "mkdir -p $C_ENV_CONFIG_DATADIR $C_ENV_CONFIG_DATADIR_BACKUP; if [ -d $C_ENV_CONFIG_DATADIR_BACKUP ] && [ -d $C_ENV_CONFIG_DATADIR ]; then echo ok; fi"
 	if [ "$S_CMDRES" != "ok" ]; then
 		echo "unable to locate data/backup directory. Exiting"
 		exit 1
