@@ -30,8 +30,8 @@ function f_execute_cleanup() {
 	mkdir -p $F_LOGDIR
 
 	if [ "$P_SINGLE_SCHEMA" = "" ]; then
-		# backup
-		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR_BACKUP/*; if [ \"\${ls $C_ENV_CONFIG_DATADIR}\" != \"\" ]; then mv $C_ENV_CONFIG_DATADIR/* $C_ENV_CONFIG_DATADIR_BACKUP/; fi"
+		# remove old
+		f_common_datadir "rm -rf $C_ENV_CONFIG_DATADIR/*"
 
 		# clear log and staging area
 		rm -rf $F_LOGDIR/*
