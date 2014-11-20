@@ -42,7 +42,7 @@ function f_local_executeall() {
 			echo hosts.sh: invalid value=$P_RUNCMD_VALUE. Exiting
 			exit 1
 		fi
-	elif [ "$P_RUNCMD_CMD" = "delete" ]; then
+	elif [ "$P_RUNCMD_CMD" = "delete" ] || [ "$P_RUNCMD_CMD" = "check" ]; then
 		if [ "$F_HOST_NAME" = "" ]; then
 			echo hosts.sh: invalid value=$P_RUNCMD_VALUE. Exiting
 			exit 1
