@@ -13,8 +13,8 @@ cd ..
 P_EXECUTE_CMD="$1"
 shift 1
 
-echo "`date`: execute ./runcmd.sh -dc $C_CONTEXT_DC $*" >> $RUNPATH/deploy.log
-./runcmd.sh -dc $C_CONTEXT_DC $* | tee -a $RUNPATH/deploy.log; F_STATUS=${PIPESTATUS[0]}
+echo "`date`: execute ./hosts.sh -dc $C_CONTEXT_DC $*" >> $RUNPATH/deploy.log
+./hosts.sh -dc $C_CONTEXT_DC $* | tee -a $RUNPATH/deploy.log; F_STATUS=${PIPESTATUS[0]}
 
 exit $F_STATUS
 
