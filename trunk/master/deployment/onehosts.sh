@@ -54,8 +54,8 @@ function f_local_execute() {
 			return 1
 		fi
 
-		local F_HOSTNAME=${RUN_CMD_RES%% *}
-		local F_HOSTADDR=${RUN_CMD_RES##* }
+		local F_HOSTADDR=${RUN_CMD_RES%% *}
+		local F_HOSTNAME=${RUN_CMD_RES##* }
 
 		if [ "$F_HOSTNAME" != "$P_EXECUTE_HOSTNAME" ] || [ "$F_HOSTADDR" != "$P_EXECUTE_HOSTADDR" ]; then
 			echo "$P_EXECUTE_HOSTLOGIN: $RUN_CMD_RES - not matched ($P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR)"
