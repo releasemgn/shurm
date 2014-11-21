@@ -10,9 +10,6 @@ cd ..
 . ./getopts.sh
 . ./setenv.sh $C_CONTEXT_ENV
 
-P_EXECUTE_CMD="$1"
-shift 1
-
 echo "`date`: execute ./hosts.sh -dc $C_CONTEXT_DC $*" >> $RUNPATH/deploy.log
 ./hosts.sh -dc $C_CONTEXT_DC $* | tee -a $RUNPATH/deploy.log; F_STATUS=${PIPESTATUS[0]}
 
