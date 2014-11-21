@@ -22,12 +22,12 @@ fi
 . ./common.sh
 
 function f_local_execute_log() {
-	if [ "$P_EXECUTE_CMD" = "no" ]; then
+	if [ "$GETOPT_EXECUTE" != "yes" ]; then
 		echo "$P_EXECUTE_HOSTLOGIN: $P_EXECUTE_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR (showonly)"
 		return 0
 	fi
 
-	echo "$P_EXECUTE_HOSTLOGIN: $P_EXECUTE_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR ..."
+	echo "$P_EXECUTE_HOSTLOGIN: $P_EXECUTE_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR (execute) ..."
 
 	local F_LOGCMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): $P_EXECUTE_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR\" >> ~/execute.log"
 	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_LOGCMD"
