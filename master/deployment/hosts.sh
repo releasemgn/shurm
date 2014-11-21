@@ -35,7 +35,11 @@ SRVNAME_LIST=$*
 function f_local_executeall() {
 	# check host pair
 	local F_HOST_NAME=${P_RUNCMD_VALUE%=*}
-	local F_HOST_IP=${P_RUNCMD_VALUE#*=}
+
+	local F_HOST_IP=
+	if [[ "$P_RUNCMD_VALUE" =~ "=" ]]; then
+		F_HOST_IP=${P_RUNCMD_VALUE#*=}
+	fi
 
 	if [ "$P_RUNCMD_CMD" = "set" ]; then
 		if [ "$F_HOST_NAME" = "" ] || [[ ! "$F_HOST_IP" =~ [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ ]]; then
