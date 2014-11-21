@@ -9,7 +9,7 @@ P_EXECUTE_HOSTADDR=$4
 . ./common.sh
 
 function f_local_execute() {
-	if [ [ "$P_EXECUTE_CMD" = "set" ] || [ "$P_EXECUTE_CMD" = "delete" ]; then
+	if [ "$P_EXECUTE_CMD" = "set" ] || [ "$P_EXECUTE_CMD" = "delete" ]; then
 		if [ "$P_EXECUTE_CMD" != "yes" ]; then
 			echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR (showonly)"
 			return 0
