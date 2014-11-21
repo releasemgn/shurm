@@ -19,7 +19,7 @@ if [ "$P_RUNCMD_CMD" = "" ]; then
 	exit 1
 fi
 if [ "$P_RUNCMD_VALUE" = "" ]; then
-	echo hosts.sh: $P_RUNCMD_VALUE not set
+	echo hosts.sh: P_RUNCMD_VALUE not set
 	exit 1
 fi
 shift 2
