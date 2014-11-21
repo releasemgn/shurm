@@ -6,28 +6,52 @@ P_EXECUTE_HOSTLOGIN=$2
 P_EXECUTE_HOSTNAME=$3
 P_EXECUTE_HOSTADDR=$4
 
+if [ "$P_EXECUTE_CMD" = "" ]; then
+	echo P_EXECUTE_CMD not set. Exiting
+	exit 1
+fi
+if [ "$P_EXECUTE_HOSTLOGIN" = "" ]; then
+	echo P_EXECUTE_HOSTLOGIN not set. Exiting
+	exit 1
+fi
+if [ "$P_EXECUTE_HOSTNAME" = "" ]; then
+	echo P_EXECUTE_HOSTNAME not set. Exiting
+	exit 1
+fi
+
 . ./common.sh
 
-function f_local_execute() {
-	if [ "$P_EXECUTE_CMD" = "set" ] || [ "$P_EXECUTE_CMD" = "delete" ]; then
-		if [ "$P_EXECUTE_CMD" = "no" ]; then
-			echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR (showonly)"
-			return 0
-		fi
-
-		echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR ..."
-
-		local F_LOGCMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR\" >> ~/execute.log"
-		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_LOGCMD"
+function f_local_execute_log() {
+	if [ "$P_EXECUTE_CMD" = "no" ]; then
+		echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR (showonly)"
+		return 0
 	fi
 
-	if [ "$P_EXECUTE_CMD" = "set" ]; then
-		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | grep -v $P_EXECUTE_HOSTNAME | grep -v $P_EXECUTE_HOSTADDR > /etc/hosts.new; echo \"$P_EXECUTE_HOSTADDR $P_EXECUTE_HOSTNAME\" >> /etc/hosts.new; mv /etc/hosts.new /etc/hosts"
+	echo "$P_EXECUTE_HOSTLOGIN: $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR ..."
 
-	elif [ "$P_EXECUTE_CMD" = "delete" ]; then
+	local F_LOGCMD="echo `date` \"(SSH_CLIENT=$SSH_CLIENT): $P_RUNCMD_CMD $P_EXECUTE_HOSTNAME $P_EXECUTE_HOSTADDR\" >> ~/execute.log"
+	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "$F_LOGCMD"
+}
+
+function f_local_execute_set() {
+	if [ "$P_EXECUTE_HOSTADDR" = "" ]; then
+		echo P_EXECUTE_HOSTADDR not set. Exiting
+		exit 1
+	fi
+
+	f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | grep -v $P_EXECUTE_HOSTNAME | grep -v $P_EXECUTE_HOSTADDR > /etc/hosts.new; echo \"$P_EXECUTE_HOSTADDR $P_EXECUTE_HOSTNAME\" >> /etc/hosts.new; mv /etc/hosts.new /etc/hosts"
+}
+
+function f_local_execute_delete() {
+	if [ "$P_EXECUTE_HOSTADDR" != "" ]; then
 		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | grep -v $P_EXECUTE_HOSTNAME | grep -v $P_EXECUTE_HOSTADDR > /etc/hosts.new; mv /etc/hosts.new /etc/hosts"
+	else
+		f_run_cmdcheck $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | grep -v $P_EXECUTE_HOSTNAME > /etc/hosts.new; mv /etc/hosts.new /etc/hosts"
+	fi
+}
 
-	elif [ "$P_EXECUTE_CMD" = "check" ] && [ "$P_EXECUTE_HOSTADDR" = "" ]; then
+function f_local_execute_check() {
+	if [ "$P_EXECUTE_HOSTADDR" = "" ]; then
 		f_run_cmd $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | grep $P_EXECUTE_HOSTNAME"
 		if [ "$RUN_CMD_RES" = "" ]; then
 			echo "$P_EXECUTE_HOSTLOGIN: missing $P_EXECUTE_HOSTNAME"
@@ -40,9 +64,8 @@ function f_local_execute() {
 		fi
 		
 		echo "$P_EXECUTE_HOSTLOGIN: $RUN_CMD_RES"
-		return 0
 
-	elif [ "$P_EXECUTE_CMD" = "check" ] && [ "$P_EXECUTE_HOSTADDR" != "" ]; then
+	else
 		f_run_cmd $P_EXECUTE_HOSTLOGIN "cat /etc/hosts | egrep \"$P_EXECUTE_HOSTNAME|$P_EXECUTE_HOSTADDR\""
 		if [ "$RUN_CMD_RES" = "" ]; then
 			echo "$P_EXECUTE_HOSTLOGIN: missing $P_EXECUTE_HOSTNAME"
@@ -63,7 +86,20 @@ function f_local_execute() {
 		fi
 
 		echo "$P_EXECUTE_HOSTLOGIN: $RUN_CMD_RES - ok"
-		return 0
+	fi
+}
+
+function f_local_execute() {
+	if [ "$P_EXECUTE_CMD" = "set" ] || [ "$P_EXECUTE_CMD" = "delete" ]; then
+		f_local_execute_log
+	fi
+
+	if [ "$P_EXECUTE_CMD" = "set" ]; then
+		f_local_execute_set
+	elif [ "$P_EXECUTE_CMD" = "delete" ]; then
+		f_local_execute_delete
+	elif [ "$P_EXECUTE_CMD" = "check" ]; then
+		f_local_execute_check
 	fi
 }
 
