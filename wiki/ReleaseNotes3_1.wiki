@@ -18,7 +18,7 @@ Release 3.1 notes.
   * add attribute versiontype to distributive item
   * versiontype defines how to deploy to environment
   * distributive item itself can correspond to any versioning type
-  * existing options are:
+  * available options are:
 {{{
 "default" or "prefix" (also is used when missing) - 2.3.4-mybinary.war
 "none" - mybinary.war, cuts any version present in distribution
