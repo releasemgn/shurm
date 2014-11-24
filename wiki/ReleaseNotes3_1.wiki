@@ -13,6 +13,19 @@ Release 3.1 notes.
 
 = Deployment Changes =
 
+== Deploy Item Versioning ==
+
+  * add attribute versiontype to distributive item
+  * versiontype defines how to deploy to environment
+  * distributive item itself can correspond to any versioning type
+  * existing options are:
+{{{
+"default" or "prefix" (also is used when missing) - 2.3.4-mybinary.war
+"none" - mybinary.war, cuts any version present in distribution
+"middash" - mybinary-2.3.4.war, default nexus versioning
+"mindpound" - mybinary##2.3.4.war, apache tomcat 7 versioning
+}}}
+
 == Command Servers ==
 
   * add new server type "generic.command" to allow to run parameterized command which stops after performing its activities
