@@ -15,7 +15,7 @@ Release 3.1 notes.
 
 == Deploy Item Versioning ==
 
-  * add attribute versiontype to distributive item
+  * add attribute versiontype to distributive item, replace old "options" attribute
   * versiontype defines how to deploy to environment
   * distributive item itself can correspond to any versioning type
   * available options are:
