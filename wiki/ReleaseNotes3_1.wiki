@@ -152,7 +152,9 @@ Developer can have access only to commit to dev configuration
 In the same time release engineer can use prod to track prod configuration
 
 component references category using subdir attribute:
-<component name="osb.conf" 		subdir="prod" type="files" files="smev-xquery.xml smev-xquery.properties" layer="server"/>
+<component name="osb.conf" 		
+    subdir="prod" type="files" 
+    files="smev-xquery.xml smev-xquery.properties" layer="server"/>
 }}}
   * svnrestoreconfig.sh and svnsaveconfig.shg will use proper paths to find configuration component files
 
