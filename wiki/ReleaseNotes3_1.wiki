@@ -21,9 +21,16 @@ Release 3.1 notes.
   * available options are:
 {{{
 "default" or "prefix" (also is used when missing) - 2.3.4-mybinary.war
+<distitem name="arm-sheduler-module" type="binary" extension=".ear"/>
+
 "none" - mybinary.war, cuts any version present in distribution
+<distitem name="solr" type="binary" extension=".war" deployversion="none"/>
+
 "middash" - mybinary-2.3.4.war, default nexus versioning
+<distitem name="ojdbc6" type="binary" extension=".jar" deployversion="middash"/>
+
 "mindpound" - mybinary##2.3.4.war, apache tomcat 7 versioning
+<distitem name="plugin" type="war" context="sia-web" deployname="plugin" deployversion="midpound"/>
 }}}
 
 == Command Servers ==
