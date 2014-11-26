@@ -204,6 +204,22 @@ ssh oracle@dbhost ". <path to orasetenv.sh>; sqlplus / \"as sysdba\""
 
 3. system.admindb_uatdata table is created to store list of tables
 You can drop it after operation or leave.
+
+4. create all paths referenced in dump operation definition file
+Add proper permissions.
+
+5. reserve sufficient disk space for dump operations
+}}}
+  * export/import operations are using specific directory registered in database using either of
+{{{
+1. specify precreated directory 
+specify C_ENV_CONFIG_DATAPUMP_DIR=MYDIR
+create datapump link pointed to registered database directory
+
+2. register directory on the fly:
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+create ordinary datapump directory
+this directory will be registered before running import/export
 }}}
 
 *export data*:
@@ -228,6 +244,18 @@ C_ENV_CONFIG_DATADIR_BACKUP=/distr/myproduct/data-backup-test
 C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
 C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
 C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+}}}
+  * you can control exported schema set:
+{{{
+- use full product schema set 
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+
+- use explicitly defined set using space-delimited list
+C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3" 
+}}}
+  * you can change schema names using C_ENV_CONFIG_SCHMAPPING property
+{{{
+C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
 }}}
 
 = Minors =
