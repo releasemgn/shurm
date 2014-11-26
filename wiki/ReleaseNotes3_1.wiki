@@ -173,7 +173,21 @@ component references category using subdir attribute:
 
 == Using Oracle Datapump to Maintain Databases ==
 
-  * added etc/datapump directory to store dump operation definition files
+  * use etc/datapump directory to store dump operation definition files
+  * use flexible dump set
+{{{
+standard dump set used in urm import/export operations:
+- meta.dmp - contains only metadata for all referenced schemes
+- role.dmp - contains set of roles of source database instance
+- schema.dmp - contains only data for given schema
+note: no metadata, no index data, no statistics
+
+One can change this setup by using property C_ENV_CONFIG_IMPORT_DUMPGROUPS:
+C_ENV_CONFIG_IMPORT_DUMPGROUPS="<dump file>:<std items>; ...", where 
+<dump file> - specific dump file, e.g. mydump.dbf
+<std items> - comma-delimited items, e.g.:
+mydump.dbf: meta, role, myschema1
+}}}
   * use data subset definition file to define exported/imported data
 {{{
 export/import definition file references it using:
