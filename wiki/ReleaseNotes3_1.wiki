@@ -173,7 +173,7 @@ component references category using subdir attribute:
 
 == Using Oracle Datapump to Maintain Databases ==
 
-*export data*:
+  * added etc/datapump directory to store dump operation definition files
   * use data subset definition file to define exported/imported data
 {{{
 export/import definition file references it using:
@@ -191,7 +191,8 @@ each line means:
     mytable - specific table name in given schema (upper case)
 - all schema tables, if contains myschema/TABLE/*
 }}}
-  * added etc/datapump directory to store dump operation definition files
+
+*export data*:
   * add script export.sh to master/database to create full/limited dumps 
 {{{
 sample export definition file:
