@@ -190,6 +190,12 @@ F_MYVAR=$C_ENV_XMLVALUE
 {{{
 <property name="distr-remotehost" value="release-reader@host:11111"/>
 }}}
+  * use key file defined in environment to access distribution box
+  * add attribute mavenversion to override maven version used to build specific codebase project in source.xml
+{{{
+<project name="myproj" vcs="svnnew" version="branch" 
+javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/mygroup" jira="MYP">
+}}}
 
 = Bugfixes =
 
