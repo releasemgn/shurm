@@ -191,11 +191,26 @@ each line means:
     mytable - specific table name in given schema (upper case)
 - all schema tables, if contains myschema/TABLE/*
 }}}
+  * to perform export it relies on preliminary setup:
+{{{
+1. Before running sql or exporting data urm calls orasetenv.sh (see below). 
+Create orasetenv.sh using path defined in dump operation file.
+It can be empty if context is defined somewhere else.
+Database context should be available after calling it using remotedly with ssh.
+
+2. sqlplus / "as sysdba" is used to export/import data
+Check whether command line like below is working fine:
+ssh oracle@dbhost ". <path to orasetenv.sh>; sqlplus / \"as sysdba\""
+
+3. system.admindb_uatdata table is created to store list of tables
+You can drop it after operation or leave.
+}}}
 
 *export data*:
   * add script export.sh to master/database to create full/limited dumps 
+  * export.sh script runs on admin box, export data from database host and copies dump files to specified datapump storage host (or local, if missing)
+  * sample export definition file:
 {{{
-sample export definition file:
 C_ENV_CONFIG_ENV=major
 C_ENV_CONFIG_DB=mydb
 
@@ -210,6 +225,7 @@ C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
 C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/export
 C_ENV_CONFIG_DATADIR=/distr/myproduct/data
 C_ENV_CONFIG_DATADIR_BACKUP=/distr/myproduct/data-backup-test
+C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
 C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
 C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
 }}}
