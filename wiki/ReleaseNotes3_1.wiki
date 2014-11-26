@@ -186,6 +186,10 @@ F_MYVAR=$C_ENV_XMLVALUE
 f_env_getsecretpropertyfinalvalue "var"
 F_MYVAR=$C_ENV_XMLVALUE
 }}}
+  * added option to override port 22 to access release box
+{{{
+<property name="distr-remotehost" value="release-reader@host:11111"/>
+}}}
 
 = Bugfixes =
 
