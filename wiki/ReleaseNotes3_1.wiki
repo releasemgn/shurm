@@ -169,6 +169,50 @@ component references category using subdir attribute:
 ./codebase-export.sh -branch demo-3.0 dst/path/root
 }}}
 
+= Database Modifications =
+
+== Using Oracle Datapump to Maintain Databases ==
+
+*export data*:
+  * use data subset definition file to define exported/imported data
+{{{
+export/import definition file references it using:
+C_ENV_CONFIG_TABLESET=myfilename.txt
+where myfilename.txt - text file in etc/datapump
+
+below usage points to default name - datalight-tables.txt
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+file content is set of lines
+each line means:
+- comment, if started with #
+- specific table, if contains myschema/TABLE/mytable, where
+    myschema - specific database schema (upper case)
+    mytable - specific table name in given schema (upper case)
+- all schema tables, if contains myschema/TABLE/*
+}}}
+  * added etc/datapump directory to store dump operation definition files
+  * add script export.sh to master/database to create full/limited dumps 
+{{{
+sample export definition file:
+C_ENV_CONFIG_ENV=major
+C_ENV_CONFIG_DB=mydb
+
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="mydb=/"
+C_ENV_CONFIG_LOADDIR="mydb=data/datapump"
+C_ENV_CONFIG_STAGINGDIR=data/dumpfiles
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/export
+C_ENV_CONFIG_DATADIR=/distr/myproduct/data
+C_ENV_CONFIG_DATADIR_BACKUP=/distr/myproduct/data-backup-test
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+}}}
+
 = Minors =
 
   * added ability to use specific branch (buildbranch) and version (buildversion) on both projectset or project in release.xml
