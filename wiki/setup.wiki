@@ -96,7 +96,7 @@ List possible distributive items and their structure in etc/distr.xml (see sampl
 
 Define your environments (see samples/etc/env):
 - product can have unlimited number of environments having different configurations
-- every file stored in samples/etc/env defines additional environment
+- every file stored in $MYP_DEPLOYMENT_HOME/etc/env defines additional environment
 }}}
   * construct environment script wrappers
 {{{
