@@ -245,7 +245,7 @@ C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3"
 }}}
 
 *export data*:
-  * add script export.sh to master/database to create full/limited dumps 
+  * added script export.sh to master/database to create full/limited dumps 
   * export.sh script runs on admin box, export data from database host and copies dump files to specified datapump storage host (or local, if missing)
   * sample export definition file:
 {{{
@@ -294,6 +294,33 @@ exports given schema data dump
 }}}
 
 *import data*:
+  * added script import.sh to master/database to load full/limited dumps 
+  * import.sh script runs on admin box, copies data from local host to database host and loads into database
+  * sample import definition file:
+{{{
+C_CONFIG_SVNAUTH="--username=svnuser --password=svnuser"
+
+C_ENV_CONFIG_ENV=express
+C_ENV_CONFIG_DC=dc.reg
+C_ENV_CONFIG_DB=regdb
+
+C_ENV_CONFIG_FULLSCHEMALIST="pgu juddi nsi pgudrafts protocol terrabyte admsf forum ssp"
+C_ENV_CONFIG_METAONLYSCHEMALIST="pgudrafts forum"
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="regdb=/"
+C_ENV_CONFIG_LOADDIR="regdb=datapump"
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/import
+C_ENV_CONFIG_DATADIR="regdb=/distr/pgu/data"
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_POSTREFRESH="template-prod2all-main template-prod2all-gosuslugi"
+C_ENV_CONFIG_RECREATETABLESPACES=yes
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+C_ENV_CONFIG_USETRANSFORM=no
+C_ENV_CONFIG_ADDTRANSFORM=
+}}}
   * you can change imported schema names using C_ENV_CONFIG_SCHMAPPING property
 {{{
 C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
