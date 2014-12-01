@@ -185,7 +185,7 @@ note: no metadata, no index data, no statistics
 One can change this setup by using property C_ENV_CONFIG_IMPORT_DUMPGROUPS:
 C_ENV_CONFIG_IMPORT_DUMPGROUPS="<dump file>:<std items>; ...", where 
 <dump file> - specific dump file, e.g. mydump.dbf
-<std items> - comma-delimited items, e.g.:
+<std items> - comma-delimited standard items (meta, role or schema name), e.g.:
 mydump.dbf: meta, role, myschema1
 }}}
   * use data subset definition file to define exported/imported data
@@ -227,13 +227,13 @@ Add proper permissions.
   * export/import operations are using specific directory registered in database using either of
 {{{
 1. specify precreated directory 
-specify C_ENV_CONFIG_DATAPUMP_DIR=MYDIR
-create datapump link pointed to registered database directory
+- specify C_ENV_CONFIG_DATAPUMP_DIR=MYDIR
+- create datapump link pointed to registered database directory
 
 2. register directory on the fly:
 C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
-create ordinary datapump directory
-this directory will be registered before running import/export
+- create ordinary datapump directory
+- this directory will be registered before running import/export
 }}}
 
 *export data*:
