@@ -267,6 +267,31 @@ C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
 C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
 C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
 }}}
+  * export location:
+{{{
+Dump operation is performed remotedly on C_ENV_CONFIG_REMOTE_HOSTLOGIN
+Exported dump is first created by Oracle in C_ENV_CONFIG_LOADDIR
+then dump file is moved to C_ENV_CONFIG_STAGINGDIR
+then dump file is copied to local host to log directory
+
+If C_ENV_CONFIG_DATADIR_HOSTLOGIN is set then dump is copied to this host
+Otherwise dump is moved locally to C_ENV_CONFIG_DATADIR
+}}}
+  * export comman options:
+{{{
+export command variants:
+./export.sh export-configuration-file
+exports meta, role and all listed schemes
+
+./export.sh export-configuration-file meta
+exports meta.dmp and role.dmp
+
+./export.sh export-configuration-file data
+exports all data dumps
+
+./export.sh export-configuration-file schema
+exports given schema data dump
+}}}
 
 *import data*:
   * you can change imported schema names using C_ENV_CONFIG_SCHMAPPING property
