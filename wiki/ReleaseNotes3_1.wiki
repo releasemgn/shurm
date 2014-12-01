@@ -200,10 +200,10 @@ C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
 file content is set of lines
 each line means:
 - comment, if started with #
-- specific table, if contains myschema/TABLE/mytable, where
-    myschema - specific database schema (upper case)
-    mytable - specific table name in given schema (upper case)
-- all schema tables, if contains myschema/TABLE/*
+- specific table, if contains MYSCHEMA/TABLE/MYTABLE, where
+    MYSCHEMA - specific database schema (upper case)
+    MYTABLE - specific table name in given schema (upper case)
+- all schema tables, if contains MYSCHEMA/TABLE/*
 }}}
   * to perform export it relies on preliminary setup:
 {{{
