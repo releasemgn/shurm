@@ -295,7 +295,7 @@ exports given schema data dump
 
 *import data*:
   * added script import.sh to master/database to load full/limited dumps 
-  * import.sh script runs on admin box, copies data from local host to database host and loads into database
+  * import.sh script runs on admin box, copies data from local host to database host, loads into database and applies post-refresh adjustments to adopt database data to specific environment
   * sample import definition file:
 {{{
 C_CONFIG_SVNAUTH="--username=svnuser --password=svnuser"
@@ -324,6 +324,37 @@ C_ENV_CONFIG_ADDTRANSFORM=
   * you can change imported schema names using C_ENV_CONFIG_SCHMAPPING property
 {{{
 C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
+}}}
+  * C_ENV_CONFIG_METAONLYSCHEMALIST defines set of schemas which have no data according to tableset file
+{{{
+before importing source directory is validated to contain requires dumps
+- C_ENV_CONFIG_FULLSCHEMALIST defines full set of imported dumps
+- those defined in C_ENV_CONFIG_METAONLYSCHEMALIST have only metadata
+}}}
+  * import approach
+{{{
+import is performed in 3 steps - meta, data, post-refresh
+
+generic meta import sequence is:
+1. put database in exclusive move
+2. kill all schema connections
+3. drop schemas and their objects
+4. recreate tablespaces (if C_ENV_CONFIG_RECREATETABLESPACES is set to yes)
+5. load meta and role dumps
+6. recreate all indexes and constrains
+7. make database available for connections
+
+generic data import sequence is:
+1. disable constraints referencing loaded data
+2. truncate data if any
+3. load data for all dumps except C_ENV_CONFIG_METAONLYSCHEMALIST
+4. enable constrains and rebuild indexes
+
+generic post-refresh sequence is:
+1. iterate C_ENV_CONFIG_POSTREFRESH items, next steps - for every item
+2. download item scripts from svn at C_CONFIG_SOURCE_SQL_GLOBALPENDING/refresh/item
+3. configure item scripts using C_ENV_CONFIG_ENV/C_ENV_CONFIG_DC/C_ENV_CONFIG_DB
+4. apply configured scripts to target database
 }}}
 
 = Minors =
