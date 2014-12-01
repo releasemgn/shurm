@@ -186,7 +186,7 @@ One can change this setup by using property C_ENV_CONFIG_IMPORT_DUMPGROUPS:
 C_ENV_CONFIG_IMPORT_DUMPGROUPS="<dump file>:<std items>; ...", where 
 <dump file> - specific dump file, e.g. mydump.dbf
 <std items> - comma-delimited standard items (meta, role or schema name), e.g.:
-mydump.dbf: meta, role, myschema1
+mydump.dbf: meta, myschema1, myschema2
 }}}
   * use data subset definition file to define exported/imported data
 {{{
