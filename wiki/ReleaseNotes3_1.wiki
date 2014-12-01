@@ -356,6 +356,21 @@ generic post-refresh sequence is:
 3. configure item scripts using C_ENV_CONFIG_ENV/C_ENV_CONFIG_DC/C_ENV_CONFIG_DB
 4. apply configured scripts to target database
 }}}
+  * import command options:
+{{{
+import command variants:
+./import.sh import-configuration-file all
+imports meta, role and all listed schemes
+
+./import.sh import-configuration-file meta
+imports meta.dmp and role.dmp
+
+./import.sh import-configuration-file data
+imports all data dumps
+
+./import.sh import-configuration-file schema
+imports given schema data dump
+}}}
 
 = Minors =
 
