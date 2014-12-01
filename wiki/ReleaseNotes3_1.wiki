@@ -259,7 +259,7 @@ C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
 C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
 C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
 }}}
-  * you can control exported schema set:
+  * you can control schema set:
 {{{
 - use full product schema set 
 C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
@@ -267,7 +267,9 @@ C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
 - use explicitly defined set using space-delimited list
 C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3" 
 }}}
-  * you can change schema names using C_ENV_CONFIG_SCHMAPPING property
+
+*export data*:
+  * you can change imported schema names using C_ENV_CONFIG_SCHMAPPING property
 {{{
 C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
 }}}
