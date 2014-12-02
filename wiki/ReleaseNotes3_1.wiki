@@ -485,6 +485,13 @@ http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?w
 ./login.sh -hostuser guest pguapp
 ./runcmd.sh -hostuser guest "echo $MYVAR" app1 app2 app3
 }}}
+  * change configuration tracking folders
+{{{
+new names are:
+DC/SERVER/CONFCOMP-HOST-LOGIN
+
+to delete old folders, run ./svnsaveconfigs.sh -force
+}}}
 
 = Bugfixes =
 
