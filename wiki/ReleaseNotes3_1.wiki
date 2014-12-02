@@ -187,16 +187,29 @@ component references category using subdir attribute:
 }}}
   * svnrestoreconfig.sh and svnsaveconfig.shg will use proper paths to find configuration component files
 
-== Export Codebase ==
+== Codebase Maintenance Helpers ==
 
-  * add new script codebase-export.sh to export product projects to given localtion
-  * allows to use specific tag or branch, use default branch for specific build mode
-  * examples:
+  * add new script codebase-export.sh to export product projects to given location:
 {{{
+examples:
 ./codebase-export.sh dst/path/root
 ./codebase-export.sh dst/path/root core IDECS pgu-portal
 ./codebase-export.sh -tag prod-3.0.17 dst/path/root
 ./codebase-export.sh -branch demo-3.0 dst/path/root
+}}}
+  * add new script codebase-checkout.sh to checkout product projects to given location disregarding VCS:
+{{{
+examples:
+./codebase-checkout.sh dst/path/root
+./codebase-checkout.sh dst/path/root core IDECS pgu-portal
+./codebase-checkout.sh -branch demo-3.0 dst/path/root
+}}}
+
+  * add new script codebase-commit.sh to commit to VCS changes done in product projects locally:
+{{{
+examples:
+./codebase-commit.sh dst/path/root
+./codebase-checkout.sh dst/path/root core IDECS pgu-portal
 }}}
 
 = Database Modifications =
