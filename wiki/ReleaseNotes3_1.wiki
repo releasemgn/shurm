@@ -537,6 +537,7 @@ to delete old folders, run ./svnsaveconfigs.sh -force
 	<distitem name="presto-cassandra" type="nexus" extension=".jar" path="com.facebook.presto"/>
 </project>
 }}}
+  * rename uploadthirdparty.sh to thirdpartyupload.sh
 
 = Bugfixes =
 
