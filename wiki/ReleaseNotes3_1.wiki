@@ -9,7 +9,20 @@ Release 3.1 notes.
 = Change List =
 
 || ID || *Change* || *Documentation updated* ||
-|| 1 || || ||
+|| 1 || Redundancy Check || no ||
+|| 2 || Redundancy Check || no ||
+|| 2 || Key Management || no ||
+|| 2 || Deploy Item Versioning || no ||
+|| 2 || Command Servers || no ||
+|| 2 || Upgrading Environment || no ||
+|| 2 || Copy Files and Directories to Environment || no ||
+|| 2 || Configuration Categories || no ||
+|| 2 || Codebase Maintenance Helpers || no ||
+|| 2 || Handling Release Types || no ||
+|| 2 || Using Database Release from Distribution Box || no ||
+|| 2 || Configuring Database Scripts || no ||
+|| 2 || Using Oracle Datapump to Maintain Databases || no ||
+|| 2 || Minors || no ||
 
 = Deployment Changes =
 
