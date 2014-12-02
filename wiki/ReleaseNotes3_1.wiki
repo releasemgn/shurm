@@ -132,12 +132,6 @@ force upgrade given env hosts even if uprade was already performed
 ./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
 }}}
 
-== Configuring Database Scripts ==
-
-  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
-  * variables are substituted on execution
-  * variables are extracted from server set corresponding to specific database where release is being applied
-
 = Build and Codebase Maintenance Changes =
 
 == Configuration Categories ==
@@ -181,6 +175,11 @@ envionment file defines location of distributives:
 <property name="distr-remotehost" value="release-reader@myhost"/>
 }}}
 
+== Configuring Database Scripts ==
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
 
 == Using Oracle Datapump to Maintain Databases ==
 
