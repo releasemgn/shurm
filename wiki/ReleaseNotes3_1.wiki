@@ -493,6 +493,7 @@ DC/SERVER/CONFCOMP-HOST-LOGIN
 to delete old folders, run ./svnsaveconfigs.sh -force
 }}}
   * use C_CONFIG_VERSION_NEXT_FULL from config.sh to find exact version to build
+  * define 2 standard development build modes - "devbranch" and "devtrunk" instead of old "dev" build mode
 
 = Bugfixes =
 
