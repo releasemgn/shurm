@@ -399,6 +399,7 @@ F_MYVAR=$C_ENV_XMLVALUE
 <project name="myproj" vcs="svnnew" version="branch" 
 javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/mygroup" jira="MYP">
 }}}
+  * "-pending <folder>" option renamed to "-folder <folder>" to denote group folder used to get specific release files
 
 = Bugfixes =
 
