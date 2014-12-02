@@ -13,6 +13,21 @@ Release 3.1 notes.
 
 = Deployment Changes =
 
+== Redundancy Check ==
+
+  * added state directory to staging area to store current set of version files and hot deploy binaries
+  * state directory automatically populated with .ver files containing path and md5 hash value of deployment item
+  * state directory keeps last versions of files uploaded to server using hot deploy method
+  * state directory allows to skip redundant deployment:
+{{{
+./redist.sh by default will ignore items having the same filename and md5 hash value
+./redist.sh -ignoreversion skips update of file which differs only in version
+./redist.sh -force will ignore state directory data and will transfer full release contents
+
+./dropredist.sh by default will drop only release data
+./dropredist.sh -all will also drop state directory
+}}}
+
 == Deploy Item Versioning ==
 
   * add attribute versiontype to distributive item, replace old "options" attribute
@@ -441,10 +456,6 @@ consider webservice is defined for component:
 
 Then checkenv.sh tests services using urls like:
 http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
-}}}
-  * added state directory to staging area to store current set of version files and hot deploy binaries
-{{{
-- directory automatically populated with 
 }}}
 
 
