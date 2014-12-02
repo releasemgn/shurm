@@ -189,6 +189,7 @@ component references category using subdir attribute:
 
 == Codebase Maintenance Helpers ==
 
+  * all scripts are performing group operations on codebase disregarding VCS used - one project can use svn, while another can be using git
   * add new script codebase-export.sh to export product projects to given location:
 {{{
 examples:
@@ -197,7 +198,7 @@ examples:
 ./codebase-export.sh -tag prod-3.0.17 dst/path/root
 ./codebase-export.sh -branch demo-3.0 dst/path/root
 }}}
-  * add new script codebase-checkout.sh to checkout product projects to given location disregarding VCS:
+  * add new script codebase-checkout.sh to checkout product projects to given location:
 {{{
 examples:
 ./codebase-checkout.sh dst/path/root
@@ -208,7 +209,15 @@ examples:
 {{{
 examples:
 ./codebase-commit.sh dst/path/root
-./codebase-checkout.sh dst/path/root core IDECS pgu-portal
+./codebase-commit.sh dst/path/root core IDECS pgu-portal
+}}}
+  * add new script codebase-copytagtobranch.sh to create specific branch from given tag for all listed product projects:
+{{{
+examples:
+./codebase-copytagtobranch.sh <tag> <branch> core IDECS pgu-portal
+
+note, that for git every branch or tag padded by URM to the left with "branch-" and "tag-" respectively
+In URM parameters there is no need to add branch- or tag- prefix.
 }}}
 
 = Database Modifications =
