@@ -204,7 +204,6 @@ examples:
 ./codebase-checkout.sh dst/path/root core IDECS pgu-portal
 ./codebase-checkout.sh -branch demo-3.0 dst/path/root
 }}}
-
   * add new script codebase-commit.sh to commit to VCS changes done in product projects locally:
 {{{
 examples:
