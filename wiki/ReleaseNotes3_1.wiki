@@ -422,6 +422,16 @@ and copied to
 $C_CONFIG_DISTR_PATH/myrelease/SQL
 }}}
   * download only sql svn subdirectory when preparing script part of release using getsql.sh
+  * use webdomain attribute in nlbserver to use in webservice testing from checkenv.sh script
+{{{
+<server name="nlb" type="service" servicename="nginx"
+...
+	webdomain="myproduct.mydomain.com"
+	>
+	<node hostlogin="root@myhost"/>
+	<configure component="nlb.conf" deploypath="etc/myproduct.uat"/>
+</server>
+}}}
 
 = Bugfixes =
 
