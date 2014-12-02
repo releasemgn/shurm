@@ -329,7 +329,7 @@ C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
 {{{
 before importing source directory is validated to contain requires dumps
 - C_ENV_CONFIG_FULLSCHEMALIST defines full set of imported dumps
-- those defined in C_ENV_CONFIG_METAONLYSCHEMALIST have only metadata
+- those defined in C_ENV_CONFIG_METAONLYSCHEMALIST have only metadata and can be missing
 }}}
   * import approach
 {{{
