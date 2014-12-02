@@ -171,6 +171,17 @@ component references category using subdir attribute:
 
 = Database Modifications =
 
+== Using Database Release from Distribution Box ==
+
+  * originally only local distributives were supported for database operations, now distributive can be used from original location
+  * if deployment box differs from distributive box then database scripts are first copied then being applied to database
+{{{
+envionment file defines location of distributives:
+<property name="distr-use-local" value="false"/>
+<property name="distr-remotehost" value="release-reader@myhost"/>
+}}}
+
+
 == Using Oracle Datapump to Maintain Databases ==
 
   * use etc/datapump directory to store dump operation definition files
