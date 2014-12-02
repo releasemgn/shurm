@@ -28,6 +28,26 @@ Release 3.1 notes.
 ./dropredist.sh -all will also drop state directory
 }}}
 
+== Key Management ==
+
+  * added script keys.sh to update keys in .ssh/authorized_keys in environment
+{{{
+./key.sh [-key accesskeyfile] [-newkey storekeyfile] command [servers]
+
+accesskeyfile - path to private key file to login into host
+- by default it is local ~/.ssh/id_dsa
+- if unknown to host, then password will be prompted
+
+storekeyfile - path to public key file to store in authorized_keys
+- by default it is local ~/.ssh/id_dsa.pub
+
+command - "set", "add" or "delete"
+- set will delete all keys from authorized_keys and will add storekeyfile
+- add will delete key of the same name if any and will add storekeyfile
+- delete will delete key of the same name  as storekeyfile
+}}}
+  * operation is iterated on uninue nodes of listed servers, by default on all the environment
+
 == Deploy Item Versioning ==
 
   * add attribute versiontype to distributive item, replace old "options" attribute
@@ -459,6 +479,11 @@ http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?w
 }}}
   * hide several logging messages, use -showall to display
   * deleted option -ignoreerrors, use -skiperrors instead
+  * add option to use custom user to access environment
+{{{
+./login.sh -hostuser guest pguapp
+./runcmd.sh -hostuser guest "echo $MYVAR" app1 app2 app3
+}}}
 
 = Bugfixes =
 
