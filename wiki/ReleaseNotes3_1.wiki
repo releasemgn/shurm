@@ -530,6 +530,12 @@ to delete old folders, run ./svnsaveconfigs.sh -force
   * use C_CONFIG_VERSION_NEXT_FULL from config.sh to find exact version to build
   * define two standard development build modes - "devbranch" and "devtrunk" instead of old "dev" build mode
   * enable using prebuilt items from any specified repository, not from thirdparty only
+  * enable using maven version which differs from product-default:
+{{{
+<project name="presto" vcs="git" version="branch" javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/smev/presto" jira="SMEV">
+	<distitem name="presto-cassandra" type="nexus" extension=".jar" path="com.facebook.presto"/>
+</project>
+}}}
 
 = Bugfixes =
 
