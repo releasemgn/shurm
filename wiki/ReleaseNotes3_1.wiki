@@ -368,7 +368,7 @@ imports meta.dmp and role.dmp
 ./import.sh import-configuration-file data
 imports all data dumps
 
-./import.sh import-configuration-file schema
+./import.sh import-configuration-file myschema
 imports given schema data dump
 }}}
 
