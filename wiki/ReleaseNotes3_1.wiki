@@ -431,6 +431,16 @@ $C_CONFIG_DISTR_PATH/myrelease/SQL
 	<node hostlogin="root@myhost"/>
 	<configure component="nlb.conf" deploypath="etc/myproduct.uat"/>
 </server>
+
+consider webservice is defined for component:
+<component name="commapp" unit="core">
+	<distitem name="notificationservice"/>
+	<webservice url="notificationservice/ws/NotificationConfigService"/>
+	<webservice url="notificationservice/ws/NotificationEngineService"/>
+...
+
+Then checkenv.sh test reference services using urls like:
+http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
 }}}
 
 = Bugfixes =
