@@ -458,6 +458,7 @@ Then checkenv.sh tests services using urls like:
 http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
 }}}
   * hide several logging messages, use -showall to display
+  * deleted option -ignoreerrors, use -skiperrors instead
 
 = Bugfixes =
 
