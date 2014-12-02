@@ -442,6 +442,7 @@ consider webservice is defined for component:
 Then checkenv.sh tests services using urls like:
 http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
 }}}
+  * added state directory to staging area to store current set of version files and hot deploy binaries
 
 = Bugfixes =
 
