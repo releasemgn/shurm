@@ -220,6 +220,20 @@ note, that for git every branch or tag padded by URM to the left with "branch-" 
 In URM parameters there is no need to add branch- or tag- prefix.
 }}}
 
+== Handling Release Types ==
+
+  * option -release is processed differently depending on release type:
+{{{
+- if release name is X.Y then it is treated as major release
+major release has source folder major-release-X.Y in releases svn
+
+- if release name is like "NNN-demo-ZZZ" then it is regarded as demo release
+demo release has source folder demo-ZZZ-NNN, where ZZZ - demo id and NNN - baseline version
+
+- otherwise release RRR is ordinary patch release
+patch release has source folder prod-patch-RRR
+}}}
+
 = Database Modifications =
 
 == Using Database Release from Distribution Box ==
