@@ -409,11 +409,17 @@ F_MYVAR=$C_ENV_XMLVALUE
 <project name="myproj" vcs="svnnew" version="branch" 
 javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/mygroup" jira="MYP">
 }}}
-  * "-pending" option renamed to "-folder" to denote group folder used to get specific release files
+  * "-pending" option renamed to "-folder" to denote release folder used to place release files
 {{{
 example:
 cd master/database
-./getsql.sh -folder R_3_1 prod-patch-3.0.44
+./getsql.sh -folder myrelease prod-patch-3.0.44
+
+database files will be downloaded from
+$C_CONFIG_SOURCE_SQL_GLOBALPENDING/prod-patch-3.0.44
+
+and copied to
+$C_CONFIG_DISTR_PATH/myrelease/SQL
 }}}
   * download only sql svn subdirectory when preparing script part of release using getsql.sh
 
