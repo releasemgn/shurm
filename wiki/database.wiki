@@ -27,8 +27,8 @@ Defines how to apply changes to database.
 
 == Script Options ==
 
-  * option: *"-showall"* - add debug informing
-  * option: *"-execute|-showonly"* - actual execution or show command to be excuted
+  * option: *"-showall"* - add debug logging
+  * option: *"-execute|-showonly"* - actual execution or show command to be executed
   * option: *"-a|-f|-x"* - apply new (-a), old (-f), all (-x) scripts
   * option: *"-c|-r|-p"* - change adminstration statuses - change to correct (-c), remove (-r), show current status (-p)
   * option: *"-s"* - do not stop on error in execution
