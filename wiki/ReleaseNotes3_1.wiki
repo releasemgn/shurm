@@ -405,7 +405,7 @@ example:
 cd master/database
 ./getsql.sh -folder R_3_1 prod-patch-3.0.44
 }}}
-  * download only sql part when preparing script part of release using getsql.sh
+  * download only sql svn subdirectory when preparing script part of release using getsql.sh
 
 = Bugfixes =
 
