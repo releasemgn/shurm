@@ -400,6 +400,11 @@ F_MYVAR=$C_ENV_XMLVALUE
 javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/mygroup" jira="MYP">
 }}}
   * "-pending" option renamed to "-folder" to denote group folder used to get specific release files
+{{{
+example:
+cd master/database
+./getsql.sh -folder R_3_1 prod-patch-3.0.44
+}}}
 
 = Bugfixes =
 
