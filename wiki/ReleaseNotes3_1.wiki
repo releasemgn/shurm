@@ -47,6 +47,7 @@ command - "set", "add" or "delete"
 - delete will delete key of the same name  as storekeyfile
 }}}
   * operation is iterated on uninue nodes of listed servers, by default on all the environment
+  * option -key can be used in any deployment command to override default access key
 
 == Deploy Item Versioning ==
 
