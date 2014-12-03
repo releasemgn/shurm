@@ -9,7 +9,7 @@ Release 3.1 notes.
 = Change List =
 
 || ID || *Change* || *Documentation updated* ||
-|| 1 || Redundancy Check || no ||
+|| 1 || Redundancy Check || yes ||
 || 2 || Key Management || no ||
 || 3 || Deploy Item Versioning || no ||
 || 4 || Command Servers || no ||
