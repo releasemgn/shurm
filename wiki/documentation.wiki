@@ -15,7 +15,7 @@ Allows to establish standard unified release management process:
   * Build and manage distributions - [makedistr Makedistr]
   * Deploy binary and configuration files - [deployment Deployment]
   * Database modifications - [database Database]
-  * Setup environment monitoring - [monitoring Monitoring]
+  * Environment monitoring - [monitoring Monitoring]
 
 *Development activities*:
   * Prepare database modifications - [sqlguidelines SQL Guidelines]
