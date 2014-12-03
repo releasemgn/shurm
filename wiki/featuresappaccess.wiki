@@ -113,7 +113,7 @@ It makes svn history o configuration marked with release numbers.
 You will know when and why configuration change occured.
 }}}
 
-= Skype/Jabber chat notifications =
+= IM notifications =
 
   * if Skype integration server was started on release box, you can use automatic notification to the chat information about start, stop and deploy operations using Skype
   * chat room file should have name starting with "skype."
@@ -144,6 +144,7 @@ Define chat room file in env.xml:
 <property name="configuration-chatroomfile" value="chatfiles/jabber.release.pgu.uat.txt"/>
 
 Then room will be populated by lines like:
-[12:50 pm]<release-mgn> [deployredist.sh] deploy 2.9.6 to server list:  pguapp regweb.nginx regweb... (dc=dc.reg)
+[12:50 pm]<release-mgn> [deployredist.sh] deploy 2.9.6 to server list:
+ pguapp regweb.nginx regweb... (dc=dc.reg)
 [12:50 pm]<release-mgn> [deployredist.sh] deploy done. (dc=dc.reg)
 }}}
