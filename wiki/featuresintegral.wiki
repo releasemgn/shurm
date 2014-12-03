@@ -8,4 +8,12 @@ Features to perform on top level of release functions
 
 = Complex Release Operations =
 
+  * master/release.sh script allows to build, get configuration and DB changes and deploy all into uat environment using one command
+{{{
+./release.sh default uat - next planned release
+./release.sh 1.13.5-demo uat - given release
+
+./release.sh -env express default uat - next planned release but to express environment
+}}}
+
 = Update Environment Wrappers =
