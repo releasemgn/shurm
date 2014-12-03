@@ -14,7 +14,7 @@ Release 3.1 notes.
 || 3 || Deploy Item Versioning || yes ||
 || 4 || Command Servers || yes ||
 || 5 || Upgrading Environment || yes ||
-|| 6 || Copy Files and Directories to Environment || no ||
+|| 6 || Copy Files and Directories to Environment || yes ||
 || 7 || Configuration Categories || no ||
 || 8 || Codebase Maintenance Helpers || no ||
 || 9 || Handling Release Types || no ||
