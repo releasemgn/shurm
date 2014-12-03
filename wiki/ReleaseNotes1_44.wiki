@@ -12,7 +12,7 @@ Release 1.44 notes.
 || 1 || Introduce top-level scripts || yes ||
 || 2 || Implement custom deploy scripts for hotdeploy || yes ||
 || 3 || Skip redundant redeploy by md5 || yes ||
-|| 4 || Add predefined release labels - last, next || yws ||
+|| 4 || Add predefined release labels - last, next || yes ||
 
 = Common Changes =
 
