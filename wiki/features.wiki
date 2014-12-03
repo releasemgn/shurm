@@ -13,7 +13,7 @@ Defines features implemented in URM.
    * File upload logging
    * Execution logging
    * Track environment configuration changes
-   * Skype/Jabber chat notifications
+   * IM notifications
   * [featuresredist Copying Files to Environment]
    * Local and remove distributives
    * Renaming files in environment
