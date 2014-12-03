@@ -1,4 +1,4 @@
-#summary Functional Capabilities of URM - Host Access and Operation Audit
+#summary Functional Capabilities of URM - Host Access, Operating System Activities and Operation Audit
 [home] -> [documentation] -> [features] -> [featuresappaccess]
 
 Defines how to access environment hosts and automated audit of application deployment and environment control operations.
