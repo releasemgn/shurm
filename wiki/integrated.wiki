@@ -1,0 +1,15 @@
+#summary Integrated operations
+[home] -> [documentation] -> [integrated]
+
+Introduces mixed-mode operations, includind deployment, database and builds.
+
+<wiki:toc max_depth="2" />
+----
+
+= Overview =
+
+  * *integrated* module - allows to execute typical complex release engineering operations using single commands
+
+= Scripts =
+
+  * release.sh
