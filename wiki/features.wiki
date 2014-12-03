@@ -13,6 +13,21 @@ Defines features implemented in URM.
    * Update environment wrappers
    * Using predefined release labels
 
+= Build and Distributive Management =
+
+  * [featuresbuild Build Projects]
+   * Handling Nexus and Maven environment
+   * Build product codebase
+   * Release builds
+  * [featuresdist Distributive Management]
+   * Release planning and updates
+   * Prepare binary updates
+   * Prepare configuration updates
+  * [featurescodebase Codebase Management]
+   * bulk codebase updates
+   * tags and branches management
+   * tags and branches management
+
 = Application Deployment =
 
   * [featuresappaccess Host Access, Operating System Activities and Operation Audit]
