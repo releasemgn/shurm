@@ -9,7 +9,7 @@ Release 1.44 notes.
 = Change List =
 
 || ID || *Change* || *Documentation updated* ||
-|| 1 || Introduce top-level scripts || no ||
+|| 1 || Introduce top-level scripts || yes ||
 || 2 || Implement custom deploy scripts for hotdeploy || no ||
 || 3 || Skip redundant redeploy by md5 || no ||
 || 4 || Add predefined release labels - last, next || no ||
