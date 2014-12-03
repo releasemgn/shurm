@@ -1,0 +1,11 @@
+#summary Functional Capabilities of URM - Distributive Management
+[home] -> [documentation] -> [features] -> [featuresdist]
+
+Explains how to create and maintain distributives using URM.
+
+<wiki:toc max_depth="2" />
+----
+
+= TBD =
+
+  * TBD
