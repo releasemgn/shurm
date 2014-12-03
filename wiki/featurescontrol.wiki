@@ -173,11 +173,13 @@ there are start groups in envionment specification file:
 			<startgroup name="fedweb" servers="siaweb fedweb formweb"/>
 		</startorder>
 
-- start groups are started sequentially with order in environment specification file, stopped in reverse order
+- start groups are started sequentially with order in environment specification file, 
+stopped in reverse order
 - sequence of groups can be caused by interprocess dependencies
 - servers in the group are started/stopped in parallel
 
-Start/stop operations in several datacenters are sequential by default, but can be made parallel using:
+Start/stop operations in several datacenters are sequential by default,
+but can be made parallel using:
 	./startenv.sh -parallel -dcmask "dc.k[1-6]"
 }}}
 
