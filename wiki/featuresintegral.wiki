@@ -33,6 +33,7 @@ update Your Product URM in svn:
 
 = Using predefined release labels = 
 
+  * URM supports using predefined release labels in any URM script instead of specific release label
   * predefined release label "last" - points to $C_CONFIG_VERSION_LAST_FULL value defined in product config.sh script
   * predefined release label "next" - points to $C_CONFIG_VERSION_NEXT_FULL value defined in product config.sh script 
   * predefined release label "prod" means release marked with postfix "-prod" in distributive directory
