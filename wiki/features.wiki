@@ -6,6 +6,13 @@ Defines features implemented in URM.
 <wiki:toc max_depth="2" />
 ----
 
+= Integral Operations =
+
+  * [featuresintegral Integral Operations]
+   * Complex release operations
+   * Update environment wrappers
+   * Using predefined release labels
+
 = Application Deployment =
 
   * [featuresappaccess Host Access and Operation Audit]
@@ -63,10 +70,3 @@ Defines features implemented in URM.
    * Apply manual administration scripts using sys account
    * Load data using sqlldr
    * Handling errors
-
-= Integral Operations =
-
-  * [featuresintegral Integral Operations]
-   * Complex release operations
-   * Update environment wrappers
-   * Using predefined release labels
