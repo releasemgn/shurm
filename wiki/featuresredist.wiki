@@ -489,3 +489,20 @@ rootpath/binpath/hotdeploy-bar.sh \
 
 note that ~ or * symbols need to be enclosed by quotes or escaped
 }}}
+
+= Configuration categories =
+
+  * configuration components can be grouped in custom category in svn
+  * one can define different access rules to categories
+{{{
+e.g. one can define "prod" category and "dev" category
+svn:releases/myproduct/configuration/templates/prod
+svn:releases/myproduct/configuration/templates/dev
+Developer can have access only to commit to dev configuration
+In the same time release engineer can use prod to track prod configuration
+
+component references category using subdir attribute:
+<component name="osb.conf" subdir="prod" type="files" 
+    files="smev-xquery.xml smev-xquery.properties" layer="server"/>
+}}}
+  * svnrestoreconfig.sh and svnsaveconfig.shg will use proper paths to find configuration component files
