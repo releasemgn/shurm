@@ -68,4 +68,4 @@ Defines features implemented in URM.
   * [featuresintegral Integral Operations]
    * Complex release operations
    * Update environment wrappers
-   * Using common release labels
+   * Using predefined release labels
