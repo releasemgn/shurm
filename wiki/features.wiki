@@ -10,6 +10,7 @@ Defines features implemented in URM.
 
   * [featuresappaccess Host Access and Operation Audit]
    * Key-based access to hosts
+   * Key management
    * File upload logging
    * Execution logging
    * Track environment configuration changes
