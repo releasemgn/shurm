@@ -15,6 +15,7 @@ Introduces mixed-mode operations, includind deployment, database and builds.
 
   * release.sh
   * configure.sh
+  * svnsave.sh
 
 = Script Options = 
 
