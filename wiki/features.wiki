@@ -37,6 +37,7 @@ Defines features implemented in URM.
    * Backup and rollack
    * Hot deployment
    * Redundancy check
+   * Direct copy files and directories to environment
   * [featurescontrol Start and Stop Environment Processes]
    * Start and stop of selected servers
    * Services and pure processes
