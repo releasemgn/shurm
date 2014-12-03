@@ -18,7 +18,7 @@ Release 1.44 notes.
 
 == Introduce top-level scripts ==
 
-  * master directory now contains top-level scripts to be used for execute different UMR functions - build, deployment etc
+  * master directory now contains top-level scripts to be used for execute mixed set of URM functions - build, deployment etc
   * release.sh script added - to build, get configuration and DB changes and deploy all into uat environment using one command
 {{{
 ./release.sh default uat - next planned release
