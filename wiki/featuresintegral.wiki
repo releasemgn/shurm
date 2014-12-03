@@ -17,3 +17,16 @@ Features to perform on top level of release functions
 }}}
 
 = Update Environment Wrappers =
+
+  * environment wrappers help to set context of deployment operations to avoid risk of harm something in undesired environment
+  * if list of environments or their datacenters are changed, set of wrappers should be rebuilt
+{{{
+make sure etc is up to date:
+~/svnget $MYPRODUCT_DEPLOYMENT_HOME/etc
+
+recreate wrappers according to set of environments and datacenters in etc:
+./configure.sh
+
+update Your Product URM in svn:
+./svnsave.sh
+}}}
