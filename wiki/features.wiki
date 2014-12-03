@@ -23,6 +23,7 @@ Defines features implemented in URM.
    * Release planning and updates
    * Prepare binary updates
    * Prepare configuration updates
+   * Prepare database updates
   * [featurescodebase Codebase Management]
    * bulk codebase updates
    * tags and branches management
