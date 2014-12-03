@@ -119,7 +119,7 @@ if process is not stopped within 60 seconds:
 - for pure process URM executes "kill -9 <server process set>"
 }}}
 
-= Helper servers =
+= Auxilliary servers =
 
   * given server can have closely related helper servers - proxy-server and subordinate servers
   * proxy-server is usually an light server providing interface to main server
@@ -179,3 +179,21 @@ To make start/stop operations in parallel among servers, there are start groups 
 Start/stop operations in several datacenters are sequential by default, but can be made parallel using:
 	./startenv.sh -parallel -dcmask "dc.k[1-6]"
 }}}
+
+= Command servers =
+
+  * use server type "generic.command" to allow to run parameterized command which stops after performing its activities
+{{{
+<server name="pig" type="generic.command" deploytype="default"
+}}}
+  * command server is affected by start/stop only if executed by direct referencing it in startenv.sh, stopenv.sh, restartenv.sh
+  * deployredist.sh will not stop or start command server, but will rollout distributive items there
+  * command server is controlled like a generic.server via start/stop/status scripts
+  * command server can be started with different argumments using new option:
+{{{
+./startenv.sh -args "myargs" pig
+
+This will result in calling start script in below way
+server.start.sh pig myargs
+}}}
+  * command server start script should run server in async mode, and checkenv.sh and stopenv.sh can be applicable there
