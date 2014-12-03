@@ -478,3 +478,14 @@ rootpath/binpath/hotdeploy-bar.sh \
 ./dropredist.sh -all will also drop state directory
 }}}
   * if distribute item contains item.md5 file, its content is used for md5 CRC data, without spending time for calculation
+
+= Direct copy files and directories to environment = 
+
+  * use deployment script scp.sh to copy specific local files to all environment hosts corresponding to given server list
+  * examples
+{{{
+./scp.sh -root /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar /usr/java
+./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
+
+note that ~ or * symbols need to be enclosed by quotes or escaped
+}}}
