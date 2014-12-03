@@ -1,7 +1,7 @@
 #summary Functional Capabilities of URM - Build Projects
 [home] -> [documentation] -> [features] -> [featuresbuild]
 
-Explains to build projects using URM.
+Explains how to build projects using URM.
 
 <wiki:toc max_depth="2" />
 ----
