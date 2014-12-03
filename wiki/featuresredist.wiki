@@ -415,7 +415,8 @@ after successful upload binaries are also copies to state directory (see above)
 - upload directory is on release box in redist/hotdeploypath
 - state directory in on release box in redist/state
 - deployscript is in on release box MYPRODUCT_DEPLOYMENT_HOME/custom
-- upload command is:
+
+upload command is:
 MYPRODUCT_DEPLOYMENT_HOME/custom/hotdeploy-bar.sh \
 	RUNTIMEUPLOADDIR \
 	RELEASE \
@@ -436,4 +437,14 @@ MYPRODUCT_DEPLOYMENT_HOME/custom/hotdeploy-bar.sh \
 - upload directory is on hotdeployserver box in rootpath/hotdeploypath
 - state directory in on hotdeployserver box in redist/state
 - deployscript is on on hotdeployserver box in rootpath/binpath
+
+upload command is:
+rootpath/binpath/hotdeploy-bar.sh \
+	RUNTIMEUPLOADDIR \
+	RELEASE \
+	ENV \
+	DC \
+	PROGRAMNAME \
+	NODE \
+	HOTDEPLOYDATA
 }}}
