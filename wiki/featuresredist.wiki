@@ -369,6 +369,8 @@ Also if server-level value is another one, you can use component-level attribute
 ...
 	<deploy component="osb" deploytype="hotdeploy"/>
 }}}
+  * application server having hot deploy items can also have ordinary (cold) deployment which require server restart(cold) deploy
+  * both configuration and binary items can be cold or hot deployment
   * hot deployment can be executed using administration server if application server supports clustered hot deploy or hot deploy can be performed node by node
 {{{
 To reference clustered hotdeploy, use additional attributes:
@@ -391,5 +393,46 @@ hotdeploypath - path to copy binaries for upload
 in the beginning of upload operation hotdeploypath directory is cleared
 after successful upload binaries are also copies to state directory (see above)
 }}}
-  * application server having hot deploy items can also have ordinary (cold) deployment which require server restart(cold) deploy
-  * both configuration and binary items can be cold or hot deployment
+
+*custom hotdeploy*
+  * choose between generic and custom application server deploy scripts for hotdeploy
+   * generic upload script usually attached to application server distribution (and contains no application-specific details)
+   * after installation generic upload script have to be copied to bin directory as server.upload.sh
+   * server-level property "hotdeploydata" - holds any additional parameters passed to server.upload.sh hotdeploy script
+  * another way is to use custom product-aligned script
+   * server-level property "deployscript" - can be used to change hotdeploy script name from server.upload.sh to user-defined
+   * server-level property "hotdeployserver" - new predefined value "local" to use local host as a server for hotdeploy
+   * redist directory should exist on local server
+   * upload script should be in $PRODUCT_DEPLOYMENT_HOME/custom script folder of URM installation
+   * value of "hotdeploydata" property is added as parameter to custom script like server.upload.sh
+{{{
+using URM custom directory to store custom scripts:
+<server name="mapred" type="generic.command" deploytype="hotdeploy"
+	hotdeploydata="u00extdb"
+	hotdeployserver="local"
+	hotdeploypath="customhotdeploy-uat-mapred"
+	deployscript="hotdeploy-bar.sh"
+- upload directory is on release box in redist/hotdeploypath
+- state directory in on release box in redist/state
+- deployscript is in on release box MYPRODUCT_DEPLOYMENT_HOME/custom
+- upload command is:
+MYPRODUCT_DEPLOYMENT_HOME/custom/hotdeploy-bar.sh \
+	RUNTIMEUPLOADDIR \
+	RELEASE \
+	ENV \
+	DC \
+	PROGRAMNAME \
+	NODE \
+	HOTDEPLOYDATA \
+
+using custom script on upload box:
+<server name="mapred" type="generic.command" deploytype="hotdeploy"
+	rootpath="/oracle/ora_app4/osb"
+	binpath="bin"
+	hotdeploydata="u00extdb"
+	hotdeployserver="oracle@mydbhost"
+	deployscript="hotdeploy-bar.sh"
+- upload directory is on hotdeployserver box in rootpath/hotdeploypath
+- state directory in on hotdeployserver box in redist/state
+- deployscript is on on hotdeployserver box in rootpath/binpath
+}}}
