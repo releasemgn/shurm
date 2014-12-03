@@ -26,7 +26,6 @@ Defines features implemented in URM.
    * Local and remove distributives
    * Renaming files in environment
    * Staging area
-   * Automatic binary file renaming
    * Partial deployments, using "-unit" option
    * Safe copy over network
    * Multiple server locations
