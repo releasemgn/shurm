@@ -27,7 +27,7 @@ Defines features implemented in URM.
   * [featurescodebase Codebase Management]
    * bulk codebase updates
    * tags and branches management
-   * tags and branches management
+   * custom operations
 
 = Application Deployment =
 
