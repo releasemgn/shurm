@@ -13,7 +13,7 @@ Allows to establish standard unified release management process:
 
 *Release Engineering activities*:
   * Integral operations - [integrated Integrated]
-  * Build and manage distributions - [makedistr Makedistr]
+  * Build and distributives management - [makedistr Makedistr]
   * Deploy binary and configuration files - [deployment Deployment]
   * Database modifications - [database Database]
   * Environment monitoring - [monitoring Monitoring]
