@@ -354,3 +354,42 @@ Release rollback is partially manual because of unpredictable reasons:
 	./startenv.sh
 	./rollback.sh -hot X.Y.Z
 }}}
+
+= Hot deployment =
+
+  * if application server supports redeployment without restart then hot deployment URM feature can be used
+{{{
+To make use of hot deployment, set deploytype to "hotdeploy".
+
+Attribute can be set on server-level:
+<server name="osb" type="generic.server" deploytype="hotdeploy"
+
+Also if server-level value is another one, you can use component-level attribute:
+<server name="osb" type="generic.server" deploytype="default"
+...
+	<deploy component="osb" deploytype="hotdeploy"/>
+}}}
+  * hot deployment can be executed using administration server if application server supports clustered hot deploy or hot deploy can be performed node by node
+{{{
+To reference clustered hotdeploy, use additional attributes:
+<server name="osb" type="generic.server" deploytype="default"
+...
+	rootpath="/oracle/ora_app4/osb"
+	binpath="bin"
+	deploypath="build/deploy"
+	hotdeployserver="oracle@myhost"
+	hotdeploypath="build/hotdeploy"
+...
+	<deploy component="osb" deploytype="hotdeploy"/>
+	<deploy component="osb.xquery" deploypath="oracle/mw/osb/config/xpath-functions" />
+
+deploypath - is used for cold deploy of osb.xquery component
+hotdeployserver - is server where rootpath/binpath contains server.upload.sh script
+
+hotdeploypath - path to copy binaries for upload
+
+in the beginning of upload operation hotdeploypath directory is cleared
+after successful upload binaries are also copies to state directory (see above)
+}}}
+  * application server having hot deploy items can also have ordinary (cold) deployment which require server restart(cold) deploy
+  * both configuration and binary items can be cold or hot deployment
