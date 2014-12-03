@@ -22,6 +22,7 @@ Defines features implemented in URM.
    * Execution logging
    * Track environment configuration changes
    * IM notifications
+   * Operating system upgrades
   * [featuresredist Copying Files to Environment]
    * Local and remote distributives
    * Renaming files in environment
