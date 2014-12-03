@@ -60,3 +60,9 @@ Defines features implemented in URM.
    * Apply manual administration scripts using sys account
    * Load data using sqlldr
    * Handling errors
+
+= Integral Operations =
+
+  * [featuresintegral Integral Operations]
+   * Complex Release Operations
+   * Update Environment Wrappers
