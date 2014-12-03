@@ -165,7 +165,8 @@ For instance, if starting server having 2 nodes for pure server process, start s
 		node1: ./waitenv.sh
 		node2: ./waitenv.sh
 
-To make start/stop operations in parallel among servers, there are start groups in envionment specification file:
+To make start/stop operations in parallel among servers, 
+there are start groups in envionment specification file:
 		<startorder>
 			<startgroup name="uddi" servers="tlssrv nlb uddi"/>
 			<startgroup name="app" servers="siaapp pguapp commapp"/>
