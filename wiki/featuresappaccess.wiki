@@ -23,6 +23,27 @@ Add public key to every environment host to the file:
 	~<appuser>/.ssh/authorized_keys
 }}}
 
+= Key management =
+
+  * script keys.sh serves to update keys in .ssh/authorized_keys in environment
+{{{
+./key.sh [-key accesskeyfile] [-newkey storekeyfile] command [servers]
+
+accesskeyfile - path to private key file to login into host
+- by default it is local ~/.ssh/id_dsa
+- if unknown to host, then password will be prompted
+
+storekeyfile - path to public key file to store in authorized_keys
+- by default it is local ~/.ssh/id_dsa.pub
+
+command - "set", "add" or "delete"
+- set will delete all keys from authorized_keys and will add storekeyfile
+- add will delete key of the same name if any and will add storekeyfile
+- delete will delete key of the same name  as storekeyfile
+}}}
+  * operation is iterated on uninue nodes of listed servers, by default on all the environment
+  * option -key can be used in any deployment command to override default access key
+
 = File upload logging =
 
   * every upload operation is automatically logged both on release box, from where action is executed, and on environment host
