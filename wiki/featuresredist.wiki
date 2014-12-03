@@ -67,7 +67,7 @@ release directory name format is <releasever>[-<distname>], where
 
 distr.xml defines how name of deployed file
 }}}
-  * basename renaming is handled with "deployname" attribute
+  * basename renaming is handled with optional "deployname" attribute
 {{{
 - example - deploy name is the same as distributive name:
 <distitem name="gateway-web" type="binary" extension=".war"/>
@@ -80,7 +80,7 @@ extension=".war" distname="cmsservice" deployname="cmsservice"/>
 <distitem name="pds-tomcat" type="binary" 
 extension=".war" deployname="pds" deployversion="midpound"/>
 }}}
-  * version part is handled with "deployversion" attribute, can be embedded in file name in different manner - it depends on application server, where file name affects behaviour
+  * version part is handled with optional "deployversion" attribute, can be embedded in file name in different manner - it depends on application server, where file name affects behaviour
 {{{
 Deployment item file name has version part like one of:
 - <deployname><extension> - no version part
