@@ -30,3 +30,9 @@ recreate wrappers according to set of environments and datacenters in etc:
 update Your Product URM in svn:
 ./svnsave.sh
 }}}
+
+= Using predefined release labels = 
+
+  * predefined release label "last" - points to $C_CONFIG_VERSION_LAST_FULL value defined in product config.sh script
+  * predefined release label "next" - points to $C_CONFIG_VERSION_NEXT_FULL value defined in product config.sh script 
+  * predefined release label "prod" means release marked with postfix "-prod" in distributive directory
