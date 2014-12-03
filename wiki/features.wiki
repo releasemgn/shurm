@@ -23,7 +23,7 @@ Defines features implemented in URM.
    * Track environment configuration changes
    * IM notifications
   * [featuresredist Copying Files to Environment]
-   * Local and remove distributives
+   * Local and remote distributives
    * Renaming files in environment
    * Staging area
    * Partial deployments, using "-unit" option
