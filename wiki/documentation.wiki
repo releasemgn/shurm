@@ -12,11 +12,11 @@ Allows to establish standard unified release management process:
 == URM Modules ==
 
 *Release Engineering activities*:
+  * Integral operations - [integrated Integrated]
   * Build and manage distributions - [makedistr Makedistr]
   * Deploy binary and configuration files - [deployment Deployment]
   * Database modifications - [database Database]
   * Environment monitoring - [monitoring Monitoring]
-  * Integral operations - [integrated Integrated]
 
 *Development activities*:
   * Prepare database modifications - [sqlguidelines SQL Guidelines]
