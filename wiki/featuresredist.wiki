@@ -405,8 +405,8 @@ after successful upload binaries are also copies to state directory (see above)
    * redist directory should exist on local server
    * upload script should be in $PRODUCT_DEPLOYMENT_HOME/custom script folder of URM installation
    * value of "hotdeploydata" property is added as parameter to custom script like server.upload.sh
+   * using URM custom directory to store custom scripts:
 {{{
-using URM custom directory to store custom scripts:
 <server name="mapred" type="generic.command" deploytype="hotdeploy"
 	hotdeploydata="u00extdb"
 	hotdeployserver="local"
@@ -423,9 +423,10 @@ MYPRODUCT_DEPLOYMENT_HOME/custom/hotdeploy-bar.sh \
 	DC \
 	PROGRAMNAME \
 	NODE \
-	HOTDEPLOYDATA \
-
-using custom script on upload box:
+	HOTDEPLOYDATA
+}}}
+   * using custom script on upload box:
+{{{
 <server name="mapred" type="generic.command" deploytype="hotdeploy"
 	rootpath="/oracle/ora_app4/osb"
 	binpath="bin"
