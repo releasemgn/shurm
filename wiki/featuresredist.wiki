@@ -55,33 +55,47 @@ rollout.sh command performs relocation from staging area to environment runtime 
 In hotdeploy mode rollout executes hotdeploy command.
 }}}
 
-= Automatic binary file renaming =
+= Renaming files in environment =
 
   * distributive and environment files can have different names
-  * reason is having different basename or adding versioning prefix
+  * reason is having different basename or adding versioning
 {{{
 release directory name format is <releasever>[-<distname>], where
 	<releasever> - version corresponding to tag set on source code files
 	<distname> - can be used to support several distributives for the same version 
 	(e.g. cumulative and incremental)
 
-Environment file name is [<releasever>-]<deployname><extension>, where
-	<releasever> - release directory version
+distr.xml defines how name of deployed file
+}}}
+  * basename renaming is handled with "deployname" attribute
+{{{
+- example - deploy name is the same as distributive name:
+<distitem name="gateway-web" type="binary" extension=".war"/>
 
-- setting version can be skipped if distributive item has below property in distributive specification file:
-	<distitem name="axis" type="binary" extension=".jar" options="N"/>
+- example - deploy name differes from item name but the same as dist name:
+<distitem name="cmsservice-war" type="binary" 
+extension=".war" distname="cmsservice" deployname="cmsservice"/>
 
-	<deployname> - binary file basename
+- example - item is renamed on deployment
+<distitem name="pds-tomcat" type="binary" 
+extension=".war" deployname="pds" deployversion="midpound"/>
+}}}
+  * version part is handled with "deployversion" attribute, can be embedded in file name in different manner - it depends on application server, where file name affects behaviour
+{{{
+Deployment item file name has version part like one of:
+- <deployname><extension> - no version part
+- <releasever>-<deployname><extension> - prefix (default)
+- <deployname>-<releasever><extension> - dash middle
+- <deployname>##<releasever><extension> - pound middle (tomcat 7)
+where <releasever> - release directory version
 
-In release directory binary file is usually named <distname>-<majorversion><extension>, where
-	<distname> - binary file basename in distributive, can be different from built basename, if required:
-			<distitem name="ojdbc.jar" type="binary" distname="ojdbc6-11.2.0.1.0" extension=".jar"
-					deployname="ojdbc6" options="N"/>
-		
-- <majorversion> - major release version, e.g. in messagelog-1.13.ear - is 1.13, while release version is 1.13.14
+Distributive item is extracted disregarding version location.
+Usually file has name according to build settings.
+Build can be done as part of release or file can be downloaded as prebuilt.
 
-If versioning is not turned off, environment file will be renamed:
-	from <distname>-<majorversion><extension> to <releasever>-<deployname><extension>
+Distributive item can have "major version", e.g. pds-3.0.war
+In the same time release can have more specific label, e.g. 3.0.18.2-demo
+If deployversion is default (prefix) pds-3.0.war will be renamed to 3.0.18.2-pds.war
 }}}
 
 = Partial deployments, using "-unit" option =
