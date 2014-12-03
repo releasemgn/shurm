@@ -12,7 +12,7 @@ Release 3.1 notes.
 || 1 || Redundancy Check || yes ||
 || 2 || Key Management || yes ||
 || 3 || Deploy Item Versioning || yes ||
-|| 4 || Command Servers || no ||
+|| 4 || Command Servers || yes ||
 || 5 || Upgrading Environment || no ||
 || 6 || Copy Files and Directories to Environment || no ||
 || 7 || Configuration Categories || no ||
