@@ -6,7 +6,7 @@ Defines process of relocation of files to environment.
 <wiki:toc max_depth="2" />
 ----
 
-= Local and remove distributives =
+= Local and remote distributives =
 
   * generally there are distribution host, deployment host and environment host which participate in operation
   * distributives are given from filesystem path defined in environment specification path, remote or local
