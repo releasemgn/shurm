@@ -16,7 +16,7 @@ Allows to establish standard unified release management process:
   * Deploy binary and configuration files - [deployment Deployment]
   * Database modifications - [database Database]
   * Environment monitoring - [monitoring Monitoring]
-  * Mixed operations - [integrated Integrated]
+  * Integral operations - [integrated Integrated]
 
 *Development activities*:
   * Prepare database modifications - [sqlguidelines SQL Guidelines]
