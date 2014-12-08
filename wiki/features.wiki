@@ -16,7 +16,9 @@ Defines features implemented in URM.
 = Build and Distributive Management =
 
   * [featuresbuild Build Projects]
-   * Handling Nexus and Maven environment
+   * Define Java environment
+   * Define Maven environment
+   * Define Nexus environment
    * Build product codebase
    * Release builds
   * [featuresdist Distributive Management]
