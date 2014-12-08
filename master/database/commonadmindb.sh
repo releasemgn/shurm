@@ -70,7 +70,7 @@ function f_admindb_beginscriptstatus() {
 
 	f_get_db_password $P_DB_TNS_NAME $P_SCHEMA
 	f_exec_limited 60 "(
-		$F_CTLSQL
+		echo \"$F_CTLSQL\"
 	) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
 
 	local F_UPD_A=$S_EXEC_LIMITED_OUTPUT
