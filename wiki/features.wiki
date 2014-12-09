@@ -30,6 +30,7 @@ Defines features implemented in URM.
    * bulk codebase updates
    * tags and branches management
    * custom operations
+   * upload prebuilt items
 
 = Application Deployment =
 
