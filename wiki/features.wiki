@@ -77,7 +77,7 @@ Defines features implemented in URM.
    * Password file
    * Using database system account
    * Execution audit
-   * Storing log files of execution
+   * Storing execution log files
   * [featuresdbdist Prepare Database Distributive]
    * Complex database configurations
    * Source folders
