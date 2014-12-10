@@ -198,7 +198,7 @@ function f_local_getenvinfo() {
 
 	if [ -d $SQLDIRECTORY/$F_ENVFOLDER ]; then
 		f_local_addenvfolder $SQLDIRECTORY
-		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/$S_ENVFOLDER"
+		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/$F_ENVFOLDER"
 	fi
 	if [ -d $SQLDIRECTORY/svcrun/$F_ENVFOLDER ]; then
 		f_local_addenvfolder $SQLDIRECTORY/$F_ENVFOLDER $SQLDIRECTORY/$F_ENVFOLDER.run
