@@ -29,6 +29,14 @@ function f_execute_all() {
 
 	# check pom version
 	local MAIN_POM_VER=`cat $SOURCE_DIR/pom.xml | sed "s/xmlns/ignore/g;s/xsi://g;s/:xsi/ignore/g" | xmlstarlet sel -t -m "project/version" -v .`
+
+	# check if property
+	if [[ "$MAIN_POM_VER" =~ \$\{.*\} ]]; then
+		local F_VAR=${MAIN_POM_VER#\${}
+		F_VAR=${F_VAR%\}}
+		MAIN_POM_VER=`cat $SOURCE_DIR/pom.xml | sed "s/xmlns/ignore/g;s/xsi://g;s/:xsi/ignore/g" | xmlstarlet sel -t -m "project/properties/$F_VAR" -v .`
+	fi
+
 	if [ "$MAIN_POM_VER" != "$P_VERSION" ]; then
 		echo "invalid pom.xml version: $MAIN_POM_VER, expected $P_VERSION. Exiting"
 		exit 1
