@@ -182,13 +182,6 @@ function f_local_getenvinfo() {
 	S_TNSNAME=
 	S_TNSSCHEMALIST=
 
-	local F_ENVFOLDER=
-	if [ "$GETOPT_PROD" = "yes" ]; then
-		F_ENVFOLDER=prodonly
-	else
-		F_ENVFOLDER=uatonly
-	fi		
-
 	# collect folder list
 	if [ ! -d "$SQLDIRECTORY" ]; then
 		echo sqlexecall.sh: invalid source directory - $SQLDIRECTORY. Exiting
@@ -196,12 +189,9 @@ function f_local_getenvinfo() {
 	fi
 	S_FOLDERLIST=$SQLDIRECTORY
 
-	if [ -d $SQLDIRECTORY/$F_ENVFOLDER ]; then
-		f_local_addenvfolder $SQLDIRECTORY
-	fi
-	if [ -d $SQLDIRECTORY/svcrun/$F_ENVFOLDER ]; then
-		f_local_addenvfolder $SQLDIRECTORY/$F_ENVFOLDER $SQLDIRECTORY/$F_ENVFOLDER.run
-	fi
+	f_local_addenvfolder $SQLDIRECTORY
+	f_local_addenvfolder $SQLDIRECTORY/svcrun
+
 	if [ -d $SQLDIRECTORY/svcrun ]; then
 		S_FOLDERLIST="$S_FOLDERLIST $SQLDIRECTORY/svcrun"
 	fi
