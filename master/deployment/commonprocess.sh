@@ -138,7 +138,7 @@ function f_process_wait_service() {
 	exit 1
 }
 
-function f_process_waitone() {
+function f_process_waitone_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_PROGRAMTYPE=$3
@@ -182,7 +182,7 @@ function f_process_waitone() {
 }
 
 # multinode ops - wait
-function f_process_waitall_service() {
+function f_process_waitall_service_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_SERVICENAME=$3
@@ -195,7 +195,7 @@ function f_process_waitall_service() {
 	fi
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_SERVICENAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ]; then
-		echo f_process_waitall_service: invalid call. Exiting
+		echo f_process_waitall_service_started: invalid call. Exiting
 		exit 1
 	fi
 
@@ -215,7 +215,7 @@ function f_process_waitall_service() {
 	done	
 }
 
-function f_process_waitall() {
+function f_process_waitall_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_PROGRAMTYPE=$3
@@ -230,7 +230,7 @@ function f_process_waitall() {
 	fi
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_PROGRAMTYPE" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
-		echo f_process_waitall: invalid call. Exiting
+		echo f_process_waitall_started: invalid call. Exiting
 		exit 1
 	fi
 
@@ -244,13 +244,13 @@ function f_process_waitall() {
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
 				echo wait for $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
-			f_process_waitone $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
+			f_process_waitone_started $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
 }
 
-function f_process_waitall_generic() {
+function f_process_waitall_generic_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_HOSTLOGIN_LIST="$3"
@@ -263,7 +263,7 @@ function f_process_waitall_generic() {
 		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
 	fi
 
-	f_process_waitall $P_DC $P_PROGRAMNAME generic "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_PROCESS_TIMEOUT
+	f_process_waitall_started $P_DC $P_PROGRAMNAME generic "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_PROCESS_TIMEOUT
 	local F_WAITALL_GENERIC=$?
 	return $F_WAITALL_GENERIC
 }
