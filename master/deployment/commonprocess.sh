@@ -100,7 +100,7 @@ function f_process_check_generic() {
 }
 
 # one-node wait to start
-function f_process_wait_service() {
+function f_process_waitone_service_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_SERVICENAME=$3
@@ -138,7 +138,7 @@ function f_process_wait_service() {
 	exit 1
 }
 
-function f_process_waitone_started() {
+function f_process_waitone_generic_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
 	local P_PROGRAMTYPE=$3
@@ -181,6 +181,49 @@ function f_process_waitone_started() {
 	exit 1
 }
 
+function f_process_waitone_generic_stopped() {
+	local P_DC=$1
+	local P_PROGRAMNAME=$2
+	local P_PROGRAMTYPE=$3
+	local P_HOSTLOGIN=$4
+	local P_FULLBINPATH=$5
+	local P_PROCESS_TIMEOUT=$6
+
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "`date` $P_HOSTLOGIN: wait for stop $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
+	fi
+
+	local KWAIT=0
+	local F_WAITTIME=$P_PROCESS_TIMEOUT
+	local F_WAIT_DATE1=`date '+%s'`
+	local F_WAIT_DATE2
+	while [ "$KWAIT" -lt $F_WAITTIME ]; do
+		# check stopped
+		f_process_pid $P_DC $P_PROGRAMNAME $P_HOSTLOGIN
+		if [ "$C_PROCESS_PID" = "" ]; then
+			echo "`date` $P_HOSTLOGIN: server successfully stopped"
+			return 0
+		fi
+
+        	sleep 1
+		F_WAIT_DATE2=`date '+%s'`
+        	KWAIT=$(expr $F_WAIT_DATE2 - $F_WAIT_DATE1)
+	done
+
+	# enforced stop
+	echo "`date` $P_HOSTLOGIN: failed to stop server within $F_WAITTIME seconds. killing..."
+	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "kill -9 $C_PROCESS_PID"
+
+	f_process_pid $P_DC $P_PROGRAMNAME $P_HOSTLOGIN
+	if [ "$C_PROCESS_PID" = "" ]; then
+		echo "`date` $P_HOSTLOGIN: server successfully killed"
+		return 0
+	fi
+
+	echo "`date` $P_HOSTLOGIN: $P_PROGRAMTYPE server=$P_PROGRAMNAME - unable to kill. Exiting"
+	exit 1
+}
+
 # multinode ops - wait
 function f_process_waitall_service_started() {
 	local P_DC=$1
@@ -209,7 +252,7 @@ function f_process_waitall_service_started() {
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
 				echo wait for service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
-			f_process_wait_service $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN $P_PROCESS_TIMEOUT
+			f_process_waitone_service_started $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
@@ -242,9 +285,9 @@ function f_process_waitall_started() {
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo wait for $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+				echo wait for start $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
-			f_process_waitone_started $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
+			f_process_waitone_generic_started $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
@@ -264,6 +307,38 @@ function f_process_waitall_generic_started() {
 	fi
 
 	f_process_waitall_started $P_DC $P_PROGRAMNAME generic "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_PROCESS_TIMEOUT
+	local F_WAITALL_GENERIC=$?
+	return $F_WAITALL_GENERIC
+}
+
+function f_process_waitall_generic_stopped() {
+	local P_DC=$1
+	local P_PROGRAMNAME=$2
+	local P_HOSTLOGIN_LIST="$3"
+	local P_ROOTDIR=$4
+	local P_BINPATH=$5
+	local P_NODE_LIST="$6"
+	local P_PROCESS_TIMEOUT=$7
+
+	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_PROGRAMTYPE" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
+		echo f_process_waitall_generic_stopped: invalid call. Exiting
+		exit 1
+	fi
+
+	local NODE=1
+	local NODEN=`echo "$P_HOSTLOGIN_LIST" | tr " " "\n" | grep -c "@"`
+	while [ ! "$NODE" -gt $NODEN ]; do
+		if [ "$P_NODE_LIST" = "" ] || [[ "$P_NODE_LIST" =~ "$NODE" ]]; then
+			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
+			F_ENV_HOSTLOGIN=$C_LISTITEM
+
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo wait for stop $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			fi
+			f_process_waitone_generic_stopped $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
+		fi
+		NODE=$(expr $NODE + 1)
+	done	
 	local F_WAITALL_GENERIC=$?
 	return $F_WAITALL_GENERIC
 }

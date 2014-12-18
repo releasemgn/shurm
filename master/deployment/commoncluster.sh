@@ -9,6 +9,7 @@ function f_cluster_stopall_generic() {
 	local P_ROOTDIR=$4
 	local P_BINPATH=$5
 	local P_NODE_LIST="$6"
+	local P_STOPTIME=$7
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
 		echo f_cluster_stopall_generic: invalid call. Exiting
@@ -27,6 +28,18 @@ function f_cluster_stopall_generic() {
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
+
+	if [ "$C_DEPLOY_EXECUTE_ECHO_ONLY" = "true" ]; then
+		return 1
+	fi
+
+	# ensure processes are stopped
+	f_process_waitall_generic_stopped $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STOPTIME
+	if [ "$?" = "0" ]; then
+		F_STARTALL_GENERIC_RESULT=0
+	fi
+
+	return $F_STARTALL_GENERIC_RESULT
 }
 
 function f_cluster_stopall_service() {
