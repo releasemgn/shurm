@@ -290,6 +290,9 @@ function f_process_waitall_service_started() {
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
+
+	local F_WAITALL_SERVICE=$?
+	return $F_WAITALL_SERVICE
 }
 
 function f_process_waitall_service_stopped() {
@@ -323,6 +326,9 @@ function f_process_waitall_service_stopped() {
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
+
+	local F_WAITALL_SERVICE=$?
+	return $F_WAITALL_SERVICE
 }
 
 function f_process_waitall_generic_started() {
@@ -390,6 +396,7 @@ function f_process_waitall_generic_stopped() {
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
+
 	local F_WAITALL_GENERIC=$?
 	return $F_WAITALL_GENERIC
 }
