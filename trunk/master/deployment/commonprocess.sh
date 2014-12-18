@@ -54,9 +54,8 @@ function f_process_service_status() {
 function f_process_generic_started_status() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
-	local P_PROGRAMTYPE=$3
-	local P_HOSTLOGIN=$4
-	local P_FULLBINPATH=$5
+	local P_HOSTLOGIN=$3
+	local P_FULLBINPATH=$4
 
 	# find process
 	f_process_pid $P_DC $P_PROGRAMNAME $P_HOSTLOGIN
@@ -95,7 +94,7 @@ function f_process_check_generic() {
 	local P_HOSTLOGIN=$3
 	local P_FULLBINPATH=$4
 
-	f_process_generic_started_status $P_DC $P_PROGRAMNAME generic $P_HOSTLOGIN $P_FULLBINPATH
+	f_process_generic_started_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_FULLBINPATH
 	echo $P_HOSTLOGIN: generic status=$C_PROCESS_STATUS, pid=$C_PROCESS_PID
 }
 
@@ -141,13 +140,12 @@ function f_process_waitone_service_started() {
 function f_process_waitone_generic_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
-	local P_PROGRAMTYPE=$3
-	local P_HOSTLOGIN=$4
-	local P_FULLBINPATH=$5
-	local P_PROCESS_TIMEOUT=$6
+	local P_HOSTLOGIN=$3
+	local P_FULLBINPATH=$4
+	local P_PROCESS_TIMEOUT=$5
 
 	if [ "$GETOPT_SHOWALL" = "yes" ]; then
-		echo "`date` $P_HOSTLOGIN: wait for start $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
+		echo "`date` $P_HOSTLOGIN: wait for start generic server=$P_PROGRAMNAME..."
 	fi
 
 	local KWAIT=0
@@ -156,14 +154,14 @@ function f_process_waitone_generic_started() {
 	local F_WAIT_DATE2
 	while [ "$KWAIT" -lt $F_WAITTIME ]; do
 		# check already started
-		f_process_generic_started_status $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $P_HOSTLOGIN $P_FULLBINPATH
+		f_process_generic_started_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_FULLBINPATH
 		if [ "$C_PROCESS_STATUS" = "STARTED" ]; then
-			echo "`date` $P_HOSTLOGIN: $P_PROGRAMTYPE server=$P_PROGRAMNAME successfully started (pid=$C_PROCESS_PID)"
+			echo "`date` $P_HOSTLOGIN: generic server=$P_PROGRAMNAME successfully started (pid=$C_PROCESS_PID)"
 			return 0
 
 		elif [ "$C_PROCESS_STATUS" = "STOPPED" ]; then
 			if [ "$KWAIT" -gt $S_PROCESS_STARTPROCESS_TIMEOUT ]; then
-				echo "`date` $P_HOSTLOGIN: $P_PROGRAMTYPE server=$P_PROGRAMNAME is not started (reason: process launch timeout=$S_PROCESS_STARTPROCESS_TIMEOUT). Exiting"
+				echo "`date` $P_HOSTLOGIN: generic server=$P_PROGRAMNAME is not started (reason: process launch timeout=$S_PROCESS_STARTPROCESS_TIMEOUT). Exiting"
 				exit 1
 			fi
 
@@ -177,20 +175,19 @@ function f_process_waitone_generic_started() {
         	KWAIT=$(expr $F_WAIT_DATE2 - $F_WAIT_DATE1)
 	done
 
-	echo "`date` $P_HOSTLOGIN: $P_PROGRAMTYPE server=$P_PROGRAMNAME is not started within $F_WAITTIME seconds. Exiting"
+	echo "`date` $P_HOSTLOGIN: generic server=$P_PROGRAMNAME is not started within $F_WAITTIME seconds. Exiting"
 	exit 1
 }
 
 function f_process_waitone_generic_stopped() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
-	local P_PROGRAMTYPE=$3
-	local P_HOSTLOGIN=$4
-	local P_FULLBINPATH=$5
-	local P_PROCESS_TIMEOUT=$6
+	local P_HOSTLOGIN=$3
+	local P_FULLBINPATH=$4
+	local P_PROCESS_TIMEOUT=$5
 
 	if [ "$GETOPT_SHOWALL" = "yes" ]; then
-		echo "`date` $P_HOSTLOGIN: wait for stop $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
+		echo "`date` $P_HOSTLOGIN: wait for stop generic server=$P_PROGRAMNAME..."
 	fi
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
@@ -224,7 +221,7 @@ function f_process_waitone_generic_stopped() {
 		return 0
 	fi
 
-	echo "`date` $P_HOSTLOGIN: $P_PROGRAMTYPE server=$P_PROGRAMNAME - unable to kill. Exiting"
+	echo "`date` $P_HOSTLOGIN: generic server=$P_PROGRAMNAME - unable to kill. Exiting"
 	exit 1
 }
 
@@ -262,23 +259,22 @@ function f_process_waitall_service_started() {
 	done	
 }
 
-function f_process_waitall_started() {
+function f_process_waitall_generic_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
-	local P_PROGRAMTYPE=$3
-	local P_HOSTLOGIN_LIST="$4"
-	local P_ROOTDIR=$5
-	local P_BINPATH=$6
-	local P_NODE_LIST="$7"
-	local P_PROCESS_TIMEOUT=$8
+	local P_HOSTLOGIN_LIST="$3"
+	local P_ROOTDIR=$4
+	local P_BINPATH=$5
+	local P_NODE_LIST="$6"
+	local P_PROCESS_TIMEOUT=$7
+
+	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
+		echo f_process_waitall_generic_started: invalid call. Exiting
+		exit 1
+	fi
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
 		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
-	fi
-
-	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_PROGRAMTYPE" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
-		echo f_process_waitall_started: invalid call. Exiting
-		exit 1
 	fi
 
 	local NODE=1
@@ -289,28 +285,13 @@ function f_process_waitall_started() {
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo wait for start $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+				echo wait for start generic server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
-			f_process_waitone_generic_started $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
+			f_process_waitone_generic_started $P_DC $P_PROGRAMNAME $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
-}
 
-function f_process_waitall_generic_started() {
-	local P_DC=$1
-	local P_PROGRAMNAME=$2
-	local P_HOSTLOGIN_LIST="$3"
-	local P_ROOTDIR=$4
-	local P_BINPATH=$5
-	local P_NODE_LIST="$6"
-	local P_PROCESS_TIMEOUT=$7
-
-	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
-		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
-	fi
-
-	f_process_waitall_started $P_DC $P_PROGRAMNAME generic "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_PROCESS_TIMEOUT
 	local F_WAITALL_GENERIC=$?
 	return $F_WAITALL_GENERIC
 }
@@ -324,7 +305,7 @@ function f_process_waitall_generic_stopped() {
 	local P_NODE_LIST="$6"
 	local P_PROCESS_TIMEOUT=$7
 
-	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_PROGRAMTYPE" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
+	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_ROOTDIR" = "" ] || [ "$P_BINPATH" = "" ]; then
 		echo f_process_waitall_generic_stopped: invalid call. Exiting
 		exit 1
 	fi
@@ -337,9 +318,9 @@ function f_process_waitall_generic_stopped() {
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo wait for stop $P_PROGRAMTYPE server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+				echo wait for stop generic server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
-			f_process_waitone_generic_stopped $P_DC $P_PROGRAMNAME $P_PROGRAMTYPE $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
+			f_process_waitone_generic_stopped $P_DC $P_PROGRAMNAME $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
