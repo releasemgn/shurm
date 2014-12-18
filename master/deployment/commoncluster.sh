@@ -52,6 +52,7 @@ function f_cluster_stopall_service() {
 	local P_SERVICENAME=$3
 	local P_HOSTLOGIN_LIST="$4"
 	local P_NODE_LIST="$5"
+	local P_STOPTIME=$6
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ] || [ "$P_SERVICENAME" = "" ]; then
 		echo f_cluster_stopall_service: invalid call. Exiting
@@ -80,7 +81,7 @@ function f_cluster_stopall_service() {
 	fi
 
 	# ensure processes are stopped
-	f_process_waitall_generic_stopped $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STOPTIME
+	f_process_waitall_service_stopped $P_DC $P_PROGRAMNAME $P_SERVICENAME "$P_HOSTLOGIN_LIST" "$P_NODE_LIST" $P_STOPTIME
 	if [ "$?" = "0" ]; then
 		F_STOPALL_SERVICE_RESULT=0
 	fi
