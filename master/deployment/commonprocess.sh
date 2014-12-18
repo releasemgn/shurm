@@ -193,6 +193,10 @@ function f_process_waitone_generic_stopped() {
 		echo "`date` $P_HOSTLOGIN: wait for stop $P_PROGRAMTYPE server=$P_PROGRAMNAME..."
 	fi
 
+	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+	fi
+
 	local KWAIT=0
 	local F_WAITTIME=$P_PROCESS_TIMEOUT
 	local F_WAIT_DATE1=`date '+%s'`
