@@ -18,6 +18,7 @@ function f_cluster_stopall_generic() {
 
 	local NODE=1
 	local NODEN=`echo "$P_HOSTLOGIN_LIST" | tr " " "\n" | grep -c "@"`
+	local F_STOPALL_GENERIC_RESULT=1
 	while [ ! "$NODE" -gt $NODEN ]; do
 		if [ "$P_NODE_LIST" = "" ] || [[ "$P_NODE_LIST" =~ "$NODE" ]]; then
 			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
@@ -25,6 +26,9 @@ function f_cluster_stopall_generic() {
 
 			echo ============================================ stop generic app=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			f_deploy_stop_generic $P_DC $P_PROGRAMNAME $F_ENV_HOSTLOGIN $P_ROOTDIR/$P_BINPATH
+			if [ "$?" = "0" ]; then
+				F_STOPALL_GENERIC_RESULT=0
+			fi
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
@@ -36,10 +40,10 @@ function f_cluster_stopall_generic() {
 	# ensure processes are stopped
 	f_process_waitall_generic_stopped $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STOPTIME
 	if [ "$?" = "0" ]; then
-		F_STARTALL_GENERIC_RESULT=0
+		F_STOPALL_GENERIC_RESULT=0
 	fi
 
-	return $F_STARTALL_GENERIC_RESULT
+	return $F_STOPALL_GENERIC_RESULT
 }
 
 function f_cluster_stopall_service() {
@@ -56,6 +60,7 @@ function f_cluster_stopall_service() {
 
 	local NODE=1
 	local NODEN=`echo "$P_HOSTLOGIN_LIST" | tr " " "\n" | grep -c "@"`
+	local F_STOPALL_SERVICE_RESULT=1
 	while [ ! "$NODE" -gt $NODEN ]; do
 		if [ "$P_NODE_LIST" = "" ] || [[ "$P_NODE_LIST" =~ "$NODE" ]]; then
 			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
@@ -63,9 +68,24 @@ function f_cluster_stopall_service() {
 
 			echo ============================================ stop service app=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			f_deploy_stop_service $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN
+			if [ "$?" = "0" ]; then
+				F_STOPALL_SERVICE_RESULT=0
+			fi
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
+
+	if [ "$C_DEPLOY_EXECUTE_ECHO_ONLY" = "true" ]; then
+		return 1
+	fi
+
+	# ensure processes are stopped
+	f_process_waitall_generic_stopped $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STOPTIME
+	if [ "$?" = "0" ]; then
+		F_STOPALL_SERVICE_RESULT=0
+	fi
+
+	return $F_STOPALL_SERVICE_RESULT
 }
 
 # start
