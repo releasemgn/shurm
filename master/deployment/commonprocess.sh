@@ -137,6 +137,39 @@ function f_process_waitone_service_started() {
 	exit 1
 }
 
+function f_process_waitone_service_stopped() {
+	local P_DC=$1
+	local P_PROGRAMNAME=$2
+	local P_SERVICENAME=$3
+	local P_HOSTLOGIN=$4
+	local P_PROCESS_TIMEOUT=$5
+
+	# wait for stop for a while
+	local KWAIT=0
+	local F_WAITTIME=$P_PROCESS_TIMEOUT
+	if [ "$GETOPT_SHOWALL" = "yes" ]; then
+		echo "`date` $P_HOSTLOGIN: wait for stop $P_SERVICENAME..."
+	fi
+
+	local F_WAIT_DATE1=`date '+%s'`
+	local F_WAIT_DATE2
+	while [ "$KWAIT" -lt $F_WAITTIME ]; do
+		# check stopped
+		f_process_service_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_SERVICENAME
+		if [ "$C_PROCESS_STATUS" = "STOPPED" ]; then
+			echo "$P_HOSTLOGIN: $P_SERVICENAME successfully stopped"
+			return 0
+		fi
+
+        	sleep 1
+		F_WAIT_DATE2=`date '+%s'`
+        	KWAIT=$(expr $F_WAIT_DATE2 - $F_WAIT_DATE1)
+	done
+
+	echo "$P_HOSTLOGIN: failed to stop service $P_SERVICENAME within $F_WAITTIME seconds. Exiting"
+	exit 1
+}
+
 function f_process_waitone_generic_started() {
 	local P_DC=$1
 	local P_PROGRAMNAME=$2
@@ -251,9 +284,42 @@ function f_process_waitall_service_started() {
 			F_ENV_HOSTLOGIN=$C_LISTITEM
 
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
-				echo wait for service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+				echo wait for start service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
 			fi
 			f_process_waitone_service_started $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN $P_PROCESS_TIMEOUT
+		fi
+		NODE=$(expr $NODE + 1)
+	done	
+}
+
+function f_process_waitall_service_stopped() {
+	local P_DC=$1
+	local P_PROGRAMNAME=$2
+	local P_SERVICENAME=$3
+	local P_HOSTLOGIN_LIST="$4"
+	local P_NODE_LIST="$5"
+	local P_PROCESS_TIMEOUT=$6
+
+	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+	fi
+
+	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_SERVICENAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ]; then
+		echo f_process_waitall_service_stopped: invalid call. Exiting
+		exit 1
+	fi
+
+	local NODE=1
+	local NODEN=`echo "$P_HOSTLOGIN_LIST" | tr " " "\n" | grep -c "@"`
+	while [ ! "$NODE" -gt $NODEN ]; do
+		if [ "$P_NODE_LIST" = "" ] || [[ "$P_NODE_LIST" =~ "$NODE" ]]; then
+			f_getlistitem "$P_HOSTLOGIN_LIST" $NODE
+			F_ENV_HOSTLOGIN=$C_LISTITEM
+
+			if [ "$GETOPT_SHOWALL" = "yes" ]; then
+				echo wait for stop service $P_SERVICENAME server=$P_PROGRAMNAME node=$NODE, host=$F_ENV_HOSTLOGIN...
+			fi
+			f_process_waitone_service_stopped $P_DC $P_PROGRAMNAME $P_SERVICENAME $F_ENV_HOSTLOGIN $P_PROCESS_TIMEOUT
 		fi
 		NODE=$(expr $NODE + 1)
 	done	
