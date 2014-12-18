@@ -75,31 +75,7 @@ function f_deploy_stop_service() {
 		return 1
 	fi
 
-	# wait for stop for a while
-	C_PROCESS_PID_SAVE=$C_PROCESS_PID
-	local KWAIT=0
-	local F_WAITTIME=60
-	if [ "$GETOPT_SHOWALL" = "yes" ]; then
-		echo "`date` $P_HOSTLOGIN: wait for stop $P_SERVICENAME..."
-	fi
-
-	local F_WAIT_DATE1=`date '+%s'`
-	local F_WAIT_DATE2
-	while [ "$KWAIT" -lt $F_WAITTIME ]; do
-		# check stopped
-		f_process_service_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_SERVICENAME
-		if [ "$C_PROCESS_STATUS" = "STOPPED" ]; then
-			echo "$P_HOSTLOGIN: $P_SERVICENAME successfully stopped"
-			return 0
-		fi
-
-        	sleep 1
-		F_WAIT_DATE2=`date '+%s'`
-        	KWAIT=$(expr $F_WAIT_DATE2 - $F_WAIT_DATE1)
-	done
-
-	echo "$P_HOSTLOGIN: failed to stop service $P_SERVICENAME within $F_WAITTIME seconds. Exiting"
-	exit 1
+	return 0
 }
 
 # start process
