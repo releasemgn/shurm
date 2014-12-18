@@ -86,7 +86,7 @@ function f_deploy_start_generic() {
 	local P_FULLBINPATH=$4
 
 	# check already started
-	f_process_generic_started_status $P_DC $P_PROGRAMNAME generic $P_HOSTLOGIN $P_FULLBINPATH
+	f_process_generic_started_status $P_DC $P_PROGRAMNAME $P_HOSTLOGIN $P_FULLBINPATH
 	if [ "$C_PROCESS_STATUS" = "STARTED" ]; then
 		if [ "$GETOPT_SHOWALL" = "yes" ]; then
 			echo "$P_HOSTLOGIN: server already started (pid=$C_PROCESS_PID)"
