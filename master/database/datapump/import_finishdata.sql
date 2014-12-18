@@ -38,7 +38,7 @@ declare
 		-- recreate indexes
 		for rec in ( select table_owner , index_name from system.admindb_finishobj_index where table_owner = p_schema ) loop
 			begin
-				execute immediate 'alter index ' || p_schema || '.' || rec.index_name || ' LOGGING';
+				execute immediate 'alter index ' || p_schema || '.' || rec.index_name || ' rebuild LOGGING';
 				insert into system.admindb_finishobj ( oschema , otype , oname , status ) values ( p_schema , 'INDEX' , rec.index_name , 'Y' );
 			exception when others then
 				l_emesg := SQLERRM;
