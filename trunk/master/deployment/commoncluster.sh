@@ -92,7 +92,7 @@ function f_cluster_startall_generic() {
 	fi
 
 	# ensure processes are started
-	f_process_waitall_generic $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STARTTIME
+	f_process_waitall_generic_started $P_DC $P_PROGRAMNAME "$P_HOSTLOGIN_LIST" $P_ROOTDIR $P_BINPATH "$P_NODE_LIST" $P_STARTTIME
 	if [ "$?" = "0" ]; then
 		F_STARTALL_GENERIC_RESULT=0
 	fi
@@ -135,7 +135,7 @@ function f_cluster_startall_service() {
 	fi
 
 	# ensure processes are started
-	f_process_waitall_service $P_DC $P_PROGRAMNAME $P_SERVICENAME "$P_HOSTLOGIN_LIST" "$P_NODE_LIST" $P_STARTTIME
+	f_process_waitall_service_started $P_DC $P_PROGRAMNAME $P_SERVICENAME "$P_HOSTLOGIN_LIST" "$P_NODE_LIST" $P_STARTTIME
 	if [ "$?" = "0" ]; then
 		F_STARTALL_SERVICE_RESULT=0
 	fi
