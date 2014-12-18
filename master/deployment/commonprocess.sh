@@ -6,7 +6,8 @@
 C_PROCESS_PID=
 C_PROCESS_STATUS=
 
-S_PROCESS_DEFAULT_TIMEOUT=600
+S_PROCESS_DEFAULT_START_TIMEOUT=600
+S_PROCESS_DEFAULT_STOP_TIMEOUT=600
 S_PROCESS_STARTPROCESS_TIMEOUT=10
 
 function f_process_pid() {
@@ -224,7 +225,7 @@ function f_process_waitone_generic_stopped() {
 	fi
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
-		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_STOP_TIMEOUT
 	fi
 
 	local KWAIT=0
@@ -268,7 +269,7 @@ function f_process_waitall_service_started() {
 	local P_PROCESS_TIMEOUT=$6
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
-		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_START_TIMEOUT
 	fi
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_SERVICENAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ]; then
@@ -304,7 +305,7 @@ function f_process_waitall_service_stopped() {
 	local P_PROCESS_TIMEOUT=$6
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
-		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_STOP_TIMEOUT
 	fi
 
 	if [ "$P_DC" = "" ] || [ "$P_PROGRAMNAME" = "" ] || [ "$P_SERVICENAME" = "" ] || [ "$P_HOSTLOGIN_LIST" = "" ]; then
@@ -346,7 +347,7 @@ function f_process_waitall_generic_started() {
 	fi
 
 	if [ "$P_PROCESS_TIMEOUT" = "" ]; then
-		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_TIMEOUT
+		P_PROCESS_TIMEOUT=$S_PROCESS_DEFAULT_START_TIMEOUT
 	fi
 
 	local NODE=1
