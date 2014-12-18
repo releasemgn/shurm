@@ -45,32 +45,6 @@ function f_deploy_stop_generic() {
 		return 1
 	fi
 
-	# wait for stop for a while
-	C_PROCESS_PID_SAVE=$C_PROCESS_PID
-	local KWAIT=0
-	local F_WAITTIME=60
-	if [ "$GETOPT_SHOWALL" = "yes" ]; then
-		echo "`date` $P_HOSTLOGIN: wait for stop server..."
-	fi
-
-	local F_WAIT_DATE1=`date '+%s'`
-	local F_WAIT_DATE2
-	while [ "$KWAIT" -lt $F_WAITTIME ]; do
-		# check stopped
-		f_process_pid $P_DC $P_PROGRAMNAME $P_HOSTLOGIN
-		if [ "$C_PROCESS_PID" = "" ]; then
-			echo "`date` $P_HOSTLOGIN: server successfully stopped (pid=$C_PROCESS_PID_SAVE)"
-			return 0
-		fi
-
-        	sleep 1
-		F_WAIT_DATE2=`date '+%s'`
-        	KWAIT=$(expr $F_WAIT_DATE2 - $F_WAIT_DATE1)
-	done
-	
-	# enforced stop
-	echo "`date` $P_HOSTLOGIN: failed to stop server within $F_WAITTIME seconds. killing..."
-	f_deploy_execute $P_DC $P_PROGRAMNAME $P_HOSTLOGIN "kill -9 $C_PROCESS_PID"
 	return 0
 }
 

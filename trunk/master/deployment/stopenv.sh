@@ -41,10 +41,10 @@ function f_local_execute_server_single() {
 			return 1
 		fi
 
-		f_cluster_stopall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST"
+		f_cluster_stopall_generic $DC $P_SRVNAME "$C_ENV_SERVER_HOSTLOGIN_LIST" "$C_ENV_SERVER_ROOTPATH" "$C_ENV_SERVER_BINPATH" "$NODE_LIST" $C_ENV_SERVER_STOPTIME
 
 	elif [ "$C_ENV_SERVER_TYPE" = "service" ]; then
-		f_cluster_stopall_service $DC $P_SRVNAME "$C_ENV_SERVER_SERVICENAME" "$C_ENV_SERVER_HOSTLOGIN_LIST" "$NODE_LIST"
+		f_cluster_stopall_service $DC $P_SRVNAME "$C_ENV_SERVER_SERVICENAME" "$C_ENV_SERVER_HOSTLOGIN_LIST" "$NODE_LIST" $C_ENV_SERVER_STOPTIME
 
 	else
 		echo server type=$F_SERVER_TYPE is not supported. Skipped.
