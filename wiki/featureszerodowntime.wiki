@@ -81,7 +81,8 @@ nginx "second" configuration:
 	server2: server2.node2
 
 Note, that after switching to first configuration, but w/o stopping nodes 
-server1.node3 will call server2.node1 - which is leads to compatibility issues if server1 can initiate operation 
+server1.node3 will call server2.node1 - 
+which is leads to compatibility issues if server1 can initiate operation 
 internally, not by request from external.
 
 Sample configuration switching information (in datacenter):
