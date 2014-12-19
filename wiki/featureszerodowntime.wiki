@@ -2,7 +2,7 @@
 [home] -> [documentation] -> [features] -> [featureszerodowntime]
 
 Allows to deploy releases without loss of service.
-Zero downtime deployment is not possible sometimes without regard to deploy procedure.
+Zero downtime deployment is sometimes not possible without regard to deploy procedure.
 
 <wiki:toc max_depth="2" />
 ----
@@ -116,7 +116,7 @@ Full sequence of default system deploy using deployredist.sh is:
 Active group configuration should prevent from calling inactive group nodes.
 In the same time inactive group nodes should be able to perform startup sequence.
 
-To use zero downtime login add "-nodowntime" option:
+To use zero downtime add "-nodowntime" option:
 	./deployredist.sh -nodowntime <release>
 
 Without "-nodowntime" option deployment uses default sequential start/rollout/stop logic.
