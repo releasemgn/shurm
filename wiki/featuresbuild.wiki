@@ -238,3 +238,10 @@ to build all release targets:
 to build selected release targets:
 ./buildall-release.sh -release 2.3.6-trial core myproject1 myproject2
 }}}
+  * build can be combined with downloading to distribution
+{{{
+"-dist" option will force to update release distributive
+./buildall-release.sh -dist -release 2.3.6-trial
+
+this will not delete previous release items but overwrites by new built items as per build scope
+}}}
