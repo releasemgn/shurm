@@ -186,6 +186,33 @@ source.xml defines this:
 <project name="gateway" vcs="svn" version="trunk" - preproduction
 }}}
 
+= Build logs = 
+
+  * build produces logs which are store in subdirectory in wrapper directory corresponding to build mode
+{{{
+release builds create directory equal to release label, e.g.:
+$MY_PRODUCT_HOME/master/makedistr/branch/3.0.37.1-prod
+
+tag builds create directory equal to tag name with "tag-" prefix, e.g.:
+$MY_PRODUCT_HOME/master/makedistr/branch/tag-prod-3.0.44-candidate
+}}}
+  * build log directory contains top-level log history where each build execution is saved in separate log
+{{{
+e.g.:
+buildall-2014-12-15.18-09-19.out
+buildall-2014-12-16.12-46-52.out
+buildall-2014-12-16.15-22-48.out
+...
+}}}
+  * detailed logs produced by maven are placed to category subdirectory:
+{{{
+e.g. 
+$MY_PRODUCT_HOME/master/makedistr/branch/3.0.45/core/myproject-build.log
+where myproject - name of project in scope
+
+next build will add top-level log but will override maven-level logs
+}}}
+
 = Release builds =
 
   * build targets defined in specific release
