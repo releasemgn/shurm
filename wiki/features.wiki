@@ -27,10 +27,10 @@ Defines features implemented in URM.
    * Prepare configuration updates
    * Prepare database updates
   * [featurescodebase Codebase Management]
-   * bulk codebase updates
-   * tags and branches management
-   * custom operations
-   * upload prebuilt items
+   * Bulk codebase updates
+   * Tags and branches management
+   * Custom operations
+   * Upload prebuilt items
 
 = Application Deployment =
 
