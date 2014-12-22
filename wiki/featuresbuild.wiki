@@ -175,6 +175,18 @@ build all product codebase (all product projects should have this tag)
 build selected projects
 ./buildall-core-tags.sh <tag> myproject1 myproject2
 }}}
+  * production and preproduction codebase
+{{{
+projects can be in production and preproduction state.
+production projects are included in release builds.
+preproduction projects can be build only with snapshot builds.
+
+source.xml defines this:
+<project name="esperanto" vcs="svn" version="branch" - production codebase
+<project name="gateway" vcs="svn" version="trunk" - preproduction
+
+
+}}}
 
 = Release builds =
 
