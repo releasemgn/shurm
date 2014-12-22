@@ -23,7 +23,7 @@ C_CONFIG_JAVA_VERSION=jdk1.6.0_29
 
   * maven configuration file is defined in config.sh
 {{{
-to avoid confusing builds, differenciate build modes:
+to avoid confusing builds, use build modes:
 if [ "$VERSION_MODE" = "branch" ]; then
 	C_CONFIG_MAVEN_CFGFILE=~/.m2/settings.branch.xml
 }}}
