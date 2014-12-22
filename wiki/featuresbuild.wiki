@@ -86,7 +86,7 @@ if [ "$VERSION_MODE" = "devtrunk" ]; then
 Thirdparty repository is defined separately and shared among modes:
 C_CONFIG_NEXUS_PATH_THIRDPARTY=$C_CONFIG_NEXUS_BASE/content/repositories/thirdparty
 }}}
-  * maven configuration file defines repository group having used build artefacts:
+  * maven configuration file defines repository group for used build artefacts:
 {{{
 for instance, regular release builds can be defined using:
       <repositories>
