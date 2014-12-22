@@ -151,6 +151,20 @@ note, that git branches must have additional prefix "branch-"
 i.e. if git branch has final name "branch-myname" then you should call:
 ./buildall-core.sh -branch myname
 }}}
+  * build on branch head creates tag (recreates if exists) and performs download and build using this tag
+{{{
+default tag name is defined in config.sh
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_APPVERSION_TAG=prod-major
+
+you can override defaults with option:
+./buildall-core.sh -tag my-tag myproject1 myproject2
+this will result in setting tag "my-tag" on default branch head and further build
+
+note, that git tags must have additional prefix "tag-"
+i.e. if git tag has final name "tag-myname" then you should call:
+./buildall-core.sh -tag myname
+}}}
 
 = Release builds =
 
