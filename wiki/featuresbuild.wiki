@@ -311,6 +311,9 @@ also you can define it on category level:
                 <project name="portal"/>
 
 to use custom branch in release build - use buildbranch option in release.xml:
+        <buildset type="core">
+                <project name="pgu-portal" buildbranch="mycustombranch"/>
+or
         <buildset type="core" buildbranch="mycustombranch">
                 <project name="portal"/>
 will will force using specific branch, but not default one - to set tag on its head and build
