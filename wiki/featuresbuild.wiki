@@ -31,8 +31,9 @@ if [ "$VERSION_MODE" = "branch" ]; then
 {{{
 local repository location:
 <localRepository>/release/release-mgn/.m2/repository.branch</localRepository>
-
-secured login to access nexus repository:
+}}}
+  * secured login to access nexus repository:
+{{{
 settings-security.xml defines master key -
 <settingsSecurity>
 	<master>(encrypted master password)</master>
@@ -40,8 +41,9 @@ settings-security.xml defines master key -
 
 create master password using:
 mvn --encrypt-master-password <password>
-
-maven configuration file defins builder user and password
+}}}
+  * maven configuration file defins builder user and password:
+{{{
     <server>
       <id>nexus</id>
       <username>builder</username>
