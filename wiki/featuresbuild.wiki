@@ -108,6 +108,11 @@ for instance, regular release builds can be defined using:
       </pluginRepositories>
 
 }}}
+  * recommended nexus repository setup:
+   * separate repository for each of build modes for all products
+   * separate repository group for each of build modes for all products
+   * the only thirdcparty repository for all products
+   * separate login for dev and release builds
 
 = Build product codebase =
 
