@@ -22,6 +22,7 @@ Defines features implemented in URM.
    * Build product codebase
    * Build logs
    * Release builds
+   * Release tags and branches
   * [featuresdist Distributive Management]
    * Release planning and updates
    * Prepare binary updates
