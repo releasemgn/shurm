@@ -113,10 +113,28 @@ for instance, regular release builds can be defined using:
    * separate repository group for each of build modes for all products
    * the only thirdcparty repository for all products
    * separate login for dev and release builds
+   * prevent from adding snapshot artefacts to branch and devbranch repositories
+   * prevent from addins release artefacts to trunk and devtrunk
 
 = Build product codebase =
 
-  * TBD
+  * choose build mode and go to corresponding wrapper directory
+{{{
+cd $MY_PRODUCT_HOME/master/makedistr/<build mode>
+}}}
+  * to build on branch head:
+{{{
+build all product projects:
+./buildall-core.sh
+
+build selected product projects:
+./buildall-core.sh <project list>
+
+<project list> - space-delimited list of projects defined in core category in source.xml
+
+e.g.:
+./buildall-core.sh myproject1 myproject2
+}}}
 
 = Release builds =
 
