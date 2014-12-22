@@ -134,6 +134,22 @@ build selected product projects:
 
 e.g.:
 ./buildall-core.sh myproject1 myproject2
+
+default branch used is defined in config.sh for given build mode:
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_BRANCHNAME=trunk
+
+if property is not set than default branch is <project name>-prod
+
+specific project from source.xml can override this setting:
+<project name="solr-dataimport-handler" vcs="svn" version="branch" branch="prod-fed"...
+
+also you can override default branch name using command line option:
+./buildall-core.sh -branch my-branch myproject1 myproject2
+
+note, that git branches must have additional prefix "branch-"
+i.e. if git branch has final name "branch-myname" then you should call:
+./buildall-core.sh -branch myname
 }}}
 
 = Release builds =
