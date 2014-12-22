@@ -198,11 +198,18 @@ how to create release.xml - see. Release planning and updates in Distributive ma
 }}}
   * release build is performed using buildall-release.sh script:
 {{{
-to build all product core codebase:
+to build all release projects:
+./buildall-release.sh
+
+to build core projects (another build category "war" is too specific and is not for public usage)
 ./buildall-release.sh core
 
-to build selected product projects:
+to build selected release projects:
 ./buildall-release.sh core myproject1 myproject2
+
+note, that if product project is missing from release.xml then release build ignores it
+
+if project is misspelled you will wee error message
 }}}
   * default release is defined using config.sh in C_CONFIG_RELEASENUMBER variable:
 {{{
@@ -210,7 +217,7 @@ sample logic for regular planned releases:
 if [ "$VERSION_MODE" = "branch" ]; then
 	C_CONFIG_RELEASENUMBER=$C_CONFIG_VERSIONBRANCH.$C_CONFIG_NEXT_VERSION_BUILD
 
-C_CONFIG_NEXT_VERSION_BUILD is defined
+where C_CONFIG_NEXT_VERSION_BUILD is defined dynamically
 if [ -f "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt" ]; then
 	C_CONFIG_LAST_VERSION_BUILD=`cat $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt`
 	C_CONFIG_NEXT_VERSION_BUILD=`expr $C_CONFIG_LAST_VERSION_BUILD + 1`
@@ -225,4 +232,9 @@ if [ "$VERSION_MODE" = "dev" ]; then
 }}}
   * you can override defaults by specifying release label to build:
 {{{
+to build all release targets:
+./buildall-release.sh -release 2.3.6-trial
+
+to build selected release targets:
+./buildall-release.sh -release 2.3.6-trial core myproject1 myproject2
 }}}
