@@ -21,7 +21,36 @@ C_CONFIG_JAVA_VERSION=jdk1.6.0_29
     
 = Define Maven environment =
 
-  * TBD
+  * maven configuration file is defined in config.sh
+{{{
+to avoid confusing builds, differenciate build modes:
+if [ "$VERSION_MODE" = "branch" ]; then
+	C_CONFIG_MAVEN_CFGFILE=~/.m2/settings.branch.xml
+}}}
+  * maven configuration file defines local repository and login to access nexus
+{{{
+local repository location:
+<localRepository>/release/release-mgn/.m2/repository.branch</localRepository>
+
+secured login to access nexus repository:
+settings-security.xml defines master key -
+<settingsSecurity>
+	<master>(encrypted master password)</master>
+</settingsSecurity>
+
+create master password using:
+mvn --encrypt-master-password <password>
+
+maven configuration file defins builder user and password
+    <server>
+      <id>nexus</id>
+      <username>builder</username>
+      <password>(encrypted builder password)</password>
+    </server>
+
+create builder password using:
+mvn --encrypt-password <password>
+}}}
 
 = Define Nexus environment =
 
