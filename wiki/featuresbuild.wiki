@@ -184,10 +184,45 @@ preproduction projects can be build only with snapshot builds.
 source.xml defines this:
 <project name="esperanto" vcs="svn" version="branch" - production codebase
 <project name="gateway" vcs="svn" version="trunk" - preproduction
-
-
 }}}
 
 = Release builds =
 
-  * TBD
+  * build targets defined in specific release
+{{{
+release is defined by release.xml located in release folder.
+release folders root directory is defined in config.sh:
+C_CONFIG_DISTR_PATH=~/distr/$C_CONFIG_PRODUCT
+
+how to create release.xml - see. Release planning and updates in Distributive management.
+}}}
+  * release build is performed using buildall-release.sh script:
+{{{
+to build all product core codebase:
+./buildall-release.sh core
+
+to build selected product projects:
+./buildall-release.sh core myproject1 myproject2
+}}}
+  * default release is defined using config.sh in C_CONFIG_RELEASENUMBER variable:
+{{{
+sample logic for regular planned releases:
+if [ "$VERSION_MODE" = "branch" ]; then
+	C_CONFIG_RELEASENUMBER=$C_CONFIG_VERSIONBRANCH.$C_CONFIG_NEXT_VERSION_BUILD
+
+C_CONFIG_NEXT_VERSION_BUILD is defined
+if [ -f "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt" ]; then
+	C_CONFIG_LAST_VERSION_BUILD=`cat $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt`
+	C_CONFIG_NEXT_VERSION_BUILD=`expr $C_CONFIG_LAST_VERSION_BUILD + 1`
+
+last-prod-tag.txt - file to store current release minor number in PROD.
+e.g. current branch is 2.4 and last-prod-tag.txt contains 35
+it means last planned release deployed to prod is 2.4.35, next default release is 2.4.36.
+
+specific build mode can have major release - e.g.
+if [ "$VERSION_MODE" = "dev" ]; then
+	C_CONFIG_RELEASENUMBER=$C_CONFIG_NEXT_MAJORRELEASE
+}}}
+  * you can override defaults by specifying release label to build:
+{{{
+}}}
