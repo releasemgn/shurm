@@ -20,6 +20,7 @@ Defines features implemented in URM.
    * Define Maven environment
    * Define Nexus environment
    * Build product codebase
+   * Build logs
    * Release builds
   * [featuresdist Distributive Management]
    * Release planning and updates
