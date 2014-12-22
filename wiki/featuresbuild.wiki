@@ -8,11 +8,11 @@ Explains how to build projects using URM.
 
 = Define Java environment =
 
-  * URM is able to build projects using different jdk versions
-  * specific jdk version should be located in folder under /usr/java
+  * URM is able to build projects using different jdk versions and settings
   * default product jdk is defined in config.sh:
 {{{
 C_CONFIG_JAVA_VERSION=jdk1.6.0_29
+specific jdk version should be located in folder under /usr/java
 }}}
   * to override default jdk version for selected projects belonging to product set, specify version in source.xml:
 {{{
@@ -21,6 +21,7 @@ C_CONFIG_JAVA_VERSION=jdk1.6.0_29
     
 = Define Maven environment =
 
+  * URM is able to build projects using different maven versions and settings
   * maven configuration file is defined in config.sh
 {{{
 to avoid confusing builds, use build modes:
@@ -54,6 +55,20 @@ mvn --encrypt-master-password <password>
 
 create builder password using:
 mvn --encrypt-password <password>
+}}}
+  * to use specific maven version:
+{{{
+default maven version to build product projects:
+C_CONFIG_MAVEN_VERSION=2.2.1
+specific maven version should be located in /usr/local/apache-maven-<version>
+
+you can customize maven version for specific project using:
+<project name="esb" vcs="svnnew" version="branch" javaversion="jdk1.7.0_45" mavenversion="3.1.1" ...
+}}}
+  * to define product-aligned maven options
+{{{
+C_CONFIG_MAVEN_ADDITIONAL_OPTIONS="-e"
+C_CONFIG_MAVEN_PROFILES="all-components,all-modules"
 }}}
 
 = Define Nexus environment =
