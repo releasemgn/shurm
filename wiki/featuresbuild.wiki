@@ -6,6 +6,22 @@ Explains how to build projects using URM.
 <wiki:toc max_depth="2" />
 ----
 
-= TBD =
+= Define Java environment =
+
+  * TBD
+    
+= Define Maven environment =
+
+  * TBD
+
+= Define Nexus environment =
+
+  * TBD
+
+= Build product codebase =
+
+  * TBD
+
+= Release builds =
 
   * TBD
