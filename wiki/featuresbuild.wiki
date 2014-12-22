@@ -35,27 +35,6 @@ predefined build modes: devtrunk, devbranch, trunk, branch, majorbranch
 local repository location:
 <localRepository>/release/release-mgn/.m2/repository.branch</localRepository>
 }}}
-  * secured login to access nexus repository:
-{{{
-settings-security.xml defines master key -
-<settingsSecurity>
-	<master>(encrypted master password)</master>
-</settingsSecurity>
-
-create master password using:
-mvn --encrypt-master-password <password>
-}}}
-  * maven configuration file defins builder user and password:
-{{{
-    <server>
-      <id>nexus</id>
-      <username>builder</username>
-      <password>(encrypted builder password)</password>
-    </server>
-
-create builder password using:
-mvn --encrypt-password <password>
-}}}
   * to use specific maven version:
 {{{
 default maven version to build product projects:
@@ -73,7 +52,62 @@ C_CONFIG_MAVEN_PROFILES="all-components,all-modules"
 
 = Define Nexus environment =
 
-  * TBD
+  * secured login to access nexus repository in maven settings file:
+{{{
+settings-security.xml defines master key -
+<settingsSecurity>
+	<master>(encrypted master password)</master>
+</settingsSecurity>
+
+create master password using:
+mvn --encrypt-master-password <password>
+}}}
+  * maven configuration file defines builder user and password:
+{{{
+    <server>
+      <id>nexus</id>
+      <username>builder</username>
+      <password>(encrypted builder password)</password>
+    </server>
+
+create builder password using:
+mvn --encrypt-password <password>
+}}}
+  * config.sh defines nexus location:
+{{{
+C_CONFIG_NEXUS_BASE=http://yournexus.com
+}}}
+  * config.sh defines repository to upload builds into:
+{{{
+depends on build mode:
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_NEXUS_REPO=snapshots
+
+Thirdparty repository is defined separately and shared among modes:
+C_CONFIG_NEXUS_PATH_THIRDPARTY=$C_CONFIG_NEXUS_BASE/content/repositories/thirdparty
+}}}
+  * maven configuration file defines repository group having used build artefacts:
+{{{
+for instance, regular release builds can be defined using:
+      <repositories>
+        <repository>
+          <id>nexus</id>
+          <name>Repository for JDK builds</name>
+          <url>http://yournexus.com/content/groups/group-builderbranch/</url>
+          <layout>default</layout>
+        </repository>
+
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus</id>
+          <name>Repository for JDK builds</name>
+          <url>http://yournexus.com/content/groups/group-builderbranch/</url>
+          <layout>default</layout>
+        </pluginRepository>
+      </pluginRepositories>
+
+}}}
 
 = Build product codebase =
 
