@@ -26,6 +26,8 @@ C_CONFIG_JAVA_VERSION=jdk1.6.0_29
 to avoid confusing builds, use build modes:
 if [ "$VERSION_MODE" = "branch" ]; then
 	C_CONFIG_MAVEN_CFGFILE=~/.m2/settings.branch.xml
+
+predefined build modes: devtrunk, devbranch, trunk, branch, majorbranch
 }}}
   * maven configuration file defines local repository and login to access nexus
 {{{
