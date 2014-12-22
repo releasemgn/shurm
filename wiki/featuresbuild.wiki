@@ -265,6 +265,14 @@ to build all release targets:
 to build selected release targets:
 ./buildall-release.sh -release 2.3.6-trial core myproject1 myproject2
 }}}
+  * release build can use precreated tag:
+{{{
+consider you have defined release.xml in 2.3.5.6 release
+providing you have manually created tag emergency-2.3.5.6, you can call:
+./buildall-core-tags.sh -release 2.3.6-trial emergency-2.3.5.6
+
+it will build only release targets using pre-existing tag.
+}}}
   * build can be combined with downloading to distribution
 {{{
 "-dist" option will force to update release distributive
@@ -274,4 +282,38 @@ this will not delete previous release items but overwrites by new built items as
 
 actually it calls binary updates using getall-release.sh with the same parameters
 see Prepare binary updates in Distributive Management
+}}}
+
+= Release tags and branches =
+
+  * tag option is processed is the same manner as for non-release builds
+{{{
+./buildall-release.sh produces - default tag defined in config.sh
+./buildall-release.sh -tag mytag - creates given tag
+
+changing tag name is recommended practice for emergency builds
+e.g. by default ./buildall-release.sh creates planned release prod-2.3.4-candidate tag
+
+Consider you need to issue emergency release.
+It means creating release having label 2.3.3.1 and tag prod-2.3.4.1
+So you need to call:
+./buildall-release.sh -release 2.3.3.1 -tag prod-2.3.4.1
+}}}
+  * specific releases can override tag and branch approach:
+{{{
+to use pre-existing tag in release build - use buildtag option in release.xml:
+        <buildset type="core">
+                <project name="pgu-portal" buildtag="myfixedtag"/>
+this will force to use tag "myfixedtag", but not setting default tag on head of branch
+
+also you can define it on category level:
+        <buildset type="core" buildtag="myfixedtag">
+                <project name="portal"/>
+
+to use custom branch in release build - use buildbranch option in release.xml:
+        <buildset type="core" buildbranch="mycustombranch">
+                <project name="portal"/>
+will will force using specific branch, but not default one - to set tag on its head and build
+
+custom branch is useful to build emergency patch releases - created from last prod tag and patched.
 }}}
