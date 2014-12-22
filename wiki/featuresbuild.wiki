@@ -244,4 +244,7 @@ to build selected release targets:
 ./buildall-release.sh -dist -release 2.3.6-trial
 
 this will not delete previous release items but overwrites by new built items as per build scope
+
+actually it calls binary updates using getall-release.sh with the same parameters
+see Prepare binary updates in Distributive Management
 }}}
