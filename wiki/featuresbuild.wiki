@@ -165,6 +165,16 @@ note, that git tags must have additional prefix "tag-"
 i.e. if git tag has final name "tag-myname" then you should call:
 ./buildall-core.sh -tag myname
 }}}
+  * build from given tag
+{{{
+use buildall-core-tags.sh script to build from existing tag:
+
+build all product codebase (all product projects should have this tag)
+./buildall-core-tags.sh <tag>
+
+build selected projects
+./buildall-core-tags.sh <tag> myproject1 myproject2
+}}}
 
 = Release builds =
 
