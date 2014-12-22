@@ -8,7 +8,16 @@ Explains how to build projects using URM.
 
 = Define Java environment =
 
-  * TBD
+  * URM is able to build projects using different jdk versions
+  * specific jdk version should be located in folder under /usr/java
+  * default product jdk is defined in config.sh:
+{{{
+C_CONFIG_JAVA_VERSION=jdk1.6.0_29
+}}}
+  * to override default jdk version for selected projects belonging to product set, specify version in source.xml:
+{{{
+<project name="pgu-techportal" vcs="git" version="branch" javaversion="jdk1.7.0_45" ...
+}}}
     
 = Define Maven environment =
 
