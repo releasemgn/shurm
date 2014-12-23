@@ -23,6 +23,7 @@ Defines features implemented in URM.
    * Define prebuilt items
    * Using git repositories
   * [featurescodeops Codebase Management]
+   * Bulk codebase operations
    * Tags and branches management
    * Bulk codebase updates
    * Custom operations
