@@ -17,6 +17,9 @@ Defines features implemented in URM.
 
   * [featurescodebase Codebase Management]
    * Define product codebase
+   * Define product buildable codebase
+   * Define product configuration
+   * Define product database
    * Tags and branches management
    * Prebuilt items
    * Bulk codebase updates
