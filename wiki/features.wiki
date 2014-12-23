@@ -20,7 +20,7 @@ Defines features implemented in URM.
    * Define product buildable codebase
    * Define product configuration
    * Define product database
-   * Define and upload prebuilt items
+   * Define prebuilt items
    * Using git repositories
   * [featurescodeops Codebase Management]
    * Tags and branches management
