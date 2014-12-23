@@ -26,19 +26,27 @@ Explains how to maintain product codebase using URM.
     <distitem name="pgu-dependencies" type="nexus" extension="-libs.tar.gz" path="com/nvision/pgu/portal"/>
   </project>
   <project name="sp" vcs="git" version="branch" path="fedpgu" jira="PGUDEV"/>
+}}}
+  * in URM each project is built as a whole, so you need to plan your codebase structure
+  * every project has its own set of tags and branches containing whole project scope
+  * project can have below attributes:
+{{{
+"name" defines reference name and VCS name as well
 
-- in URM each project is built as a whole, so you need to plan your codebase structure
-- every project has its own set of tags and branches containing whole project scope
-- "name" defines reference name and VCS name as well
-- "vcs" can be git or svn or svnnew
+"vcs" can be git or svn or svnnew
 svn/svnnew allow repository migration
-- "version" can be "branch" or "trunk"
+
+"version" can be "branch" or "trunk"
 branch means prod status
 trunk means non-production codebase - full release build will skip building this project
-- "path" - in git repository means group, in svn repository means parent path
-- "branch" defines default production branch
-- "javaversion" - defines jdk version to use to build this project
-- "mavenversion" - defines maven version to use to build this project
+
+"path" - in git repository means group, in svn repository means parent path
+
+"branch" defines default production branch
+
+"javaversion" - defines jdk version to use to build this project
+
+"mavenversion" - defines maven version to use to build this project
 }}}
 
 = Define product configuration =
