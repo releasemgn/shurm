@@ -1,4 +1,4 @@
-#summary Functional Capabilities of URM - Codebase Management
+#summary Functional Capabilities of URM - Define Codebase
 [home] -> [documentation] -> [features] -> [featurescodebase]
 
 Explains how to maintain product codebase using URM.
