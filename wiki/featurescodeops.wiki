@@ -28,6 +28,41 @@ do the same with all projects of specific release:
 ./codebase-copytags.sh -release 1.2.3 prod-1.2.3-candidate prod-1.2.3
 this will apply command to all projects included in release.xml located in 1.2.3 distributive folder
 }}}
+  * tag and branch operations are dealing with projects, tags and branches, conformed to URM requirements:
+{{{
+git tag should have name - tag-<anyid>
+git branch should have name - branch-<anyid>
+
+svn tag should be in location $PROJECTPATH/$PROJECTNAME/tags/<anyid>
+svn branch should be in location $PROJECTPATH/$PROJECTNAME/branches/<anyid>
+if branch is "trunk", then path is $PROJECTPATH/$PROJECTNAME/trunk
+}}}
+  * following tag and branch operations are available:
+{{{
+copy branch1 (should exist) to branch2 (will be dropped if exists - CAUTION!)
+./codebase-copybranch.sh branch1 branch2 ...
+
+copy tag1 (should exist) to tag2 (cancel operation if exists)
+./codebase-copynewtags.sh tag1 tag2 ...
+
+copy tag1 (should exist) to tag2 (will be dropped if exists - CAUTION!)
+./codebase-copytags.sh tag1 tag2 ...
+
+create branch mybranch (previous will be dropped - CAUTION!) from mytag (should exist)
+./codebase-copytagtobranch.sh mytag mybranch ...
+
+drop candidate tags having name "version-candidate":
+./codebase-dropoldcandidatetags.sh version ...
+
+drop any tags:
+./codebase-tags.sh mytag ...
+
+rename branch1 branch (should exist) to branch2 branch (previous will be dropped - CAUTION!):
+./codebase-renamebranch.sh branch1 branch2 ...
+
+rename tag1 tag (should exist) to tag tag (previous will be dropped - CAUTION!):
+./codebase-renametags.sh tag1 tag2 ...
+}}}
 
 = Bulk codebase updates =
 = Custom operations =
