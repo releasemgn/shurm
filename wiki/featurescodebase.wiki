@@ -13,15 +13,11 @@ Explains how to maintain product codebase using URM.
   * buildable codebase are defined in source.xml:
 {{{
 <source>
-		<project name="pgu-portal" vcs="svn" version="branch"
- group="portal" path="/gosuslugi/" jira="PGUDEV">
-			<distitem name="gu-web" type="staticwar"
- path="com/nvision/pgu/portal"/>
-			<distitem name="pgu-dependencies" type="nexus"
- extension="-libs.tar.gz" path="com/nvision/pgu/portal"/>
-		</project>
-		<project name="sp" vcs="git" version="branch"
- group="core" path="fedpgu" jira="PGUDEV"/>
+  <project name="pgu-portal" vcs="svn" version="branch" jira="PGUDEV">
+    <distitem name="gu-web" type="staticwar" path="com/nvision/pgu/portal"/>
+    <distitem name="pgu-dependencies" type="nexus" extension="-libs.tar.gz" path="com/nvision/pgu/portal"/>
+  </project>
+  <project name="sp" vcs="git" version="branch" group="core" path="fedpgu" jira="PGUDEV"/>
 }}}
 
 = Define product buildable codebase =
