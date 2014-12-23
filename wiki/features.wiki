@@ -15,11 +15,17 @@ Defines features implemented in URM.
 
 = Build and Distributive Management =
 
+  * [featurescodebase Codebase Management]
+   * Define product codebase
+   * Bulk codebase updates
+   * Tags and branches management
+   * Custom operations
+   * Prebuilt items
+   * Find changeset tickets
   * [featuresbuild Build Projects]
    * Define Java environment
    * Define Maven environment
    * Define Nexus environment
-   * Define product codebase
    * Build product codebase
    * Build logs
    * Release builds
@@ -29,12 +35,6 @@ Defines features implemented in URM.
    * Prepare binary updates
    * Prepare configuration updates
    * Prepare database updates
-  * [featurescodebase Codebase Management]
-   * Bulk codebase updates
-   * Tags and branches management
-   * Custom operations
-   * Prebuilt items
-   * Find changeset tickets
 
 = Application Deployment =
 
