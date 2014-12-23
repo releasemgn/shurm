@@ -18,9 +18,9 @@ Defines features implemented in URM.
   * [featurescodebase Codebase Management]
    * Define product codebase
    * Tags and branches management
-   * Custom operations
    * Prebuilt items
    * Bulk codebase updates
+   * Custom operations
    * Find changeset tickets
   * [featuresbuild Build Projects]
    * Define Java environment
