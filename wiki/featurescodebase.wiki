@@ -50,6 +50,19 @@ trunk means non-production codebase - full release build will skip building this
 }}}
 
 = Define product configuration =
+
+  * configuration components are defined in distr.xml as groups of files or directories
+{{{
+<configuration>
+  <component name="tlssrv.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="tlssrv.new.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="nlb.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="dev.nlb.conf" subdir="dev" unit="core" type="dir" layer="server"/>
+  <component name="jms.conf" subdir="prod" unit="core" type="files" files="hornetq-configuration.xml hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
+  <component name="xuat.jms.conf" subdir="dev" unit="core" type="files" files="hornetq-configuration.xml 
+hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
+}}}
+
 = Define product database =
 = Define and upload prebuilt items =
 
