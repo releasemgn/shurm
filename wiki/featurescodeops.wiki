@@ -18,6 +18,9 @@ e.g. single project operation:
 do the same with several projects:
 ./codebase-copytags.sh tag1 tag2 core myproject1 myproject2
 
+do the same with all product projects of specific category (the only usable category here is core):
+./codebase-copytags.sh tag1 tag2 core myproject1 myproject2
+
 do the same with all projects of given product:
 ./codebase-copytags.sh tag1 tag2
 
