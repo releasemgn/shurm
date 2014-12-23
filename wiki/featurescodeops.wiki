@@ -7,6 +7,25 @@ Explains how to maintain product codebase using URM.
 ----
 
 = Tags and branches management =
+
+  * URM allows to perform typical branch and tag operations using unified commands and project names disregarding referencing exact type of vcs and location
+  * tag and branch operations are performed disregarding of its build mode - from master/makedistr directory
+  * branch operation can be single-project or it can affect several or all product projects at once
+{{{
+e.g. single project operation:
+./codebase-copytags.sh tag1 tag2 core myproject
+
+do the same with several projects:
+./codebase-copytags.sh tag1 tag2 core myproject1 myproject2
+
+do the same with all projects of given product:
+./codebase-copytags.sh tag1 tag2
+
+do the same with all projects of specific release:
+./codebase-copytags.sh -release 1.2.3 prod-1.2.3-candidate prod-1.2.3
+this will apply command to all projects included in release.xml located in 1.2.3 distributive folder
+}}}
+
 = Bulk codebase updates =
 = Custom operations =
 = Find changeset tickets =
