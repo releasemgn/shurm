@@ -6,6 +6,45 @@ Explains how to maintain product codebase using URM.
 <wiki:toc max_depth="2" />
 ----
 
+= Using git repositories =
+
+  * to build codebase stored in git hubs URM utilyzes approach of mirror repository, with automatic push and pull on each URM operation
+  * mirror git repositories are located in directory defined in config.sh:
+{{{
+C_CONFIG_GITMIRRORPATH=~/build/git
+
+sample code to create git mirror:
+#!/bin/sh
+
+P_GROUP=$1
+P_PROJECT=$2
+
+if [ "$P_GROUP" = "" ]; then
+        echo P_GROUP is not set. Exiting
+        exit 1
+fi
+if [ "$P_PROJECT" = "" ]; then
+        echo P_PROJECT is not set. Exiting
+        exit 1
+fi
+
+F_GIT_SOURCE=http://builder@mygit.com/$P_GROUP/$P_PROJECT.git
+F_GIT_MIRROR=/build/git/$P_PROJECT.git
+
+echo create mirror from git central repository $F_GIT_SOURCE to local $F_GIT_MIRROR
+rm -rf $F_GIT_MIRROR
+git clone --mirror $F_GIT_SOURCE $F_GIT_MIRROR
+
+echo mirror.sh: successfully done
+
+to persist auth attributes - execute below commands:
+git config --global credential.helper "cache --timeout=100000000"
+git config --global user.email myname@mycompany.com
+git config --global user.name builder
+
+after that mirror will ask password once and stores it in current account
+}}}
+
 = Define product codebase =
 
   * product generally consists of buildable codebase, prebuild binaries, configuration files, database metadata and non-operational data
