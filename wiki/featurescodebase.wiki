@@ -13,7 +13,7 @@ Explains how to maintain product codebase using URM.
   * buildable codebase is defined in source.xml as a set of projects of "core" category
   * prebuilt binaries are defined in source.xml grouped in projects of "prebuilt" category
   * configuration items are defined in distr.xml
-  * database part of product is defined by production instance, concept of URM takes into account that it is practically impossible to track database using engineered DDL scripts; more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data with manual DDL and DML updates in releases
+  * database part of product is defined by production instance
 
 = Define product buildable codebase =
 
@@ -80,6 +80,24 @@ C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/con
   * for deployment details of configuration files and how to release configuration files see Application deployment
 
 = Define product database =
+
+  * product environment can have complex database configuration in terms of instances
+  * concept of URM takes into account that it is practically impossible to track database using engineered DDL scripts
+  * more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data with manual DDL and DML updates in releases
+  * in terms of product as codebase, product database is by design represented by set of schemas, their data and metadata
+  * set of product schemes is defined in config.sh:
+{{{
+C_CONFIG_SCHEMAADMIN=pgu
+C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
+C_CONFIG_SCHEMAFEDLIST="pgu pguapi notif cms govsrvreg lk sia msgsrv ruspost reports pguforms forum admsf ssp $C_CONFIG_SCHEMAREGLIST"
+C_CONFIG_SCHEMAALLLIST="$C_CONFIG_SCHEMAFEDLIST"
+
+administration schema is used to account scripts applied to database
+C_CONFIG_SCHEMAREGLIST, C_CONFIG_SCHEMAFEDLIST - helpers to manage topology of datacenters
+C_CONFIG_SCHEMAALLLIST - all product schemas
+}}}
+  * see Prepare and Apply Database Changes for further details
+
 = Define and upload prebuilt items =
 
 = Using git repositories =
