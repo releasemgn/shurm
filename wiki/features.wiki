@@ -17,10 +17,10 @@ Defines features implemented in URM.
 
   * [featurescodebase Codebase Management]
    * Define product codebase
-   * Bulk codebase updates
    * Tags and branches management
    * Custom operations
    * Prebuilt items
+   * Bulk codebase updates
    * Find changeset tickets
   * [featuresbuild Build Projects]
    * Define Java environment
