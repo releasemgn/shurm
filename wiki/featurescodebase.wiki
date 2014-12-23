@@ -135,7 +135,7 @@ alternatively you can store in svn repository:
   <project name="thirdparty" version="branch" group="core">
     <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
 }}}
-  * last case - given product depends on libraries stored in nexus
+  * last case - given product depends on libraries stored in nexus as a result of another product build
 {{{
 this dependency is managed via ordinary maven settings pom.xml and proper product build order
 }}}
