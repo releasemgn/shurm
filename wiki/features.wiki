@@ -15,12 +15,13 @@ Defines features implemented in URM.
 
 = Build and Distributive Management =
 
-  * [featurescodebase Codebase Management]
+  * [featurescodebase Define Codebase]
    * Define product codebase
    * Define product buildable codebase
    * Define product configuration
    * Define product database
    * Define and upload prebuilt items
+  * [featurescodeops Codebase Management]
    * Tags and branches management
    * Bulk codebase updates
    * Custom operations
