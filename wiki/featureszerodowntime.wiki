@@ -10,7 +10,7 @@ Zero downtime deployment is sometimes not possible without regard to deploy proc
 = Using deploygroup =
 
   * allows to assign name to set of nodes of one or several servers
-  * any operation with nodes of given deploy group does not affect any toher nodes
+  * any operation with nodes of given deploy group does not affect other nodes
   * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
   * does not prevent from application inconsistency - when updated nodes are called from not updated ones
 {{{
