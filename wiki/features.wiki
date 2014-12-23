@@ -16,6 +16,7 @@ Defines features implemented in URM.
 = Build and Distributive Management =
 
   * [featurescodebase Define Codebase]
+   * Using git repositories
    * Define product codebase
    * Define product buildable codebase
    * Define product configuration
