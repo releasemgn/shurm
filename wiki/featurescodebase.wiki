@@ -12,8 +12,9 @@ Explains how to maintain product codebase using URM.
   * mirror git repositories are located in directory defined in config.sh:
 {{{
 C_CONFIG_GITMIRRORPATH=~/build/git
-
-sample code to create git mirror:
+}}}
+  * sample code to create git mirror:
+{{{
 #!/bin/sh
 
 P_GROUP=$1
