@@ -8,8 +8,9 @@ Explains how to create and maintain distributives using URM.
 
 = Release planning and updates =
 
-  * release planning is performed using release specification file release.xml located in ditributive folder
+  * release planning is performed using release specification file release.xml located in distributive folder
   * release.xml defines components included in release
+  * create distributive folder and release.xml manually
   * example of release definition aimed to build and deploy all binaries and configuration:
 {{{
 <release>
