@@ -68,5 +68,9 @@ rename tag1 tag (should exist) to tag tag (previous will be dropped - CAUTION!):
 }}}
 
 = Bulk codebase updates =
+
+  * URM simplifies operations with products having multiple codebase projects
+  * to export all the product codebase
+
 = Custom operations =
 = Find changeset tickets =
