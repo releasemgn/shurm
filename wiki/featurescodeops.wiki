@@ -70,7 +70,52 @@ rename tag1 tag (should exist) to tag tag (previous will be dropped - CAUTION!):
 = Bulk codebase updates =
 
   * URM simplifies operations with products having multiple codebase projects
-  * to export all the product codebase
+  * to export all the product codebase:
+{{{
+by default export will be performed from production branch
+production branch is defined in source.xml or <project>-prod if missing:
+./codebase-export.sh targetdir ...
+
+to export from specific tag:
+./codebase-export.sh -tag mytag targetdir ...
+
+to export head of specific branch:
+./codebase-export.sh -branch mybranch targetdir ...
+
+targetdir directory should exist
+}}}
+  * to perform coordinated update of build version using maven setversion:
+{{{
+script will do the following steps for every project in scope:
+1. checkout head of given branch
+2. execute mvn versions:set -DnewVersion=$VERSION
+3. execute commit 
+
+CAUTION! - it is bulk update of codebase - be careful.
+
+set version in production branch:
+./codebase-setversion.sh version ...
+
+set version in specific branch:
+./codebase-setversion.sh -branch mybranch version ...
+}}}
+  * to perform any bulk codebase update using logic out of URM scope:
+{{{
+checkout codebase using:
+./codebase-checkout.sh targetdir ...
+or
+./codebase-checkout.sh -branch mybranch targetdir ...
+
+targetdir should exist before execution
+after checkout targetdir will be populated with projects from head of specified branch
+
+then you can do any operations usign any scripts and commands to change codebase in targetdir
+
+after all you need to commit changes back to vcs repositories:
+./codebase-commit.sh targetdir ...
+
+CAUTION! - it is bulk update of codebase - be careful.
+}}}
 
 = Custom operations =
 = Find changeset tickets =
