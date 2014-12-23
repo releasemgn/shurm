@@ -89,7 +89,7 @@ C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/con
 {{{
 C_CONFIG_SCHEMAADMIN=pgu
 C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
-C_CONFIG_SCHEMAFEDLIST="pgu pguapi notif cms govsrvreg lk sia msgsrv ruspost reports pguforms forum admsf ssp $C_CONFIG_SCHEMAREGLIST"
+C_CONFIG_SCHEMAFEDLIST="pgu pguapi $C_CONFIG_SCHEMAREGLIST"
 C_CONFIG_SCHEMAALLLIST="$C_CONFIG_SCHEMAFEDLIST"
 
 administration schema is used to account scripts applied to database
