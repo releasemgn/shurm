@@ -98,7 +98,47 @@ C_CONFIG_SCHEMAALLLIST - all product schemas
 }}}
   * see Prepare and Apply Database Changes for further details
 
-= Define and upload prebuilt items =
+= Define prebuilt items =
+
+  * definition of product can include prebuilt items - binaries that are already built beyond of scope of given product, defined in source.xml:
+{{{
+<projectset type="prebuilt">
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+...
+
+  <project name="carcass" version="branch" group="core">
+    <distitem name="frgu-integration-ws" type="nexus" extension=".war" path="ru/atc/frgu-integration"/>
+...
+}}}
+  * prebuilt items are either thirdparty or results of another product build
+  * normally another product build items are used in its own environment, but sometimes referenced product is platform product - not having its own business purpose and its binaries are just reused inn several final products - so you build binary in one product and reuse it as prebuilt in this product
+{{{
+this case you most probably have this binary item present in nexus
+to reference prebuilt:
+
+  <project name="carcass" version="branch" group="core">
+    <distitem name="frgu-integration-ws" type="nexus" extension=".war" path="ru/atc/frgu-integration"/>
+...
+
+it is recommended to name prebuilt project by corresponding product name
+}}}
+  * second case is when you have exactly thirdparty binary - e.g., downloaded from internet
+{{{
+this case you can store binary in specific "thirdparty" nexus repository
+then create project entry having the same name as nexus repository:
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+...
+
+alternatively you can store in svn repository:
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+}}}
+  * last case - given product depends on libraries stored in nexus
+{{{
+this dependency is managed via ordinary maven settings pom.xml
+}}}
 
 = Using git repositories =
 
