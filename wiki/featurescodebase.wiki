@@ -36,8 +36,9 @@ rm -rf $F_GIT_MIRROR
 git clone --mirror $F_GIT_SOURCE $F_GIT_MIRROR
 
 echo mirror.sh: successfully done
-
-to persist auth attributes - execute below commands:
+}}}
+  * to persist auth attributes - execute below commands:
+{{{
 git config --global credential.helper "cache --timeout=100000000"
 git config --global user.email myname@mycompany.com
 git config --global user.name builder
