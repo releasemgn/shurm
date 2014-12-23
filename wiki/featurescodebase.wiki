@@ -13,7 +13,7 @@ Explains how to maintain product codebase using URM.
   * buildable codebase is defined in source.xml as a set of projects of "core" category
   * prebuilt binaries are defined in source.xml grouped in projects of "prebuilt" category
   * configuration items are defined in distr.xml
-  * database part of product is defined by production instance, concept of URM takes into account that it is practically impossible to track database using engineered DDL scripts; more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data
+  * database part of product is defined by production instance, concept of URM takes into account that it is practically impossible to track database using engineered DDL scripts; more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data with manual DDL and DML updates in releases
 
 = Define product buildable codebase =
 
