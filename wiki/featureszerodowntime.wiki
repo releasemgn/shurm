@@ -39,6 +39,7 @@ which is in the "first" deploy group
 = Configuration switching deployment =
 
   * ensures consistent application update in distributed fully clustered environment
+  * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
   * uses configuration switching server which allows to change cluster node configuration without loss of service
   * one possible implementation of configuration switch server is nginx, which allows to reload configuration file on pair with graceful node shutdown where commands are completed
 {{{
