@@ -6,6 +6,70 @@ Explains how to create and maintain distributives using URM.
 <wiki:toc max_depth="2" />
 ----
 
-= TBD =
+= Release planning and updates =
+
+  * release planning is performed using release specification file release.xml located in ditributive folder
+  * release.xml defines components included in release
+{{{
+example of release definition aimed to build and deploy all binaries and configuration:
+<release>
+	<build>
+		<buildset type="core" all="true"/>
+		<buildset type="prebuilt" all="true"/>
+	</build>
+
+	<configure all="true"/>
+</release>
+
+more specific incremental release can limit projects and components included:
+<release>
+	<build>
+		<buildset type="core">
+			<project name="pgu-paygate"/>
+			<project name="pgu-portal"/>
+			<project name="pgu-forms-core-front"/>
+			<project name="pgu-forms-svc"/>
+			<project name="sp"/>
+			<project name="pgu-forms-core-back"/>
+			<project name="bem"/>
+			<project name="pgu-core">
+				<distitem name="smev-lk-service"/>
+				<distitem name="drafts"/>
+				<distitem name="pgu-worker"/>
+			</project>
+		</buildset>
+
+		<buildset type="prebuilt">
+                        <project name="carcass" buildversion="3.12">
+         	                <distitem name="frgu-integration-inc"/>
+         	                <distitem name="frgu-integration-groovy"/>
+                        </project>
+		</buildset>
+	</build>
+
+        <configure>
+                <component partial="true" name="serviceregistry.settings.conf"/>
+                <component partial="true" name="jms.conf"/>
+        </configure>
+</release>
+
+Last example means:
+- building project pgu-portal and deploying all its registered binaries
+- building project pgu-core and deploying only listed 3 binaries
+- downloading 2 listed prebuild dependency binaries
+
+Configure:
+- download and deploy 2 configuration components - only present in release repository
+}}}
+
+= Prepare binary updates =
+
+  * TBD
+
+= Prepare configuration updates =
+
+  * TBD
+
+= Prepare database updates =
 
   * TBD
