@@ -52,7 +52,3 @@ trunk means non-production codebase - full release build will skip building this
 = Define product configuration =
 = Define product database =
 = Define and upload prebuilt items =
-= Tags and branches management =
-= Bulk codebase updates =
-= Custom operations =
-= Find changeset tickets =
