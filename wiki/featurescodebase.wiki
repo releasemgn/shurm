@@ -8,7 +8,7 @@ Explains how to maintain product codebase using URM.
 
 = Using git repositories =
 
-  * to build codebase stored in git hubs URM utilyzes approach of mirror repository, with automatic push and pull on each URM operation
+  * to build codebase stored in git hubs URM utilizes approach of mirror repository, with automatic push and pull on each URM operation
   * mirror git repositories are located in directory defined in config.sh:
 {{{
 C_CONFIG_GITMIRRORPATH=~/build/git
