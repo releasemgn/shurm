@@ -10,7 +10,13 @@ Explains how to maintain product codebase using URM.
 
   * product generally consists of buildable codebase, prebuild binaries, configuration files, database metadata and non-operational data
   * configuration files and database can be treated as special types of codebase
-  * buildable codebase is defined in source.xml as a set of projects of "core" category:
+  * buildable codebase is defined in source.xml as a set of projects of "core" category
+  * prebuilt binaries are defined in source.xml grouped in projects of "prebuilt" category
+  * configuration items are defined in distr.xml
+  * database part of product is defined by production instance, concept of URM takes into account that it practically impossible to track database using DDL scripts; more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data
+
+= Define product buildable codebase =
+
 {{{
 <source>
 <projectset type="core">
@@ -19,15 +25,13 @@ Explains how to maintain product codebase using URM.
     <distitem name="pgu-dependencies" type="nexus" extension="-libs.tar.gz" path="com/nvision/pgu/portal"/>
   </project>
   <project name="sp" vcs="git" version="branch" group="core" path="fedpgu" jira="PGUDEV"/>
-
+...
 }}}
 
-= Define product buildable codebase =
 = Define product configuration =
 = Define product database =
-
+= Define and upload prebuilt items =
 = Tags and branches management =
-= Prebuilt items =
 = Bulk codebase updates =
 = Custom operations =
 = Find changeset tickets =
