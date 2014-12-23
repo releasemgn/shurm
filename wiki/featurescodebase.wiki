@@ -76,7 +76,8 @@ C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/con
 - files - configuration component is set of files/dirs, listed in "files" attribute
 "exclude" - if component is defined as directory or by mask, it can exclude some files
 "layer" - should be "server"
-}}} 
+}}}
+  * for deployment details of configuration files and how to release configuration files see Application deployment
 
 = Define product database =
 = Define and upload prebuilt items =
