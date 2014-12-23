@@ -118,4 +118,20 @@ CAUTION! - it is bulk update of codebase - be careful.
 }}}
 
 = Custom operations =
+
+  * if product team have typical bulk codebase processing then it can be stored in script and iterated by projects with URM:
+{{{
+custom script should be stored in $MY_PRODUCT_HOME/custom folder
+execute custom.sh, using any standard options from getopts.sh:
+./custom.sh myscript.sh ...
+
+it will call $MY_PRODUCT_HOME/custom/myscript.sh once for every project in scope
+
+script should have f_custom_execute function which will be called with parameters:
+- category (core or prebuilt)
+- project name from source.xml
+
+script will have access to all standard library functions of common
+}}}
+
 = Find changeset tickets =
