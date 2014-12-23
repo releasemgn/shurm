@@ -10,8 +10,8 @@ Explains how to create and maintain distributives using URM.
 
   * release planning is performed using release specification file release.xml located in ditributive folder
   * release.xml defines components included in release
+  * example of release definition aimed to build and deploy all binaries and configuration:
 {{{
-example of release definition aimed to build and deploy all binaries and configuration:
 <release>
 	<build>
 		<buildset type="core" all="true"/>
@@ -20,8 +20,9 @@ example of release definition aimed to build and deploy all binaries and configu
 
 	<configure all="true"/>
 </release>
-
-more specific incremental release can limit projects and components included:
+}}}
+  * more specific incremental release can limit projects and components included:
+{{{
 <release>
 	<build>
 		<buildset type="core">
