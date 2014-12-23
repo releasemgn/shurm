@@ -135,3 +135,12 @@ script will have access to all standard library functions of common
 }}}
 
 = Find changeset tickets =
+
+  * if codebase commits satisfy ticket reference rule ("ticket: comment"), them URM can be used to find tickets referenced in commit branch since given tag
+{{{
+on default production brach:
+./diffbranchsince.sh mytag outdir
+
+on given brach:
+./diffbranchsince.sh -branch mybranch mytag outdir
+}}}
