@@ -6,6 +6,17 @@ Explains how to maintain product codebase using URM.
 <wiki:toc max_depth="2" />
 ----
 
-= TBD =
+= Define product codebase =
 
-  * TBD
+  * product generally consists of buildable codebase, prebuild binaries, configuration files, database metadata and non-operational data
+  * configuration files and database can be treated as special types of codebase
+
+= Define product buildable codebase =
+= Define product configuration =
+= Define product database =
+
+= Tags and branches management =
+= Prebuilt items =
+= Bulk codebase updates =
+= Custom operations =
+= Find changeset tickets =
