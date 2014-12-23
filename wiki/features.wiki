@@ -19,6 +19,7 @@ Defines features implemented in URM.
    * Define Java environment
    * Define Maven environment
    * Define Nexus environment
+   * Define product codebase
    * Build product codebase
    * Build logs
    * Release builds
