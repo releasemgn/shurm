@@ -63,6 +63,10 @@ hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
   <component name="xuat.jms.conf" subdir="dev" unit="core" type="files" files="hornetq-configuration.xml 
 hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
 }}}
+  * configuration components currently in PROD are located in svn:
+{{{
+C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/configuration
+}}}
 
 = Define product database =
 = Define and upload prebuilt items =
