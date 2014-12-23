@@ -67,6 +67,16 @@ hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
 {{{
 C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/configuration
 }}}
+  * configuration component files can contain variables, with values defined in environment specification file
+  * configuration component can have attributes:
+{{{
+"subdir" - configuration category, to split development and production configuration
+"type" - can be dir, files
+- dir - configuration component correspond to complete directory content in environment
+- files - configuration component is set of files/dirs, listed in "files" attribute
+"exclude" - if component is defined as directory or by mask, it can exclude some files
+"layer" - should be "server"
+}}} 
 
 = Define product database =
 = Define and upload prebuilt items =
