@@ -1,0 +1,256 @@
+Functional Capabilities of URM - Manage Databases
+[home] -> [documentation] -> [features] -> [featuresdbmanage]
+
+Features to create and maintain product databases
+
+<wiki:toc max_depth="2" />
+----
+
+= Complex database configurations =
+
+  * URM supports concepts of datacenters, database servers and application schemas
+  * currently only Oracle database is supported
+  * release can contain scripts and data files for sqlplus and sqlldr
+{{{
+Your product can be configured to run in several geographically distributed datacenters.
+Datacenter is named so because it usually contains one or more databases.
+URM currently supports configuration where database is implemented using clustered Oracle.
+In terms of your product, it stores and processes data in one or more application schemas.
+URM database server is set of product schemas in specific Oracle database.
+
+Environment specification file describes database server in the following way:
+	<datacenter name="dc.fed">
+                ...
+		<server name="pgudb" type="database" deploytype="none"
+			tnsname="u00pgu"
+			tnstype="fed"
+			>
+			<node hostlogin="oracle@172.20.15.172"/>
+		</server>
+
+where:
+- tnsname - one of entries in tnsnames.ora, Oracle client configuration file;
+	this file is used by sqlplus and sqlldr utilities to store Oracle database connection details
+
+- tnstype - one of "fed", "reg", "all", "custom":
+	"fed" - schema set defined by C_CONFIG_SCHEMAFEDLIST from product parameter file (config.sh)
+		e.g., C_CONFIG_SCHEMAFEDLIST="pgu pguapi notif cms govsrvreg lk $C_CONFIG_SCHEMAREGLIST"
+	"reg" - schema set defined by C_CONFIG_SCHEMAREGLIST
+		e.g., C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
+	"all" - schema set defined by C_CONFIG_SCHEMAALLLIST
+		e.g., C_CONFIG_SCHEMAALLLIST=
+		"$C_CONFIG_SCHEMAFEDLIST $C_CONFIG_SCHEMAREGLIST armp_RR xwikiRR sir_stat_RR"
+	"custom" - schema set defined by database server attribute - "schemalist"
+		e.g.:
+		<server name="skimdb" type="database" deploytype="manual"
+			tnsname="u00skim"
+			tnstype="custom"
+			schemalist="ctl dwh staging securelog dwhro dwhro_smev"
+
+By default scripts are applied to all databases where this schema is defined.
+Schema name is derived from script file name or control file name in release distributive.
+Partial apply is available by using command line options or regional list in aligned-scripts
+See "Aligned-scripts" below.
+}}}
+
+= Using Oracle datapump to maintain databases =
+
+  * use etc/datapump directory to store dump operation definition files
+  * use flexible dump set
+{{{
+standard dump set used in urm import/export operations:
+- meta.dmp - contains only metadata for all referenced schemes
+- role.dmp - contains set of roles of source database instance
+- schema.dmp - contains only data for given schema
+note: no metadata, no index data, no statistics
+
+One can change this setup by using property C_ENV_CONFIG_IMPORT_DUMPGROUPS:
+C_ENV_CONFIG_IMPORT_DUMPGROUPS="<dump file>:<std items>; ...", where 
+<dump file> - specific dump file, e.g. mydump.dbf
+<std items> - comma-delimited standard items (meta, role or schema name), e.g.:
+mydump.dbf: meta, myschema1, myschema2
+}}}
+  * use data subset definition file to define exported/imported data
+{{{
+export/import definition file references it using:
+C_ENV_CONFIG_TABLESET=myfilename.txt
+where myfilename.txt - text file in etc/datapump
+
+below usage points to default name - datalight-tables.txt
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+file content is set of lines
+each line means:
+- comment, if started with #
+- specific table, if contains MYSCHEMA/TABLE/MYTABLE, where
+    MYSCHEMA - specific database schema (upper case)
+    MYTABLE - specific table name in given schema (upper case)
+- all schema tables, if contains MYSCHEMA/TABLE/*
+}}}
+  * to perform export it relies on preliminary setup:
+{{{
+1. Before running sql or exporting data urm calls orasetenv.sh (see below). 
+Create orasetenv.sh using path defined in dump operation file.
+It can be empty if context is defined somewhere else.
+Database context should be available after calling it using remotedly with ssh.
+
+2. sqlplus / "as sysdba" is used to export/import data
+Check whether command line like below is working fine:
+ssh oracle@dbhost ". <path to orasetenv.sh>; sqlplus / \"as sysdba\""
+
+3. system.admindb_uatdata table is created to store list of tables
+You can drop it after operation or leave.
+
+4. create all paths referenced in dump operation definition file
+Add proper permissions.
+
+5. reserve sufficient disk space for dump operations
+}}}
+  * export/import operations are using specific directory registered in database using either of
+{{{
+1. specify precreated directory 
+- specify C_ENV_CONFIG_DATAPUMP_DIR=MYDIR
+- create datapump link pointed to registered database directory
+
+2. register directory on the fly:
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+- create ordinary datapump directory
+- this directory will be registered before running import/export
+}}}
+  * you can control schema set:
+{{{
+- use full product schema set 
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+
+- use explicitly defined set using space-delimited list
+C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3" 
+}}}
+
+*export data*:
+  * added script export.sh to master/database to create full/limited dumps 
+  * export.sh script runs on admin box, export data from database host and copies dump files to specified datapump storage host (or local, if missing)
+  * sample export definition file:
+{{{
+C_ENV_CONFIG_ENV=major
+C_ENV_CONFIG_DB=mydb
+
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="mydb=/"
+C_ENV_CONFIG_LOADDIR="mydb=data/datapump"
+C_ENV_CONFIG_STAGINGDIR=data/dumpfiles
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/export
+C_ENV_CONFIG_DATADIR=/distr/myproduct/data
+C_ENV_CONFIG_DATADIR_BACKUP=/distr/myproduct/data-backup-test
+C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+}}}
+  * export location:
+{{{
+Dump operation is performed remotedly on C_ENV_CONFIG_REMOTE_HOSTLOGIN
+Exported dump is first created by Oracle in C_ENV_CONFIG_LOADDIR
+then dump file is moved to C_ENV_CONFIG_STAGINGDIR
+then dump file is copied to local host to log directory
+
+If C_ENV_CONFIG_DATADIR_HOSTLOGIN is set then dump is copied to this host
+Otherwise dump is moved locally to C_ENV_CONFIG_DATADIR
+}}}
+  * export command options:
+{{{
+export command variants:
+./export.sh export-configuration-file
+exports meta, role and all listed schemes
+
+./export.sh export-configuration-file meta
+exports meta.dmp and role.dmp
+
+./export.sh export-configuration-file data
+exports all data dumps
+
+./export.sh export-configuration-file schema
+exports given schema data dump
+}}}
+
+*import data*:
+  * added script import.sh to master/database to load full/limited dumps 
+  * import.sh script runs on admin box, copies data from local host to database host, loads into database and applies post-refresh adjustments to adopt database data to specific environment
+  * sample import definition file:
+{{{
+C_CONFIG_SVNAUTH="--username=svnuser --password=svnuser"
+
+C_ENV_CONFIG_ENV=express
+C_ENV_CONFIG_DC=dc.reg
+C_ENV_CONFIG_DB=regdb
+
+C_ENV_CONFIG_FULLSCHEMALIST="pgu juddi nsi pgudrafts protocol terrabyte admsf forum ssp"
+C_ENV_CONFIG_METAONLYSCHEMALIST="pgudrafts forum"
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="regdb=/"
+C_ENV_CONFIG_LOADDIR="regdb=datapump"
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/import
+C_ENV_CONFIG_DATADIR="regdb=/distr/pgu/data"
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_POSTREFRESH="template-prod2all-main template-prod2all-gosuslugi"
+C_ENV_CONFIG_RECREATETABLESPACES=yes
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+C_ENV_CONFIG_USETRANSFORM=no
+C_ENV_CONFIG_ADDTRANSFORM=
+}}}
+  * you can change imported schema names using C_ENV_CONFIG_SCHMAPPING property
+{{{
+C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
+}}}
+  * C_ENV_CONFIG_METAONLYSCHEMALIST defines set of schemas which have no data according to tableset file
+{{{
+before importing source directory is validated to contain requires dumps
+- C_ENV_CONFIG_FULLSCHEMALIST defines full set of imported dumps
+- those defined in C_ENV_CONFIG_METAONLYSCHEMALIST have only metadata and can be missing
+}}}
+  * import approach
+{{{
+import is performed in 3 steps - meta, data, post-refresh
+
+generic meta import sequence is:
+1. put database in exclusive move
+2. kill all schema connections
+3. drop schemas and their objects
+4. recreate tablespaces (if C_ENV_CONFIG_RECREATETABLESPACES is set to yes)
+5. load meta and role dumps
+6. recreate all indexes and constrains
+7. make database available for connections
+
+generic data import sequence is:
+1. disable constraints referencing loaded data
+2. truncate data if any
+3. load data for all dumps except C_ENV_CONFIG_METAONLYSCHEMALIST
+4. enable constrains and rebuild indexes
+
+generic post-refresh sequence is:
+1. iterate C_ENV_CONFIG_POSTREFRESH items, next steps - for every item
+2. download item scripts from svn at C_CONFIG_SOURCE_SQL_GLOBALPENDING/refresh/item
+3. configure item scripts using C_ENV_CONFIG_ENV/C_ENV_CONFIG_DC/C_ENV_CONFIG_DB
+4. apply configured scripts to target database
+}}}
+  * import command options:
+{{{
+import command variants:
+./import.sh import-configuration-file all
+imports meta, role and all listed schemes
+
+./import.sh import-configuration-file meta
+imports meta.dmp and role.dmp
+
+./import.sh import-configuration-file data
+imports all data dumps
+
+./import.sh import-configuration-file myschema
+imports given schema data dump
+}}}
+
