@@ -118,3 +118,9 @@ You can see indexes of failed scripts using:
 If script rollback was performed, it makes sense to delete records from administration schema
 	./manage.sh -r 1.0 10001
 }}}
+
+= Configuring database scripts =
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
