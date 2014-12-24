@@ -102,6 +102,7 @@ Defines features implemented in URM.
    * Declare manual database modifications
    * Prepare bulk load file set
    * Aligned-scripts
+   * Pending folders
   * [featuresdbapply Apply Database Changes]
    * Using sqlplus to apply changes
    * Select what and where to apply
