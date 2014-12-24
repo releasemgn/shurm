@@ -62,13 +62,14 @@ Defines features implemented in URM.
    * Safe copy over network
    * Multiple server locations
    * Archive deployment
-   * Deployment of configuration files 
-   * Save and restore overall configuration
    * Static files deployment
    * Backup and rollack
    * Hot deployment
    * Redundancy check
    * Direct copy files and directories to environment
+  * [featuresconfig Environment configuration]
+   * Deployment of configuration files 
+   * Save and restore overall configuration
    * Configuration categories
   * [featurescontrol Start and Stop Environment Processes]
    * Start and stop of selected servers
