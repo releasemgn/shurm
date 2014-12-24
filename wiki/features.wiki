@@ -12,6 +12,7 @@ Defines features implemented in URM.
    * Complex release operations
    * Update environment wrappers
    * Using predefined release labels
+   * Command line output
 
 = Build and Distributive Management =
 
