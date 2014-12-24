@@ -94,7 +94,22 @@ server.stop.sh scripts stops the server:
 = Environment health check =
 
   * checkenv.sh script allows to verify that environment is healthy
-  * checkenv.sh checks process availability, calls status interface every server in scope and checks web services availability if information is provided in distributive configuration
+{{{
+to check all environment:
+./checkenv.sh
+
+to check selected servers of environment:
+./checkenv.sh server1 server2
+
+to check selected nodes of specific server:
+./checkenv.sh server1 2 3 4
+}}}
+  * checkenv.sh checks ability to login to server host, process availability, calls status interface every server in scope and checks web services availability if information is provided in distributive configuration
+  * checkenv.sh for database:
+{{{
+- executes tnsping for tnsname to check availability of given database 
+- tries to login with invalid password to find error message related to running database instance
+}}}
   * process availability is defined for pure process only:
 {{{
 process should have command line containing -Dprogram.name=<server>
