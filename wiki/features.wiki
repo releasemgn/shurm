@@ -48,6 +48,7 @@ Defines features implemented in URM.
 = Application Deployment =
 
   * [featuresappaccess Host Access, Operating System Activities and Operation Audit]
+   * Operating system accounts
    * Key-based access to hosts
    * Key management
    * File upload logging
