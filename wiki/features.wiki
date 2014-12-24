@@ -85,6 +85,8 @@ Defines features implemented in URM.
 
 = Prepare and Apply Database Changes =
 
+  * [featuresdbaccess Manage Databases]
+   * Complex database configurations
   * [featuresdbaccess Database Access and Operation Audit]
    * Simple database authentification
    * Password file
@@ -92,7 +94,6 @@ Defines features implemented in URM.
    * Execution audit
    * Storing execution log files
   * [featuresdbdist Prepare Database Distributive]
-   * Complex database configurations
    * Source folders
    * Creating distributive
    * Declare manual database modifications
