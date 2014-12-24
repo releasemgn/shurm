@@ -6,6 +6,39 @@ Explains how to create and maintain distributives using URM.
 <wiki:toc max_depth="2" />
 ----
 
+= Define distributive items =
+
+  * all possible binary and configuration distributive items are defined in distr.xml
+  * distr.xml file split items on categories, arranges them in groups, defines names, defines versioning approach and enables to store binary items in separate folders
+  * see Define Codebase to understand product configuration and Prepare and Apply Database Changes to understand database items in distributive
+  * built binary items disregarding of whether they are built or prebuilt, are defined in the same section
+{{{
+<module>
+  <distributive>
+    <binary-list>
+      <!-- carcass binaries -->
+      <distitem name="frgu-integration-ws" type="binary" extension=".war" deployversion="midpound"/>
+...
+      <distitem name="log4j-1.2.16" type="binary" extension=".jar" deployversion="none"/>
+...
+
+in fact you can have no source.xml data at all and prepare distributive manually
+}}}
+  * for the purpose of deployment, binary items are grouped in deployment components
+{{{
+}}}
+  * one binary distributive item can be part of several deployment components, see see Application Deployment for further details
+{{{
+	<deployment-binaries>
+		<component name="pguweb.fedwar" unit="core">
+			<distitem name="fms-web"/>
+			<distitem name="pfr-web"/>
+			<distitem name="rosreestr-web"/>
+			<distitem name="pgu-fed-web"/>
+			<distitem name="pgu-poltava-web"/>
+		</component>
+}}}
+
 = Release planning and updates =
 
   * release planning is performed using release specification file release.xml located in distributive folder
@@ -98,6 +131,8 @@ then specify exactly what binaries should be included in release
 			</project>
 
 see Application Deployment for details on how to limit deployment
+
+thirdparty 
 }}}
 
 = Prepare configuration updates =
