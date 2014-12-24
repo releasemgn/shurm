@@ -126,7 +126,8 @@ C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
 C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3" 
 }}}
 
-*export data*:
+== Export data ==
+
   * added script export.sh to master/database to create full/limited dumps 
   * export.sh script runs on admin box, export data from database host and copies dump files to specified datapump storage host (or local, if missing)
   * sample export definition file:
@@ -175,7 +176,8 @@ exports all data dumps
 exports given schema data dump
 }}}
 
-*import data*:
+== Import data ==
+
   * added script import.sh to master/database to load full/limited dumps 
   * import.sh script runs on admin box, copies data from local host to database host, loads into database and applies post-refresh adjustments to adopt database data to specific environment
   * sample import definition file:
@@ -253,4 +255,3 @@ imports all data dumps
 ./import.sh import-configuration-file myschema
 imports given schema data dump
 }}}
-
