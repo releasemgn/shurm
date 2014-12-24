@@ -87,6 +87,7 @@ Defines features implemented in URM.
 
   * [featuresdbmanage Manage Databases]
    * Complex database configurations
+   * Using Oracle datapump to maintain databases
   * [featuresdbaccess Database Access and Operation Audit]
    * Simple database authentification
    * Password file
