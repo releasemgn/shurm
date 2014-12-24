@@ -227,6 +227,22 @@ use dist item with explicitly defined version:
                         </project>
 		</buildset>
 }}}
+  * buildable items are downloaded from nexus
+{{{
+nexus repository is defined by build mode
+nexus location is defined in source.xml:
+	<distitem name="equeue" type="nexus" extension=".war" path="ru/rtlabs/idecs/equeue"/>
+}}}
+  * prebuilt items can be downloaded from nexus or svn
+{{{
+nexus location is defined as well similar to buildable items
+
+svn location is defined using:
+	<distitem name="geodb" type="svn" path="releases/pgu/thirdparty/geodb.tar.gz"/>
+
+svn repository is defined by variable in config.sh:
+C_CONFIG_SVNOLD_PATH=http://svn.gosuslugi.local/svn
+}}}
 
 = Prepare configuration updates =
 
