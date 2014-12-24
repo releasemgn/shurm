@@ -6,53 +6,6 @@ Features enabling preparation of database changes in distributives
 <wiki:toc max_depth="2" />
 ----
 
-= Complex database configurations =
-
-  * URM supports concepts of datacenters, database servers and application schemas
-  * currently only Oracle database is supported
-  * release can contain scripts and data files for sqlplus and sqlldr
-{{{
-Your product can be configured to run in several geographically distributed datacenters.
-Datacenter is named so because it usually contains one or more databases.
-URM currently supports configuration where database is implemented using clustered Oracle.
-In terms of your product, it stores and processes data in one or more application schemas.
-URM database server is set of product schemas in specific Oracle database.
-
-Environment specification file describes database server in the following way:
-	<datacenter name="dc.fed">
-                ...
-		<server name="pgudb" type="database" deploytype="none"
-			tnsname="u00pgu"
-			tnstype="fed"
-			>
-			<node hostlogin="oracle@172.20.15.172"/>
-		</server>
-
-where:
-- tnsname - one of entries in tnsnames.ora, Oracle client configuration file;
-	this file is used by sqlplus and sqlldr utilities to store Oracle database connection details
-
-- tnstype - one of "fed", "reg", "all", "custom":
-	"fed" - schema set defined by C_CONFIG_SCHEMAFEDLIST from product parameter file (config.sh)
-		e.g., C_CONFIG_SCHEMAFEDLIST="pgu pguapi notif cms govsrvreg lk $C_CONFIG_SCHEMAREGLIST"
-	"reg" - schema set defined by C_CONFIG_SCHEMAREGLIST
-		e.g., C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
-	"all" - schema set defined by C_CONFIG_SCHEMAALLLIST
-		e.g., C_CONFIG_SCHEMAALLLIST=
-		"$C_CONFIG_SCHEMAFEDLIST $C_CONFIG_SCHEMAREGLIST armp_RR xwikiRR sir_stat_RR"
-	"custom" - schema set defined by database server attribute - "schemalist"
-		e.g.:
-		<server name="skimdb" type="database" deploytype="manual"
-			tnsname="u00skim"
-			tnstype="custom"
-			schemalist="ctl dwh staging securelog dwhro dwhro_smev"
-
-By default scripts are applied to all databases where this schema is defined.
-Schema name is derived from script file name or control file name in release distributive.
-Partial apply is available by using command line options or regional list in aligned-scripts
-See "Aligned-scripts" below.
-}}}
-
 = Source folders =
 
   * URM folder set for database changes simplifies commits and review, especially when team is great and distributed
