@@ -18,7 +18,7 @@ Release 3.1 notes.
 || 7 || Configuration Categories || yes ||
 || 8 || Codebase Maintenance Helpers || yes ||
 || 9 || Handling Release Types || yes ||
-|| 10 || Using Database Release from Distribution Box || no ||
+|| 10 || Using Database Release from Distribution Box || yes ||
 || 11 || Configuring Database Scripts || no ||
 || 12 || Using Oracle Datapump to Maintain Databases || no ||
 || 13 || Minors || no ||
