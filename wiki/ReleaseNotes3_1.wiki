@@ -264,7 +264,7 @@ envionment file defines location of distributives:
   * variables are substituted on execution
   * variables are extracted from server set corresponding to specific database where release is being applied
 
-== Using Oracle datapump to maintain databases ==
+== Using Oracle Datapump to Maintain Databases ==
 
   * use etc/datapump directory to store dump operation definition files
   * use flexible dump set
