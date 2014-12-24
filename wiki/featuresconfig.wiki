@@ -76,7 +76,8 @@ Environment configuration files are stored in $C_CONFIG_SOURCE_CFG_LIVEROOTDIR/<
 Still, files are restored from template directory $C_CONFIG_SOURCE_CFG_ROOTDIR/templates by calling:
 	./svnrestoreconfig.sh
 
-- note, that svnrestoreconfig does not stop or start any server, so please execute them manually when required
+- note, that svnrestoreconfig does not stop or start any server, 
+so please execute them manually when required
 - currently, restore of hotdeploy configuration is not supported
 }}}
 
