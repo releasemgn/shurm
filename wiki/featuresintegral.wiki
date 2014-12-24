@@ -37,3 +37,16 @@ update Your Product URM in svn:
   * predefined release label "last" - points to $C_CONFIG_VERSION_LAST_FULL value defined in product config.sh script
   * predefined release label "next" - points to $C_CONFIG_VERSION_NEXT_FULL value defined in product config.sh script 
   * predefined release label "prod" means release marked with postfix "-prod" in distributive directory
+
+= Command line output = 
+
+  * command line has two generic levels - standard and debug
+  * to add debug information to output, use "-showall" option:
+{{{
+e.g. in rollout every command executing on remote host will be visible:
+./rollout.sh -showall
+
+it can be combined with noexecute option:
+./rollout.sh -showall -showonly
+}}}
+
