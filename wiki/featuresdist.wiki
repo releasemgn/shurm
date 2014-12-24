@@ -245,7 +245,7 @@ C_CONFIG_NEXUS_PATH_THIRDPARTY=$C_CONFIG_NEXUS_BASE/content/repositories/thirdpa
 svn location is defined using:
 	<distitem name="geodb" type="svn" path="releases/pgu/thirdparty/geodb.tar.gz"/>
 
-svn repository is defined by variable in config.sh:
+svn instance url prefix is defined by variable in config.sh:
 C_CONFIG_SVNOLD_PATH=http://mysvn.com/svn
 }}}
 
