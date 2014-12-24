@@ -233,6 +233,9 @@ nexus instance defined by variable in config.sh:
 C_CONFIG_NEXUS_BASE=http://mynexus.com
 
 nexus repository is defined by build mode
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_NEXUS_REPO=snapshots
+
 nexus location in repository is defined in source.xml:
 	<distitem name="equeue" type="nexus" extension=".war" path="ru/rtlabs/idecs/equeue"/>
 }}}
