@@ -23,6 +23,26 @@ to login to server under any specific user, execute:
 ./login.sh -hostuser myuser stockprocessor 2
 }}}
 
+= Operating system commands =
+
+  * you can execute any command in the environment:
+{{{
+execute command on every server
+./runcmd.sh "command"
+
+execute command on selected servers
+./runcmd.sh "command" myserver1 myserver2
+
+execute command on selected server nodes
+./runcmd.sh "command" myserver1 1 2 3
+
+execute command using root - once on every unique host
+./runcmd.sh -root "command"
+
+execute command using given user - once on every unique host
+./runcmd.sh -hostuser myuser "command"
+}}}
+
 = Key-based access to hosts =
 
   * Release files are copied to environment hosts using scp
