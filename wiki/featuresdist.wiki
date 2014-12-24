@@ -232,7 +232,7 @@ use dist item with explicitly defined version:
 nexus instance defined by variable in config.sh:
 C_CONFIG_NEXUS_BASE=http://mynexus.com
 
-nexus repository is defined by build mode
+nexus repository is defined by build mode in config.sh:
 if [ "$VERSION_MODE" = "devtrunk" ]; then
 	C_CONFIG_NEXUS_REPO=snapshots
 
@@ -241,7 +241,7 @@ nexus location in repository is defined in source.xml:
 }}}
   * prebuilt items can be downloaded from nexus or svn
 {{{
-nexus repository is defined by build mode
+nexus repository is defined by build mode in config.sh
 if prebuilt project has name "thirdparty", its location is defined by variable in config.sh:
 C_CONFIG_NEXUS_PATH_THIRDPARTY=$C_CONFIG_NEXUS_BASE/content/repositories/thirdparty
 
