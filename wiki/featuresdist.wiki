@@ -63,10 +63,40 @@ Last example means:
 Configure:
 - download and deploy 2 configuration components - only present in release repository
 }}}
+  * if you need to update release scope and make additional build, you need to keep in mind dependencies and hidden rules:
+{{{
+your incremental build is affected by previous builds
+if you increase the scope and performing full release build it does not cause any problems
+
+if you reduce release scope then you need to rebuild descoped projects by production tag
+then you need to rebuild new release scope
+it is recommended to mark descoped items by changing elements to descopedproject, descopeddistitem
+do not delete anything from release.xml after build
+
+if you have increased release scope you can run limited build only according to dependencies
+}}}
 
 = Prepare binary updates =
 
-  * TBD
+  * normally codebase update means regenerating related binary files and deploying these files to production environment
+  * practically there are cases where some binaries have to be changed due to codebase change are not part of specific release; also there are  cases when release item is updated in one location of production environment and and stays the same in another production location
+  * whatever situation is in place you need to understand what and why should be changed, and define it in deployment plan; default URM behavior will lead to normal scenario
+{{{
+for default scenario add projects which have planned update according to release planning
+		<buildset type="core">
+			<project name="pgu-paygate"/>
+this means that all binaries defined in source.xml are included in release
+see also Build Projects for details on modifying tags and branches to be built if required
+
+if you have some project required to be built but you know that not all of its binaries are in release - 
+then specify exactly what binaries should be included in release
+		<buildset type="core">
+			<project name="pgu-core">
+				<distitem name="smev-lk-service"/>
+				<distitem name="drafts"/>
+				<distitem name="pgu-worker"/>
+			</project>
+}}}
 
 = Prepare configuration updates =
 
