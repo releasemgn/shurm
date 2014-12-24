@@ -96,6 +96,8 @@ then specify exactly what binaries should be included in release
 				<distitem name="drafts"/>
 				<distitem name="pgu-worker"/>
 			</project>
+
+see Application Deployment for details on how to limit deployment
 }}}
 
 = Prepare configuration updates =
