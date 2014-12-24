@@ -75,6 +75,7 @@ Defines features implemented in URM.
   * [featurescontrol Start and Stop Environment Processes]
    * Start and stop of selected servers
    * Services and pure processes
+   * Environment health check
    * Process start control
    * Process stop control
    * Auxilliary servers
