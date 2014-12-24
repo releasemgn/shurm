@@ -26,6 +26,7 @@ in fact you can have no source.xml data at all and prepare distributive manually
 }}}
   * for the purpose of deployment, binary items are grouped in deployment components
 {{{
+<module>
 	<deployment-binaries>
 		<component name="pguweb.fedwar" unit="core">
 			<distitem name="fms-web"/>
