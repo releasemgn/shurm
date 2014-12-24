@@ -104,3 +104,4 @@ Defines features implemented in URM.
    * Apply manual administration scripts using sys account
    * Load data using sqlldr
    * Handling errors
+   * Configuring database scripts
