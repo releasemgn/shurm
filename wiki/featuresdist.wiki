@@ -53,7 +53,7 @@ should be deployed to corresponding subfolder of deployment location
 "obsolete" - applicable only for refactoring-aligned environments and releases
 - e.g.:
 <release>
-	<property name="obsolete" value="false">
+	<property name="obsolete" value="false"/>
 "distname" - if reference name differs from basename of filename then you need to specify distname
 - e.g.:
 <distitem name="privateoffice-ear" type="binary" extension=".ear" distname="privateoffice"/>
