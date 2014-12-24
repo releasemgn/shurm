@@ -26,9 +26,6 @@ in fact you can have no source.xml data at all and prepare distributive manually
 }}}
   * for the purpose of deployment, binary items are grouped in deployment components
 {{{
-}}}
-  * one binary distributive item can be part of several deployment components, see see Application Deployment for further details
-{{{
 	<deployment-binaries>
 		<component name="pguweb.fedwar" unit="core">
 			<distitem name="fms-web"/>
@@ -38,6 +35,7 @@ in fact you can have no source.xml data at all and prepare distributive manually
 			<distitem name="pgu-poltava-web"/>
 		</component>
 }}}
+  * one binary distributive item can be part of several deployment components, see see Application Deployment for further details
 
 = Release planning and updates =
 
