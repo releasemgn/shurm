@@ -35,8 +35,22 @@ in fact you can have no source.xml data at all and prepare distributive manually
 			<distitem name="pgu-fed-web"/>
 			<distitem name="pgu-poltava-web"/>
 		</component>
+
+one binary distributive item can be part of several deployment components
+see see Application Deployment for further details
 }}}
-  * one binary distributive item can be part of several deployment components, see see Application Deployment for further details
+  * binary distributive item has below attributes:
+{{{
+"name" - reference name, to use in deployment components, source.xml, release.xml
+"type" - binary, war, archive.direct, archive.subdir, archive.child
+- binary: one file in distributive copied to one file in environment
+- war: 2 files - web application and its static stored separately and deployed to another server
+- archive.direct: archive content is full content of deployment location
+- archive.subdir: archive content is full content of subfolder of deployment location
+subdir name is equal to archive basename
+- archive.child: archive contains one folder named by archive basename
+should be deployed to corresponding subfolder of deployment location 
+}}}
 
 = Release planning and updates =
 
