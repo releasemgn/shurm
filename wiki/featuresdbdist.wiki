@@ -233,3 +233,22 @@ Indexes of regional scripts are formed as follows:
 	distributive index = <source index>9RR
 	execution index = <source index>9<regionid>
 }}}
+
+= Pending folders =
+
+  * option "-folder" allows to operate with non-release folders using release approach to download distributives and apply to database
+{{{
+location of these non-release folders in svn is defined by variable in config.sh:
+C_CONFIG_SOURCE_SQL_GLOBALPENDING=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/database
+}}}
+  * example:
+{{{
+cd master/database
+./getsql.sh -folder myrelease prod-patch-3.0.44
+
+database files will be downloaded from
+$C_CONFIG_SOURCE_SQL_GLOBALPENDING/prod-patch-3.0.44
+
+and copied to
+$C_CONFIG_DISTR_PATH/myrelease/SQL
+}}}
