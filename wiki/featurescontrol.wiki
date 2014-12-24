@@ -91,6 +91,55 @@ server.stop.sh scripts stops the server:
 - any non-empty output is regarded as error message
 }}}
 
+= Environment health check =
+
+  * checkenv.sh script allows to verify that environment is healthy
+  * checkenv.sh checks process availability, calls status interface every server in scope and checks web services availability if information is provided in distributive configuration
+  * process availability is defined for pure process only:
+{{{
+process should have command line containing -Dprogram.name=<server>
+<server> - name of functional server defined in environment specification file
+}}}
+  * status interface should return whether server is currently running
+{{{
+order of start is usually - start of process, startup sequence, mark as running (available for calls)
+
+for pure processes URM calls server.status.sh <server>
+for services URM calls service <servicename> status
+}}}
+  * web services are defined in distr.xml:
+{{{
+<component name="orderprocessing" unit="core">
+	<distitem name="orderprocessing"/>
+	<webservice url="orderprocessing/ws/UpdatePaymentService"/>
+	<webservice url="orderprocessing/ws/EventServiceV243"/>
+	<webservice url="orderprocessing/ws/SCEngineService"/>
+	<webservice url="orderprocessing/ws/RoutingQueryService"/>
+</component>
+
+URM will check availability of corresponding wsdl on every server where this component is deployed
+}}}
+  * use webdomain attribute in nlbserver to use in webservice testing from checkenv.sh script
+{{{
+<server name="nlb" type="service" servicename="nginx"
+...
+        webdomain="myproduct.mydomain.com"
+        >
+        <node hostlogin="root@myhost"/>
+        <configure component="nlb.conf" deploypath="etc/myproduct.uat"/>
+</server>
+
+consider webservice is defined for component:
+<component name="commapp" unit="core">
+        <distitem name="notificationservice"/>
+        <webservice url="notificationservice/ws/NotificationConfigService"/>
+        <webservice url="notificationservice/ws/NotificationEngineService"/>
+...
+
+Then checkenv.sh tests services using urls like:
+http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
+}}}
+
 = Process start control =
 
   * startenv.sh before starting server, checks current state
