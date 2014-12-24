@@ -28,6 +28,10 @@ otherwise you can specify exactly path to private key file:
 	<property name="keyname" value="/path/to/keyfile/prodlogin.ppk"/>
 }}}
   * if distributive is on remote host, then it first copied to localhost and then applied to environment
+  * it is possible to override port 22 to access distributive box
+{{{
+<property name="distr-remotehost" value="release-reader@host:11111"/>
+}}}
 
 = Define distributive items =
 
