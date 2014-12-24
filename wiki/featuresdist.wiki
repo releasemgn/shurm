@@ -27,6 +27,7 @@ implicitely user can have private key located in ~/.ssh/id_dsa
 otherwise you can specify exactly path to private key file:
 	<property name="keyname" value="/path/to/keyfile/prodlogin.ppk"/>
 }}}
+  * if distributive is on remote host, then it first copied to localhost and then applied to environment
 
 = Define distributive items =
 
