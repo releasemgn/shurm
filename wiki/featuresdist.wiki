@@ -187,16 +187,16 @@ to download binaries of selected proejcts:
 ./getall.sh prebuilt project3 project4
 
 to download next planned release binaries without affecting distributive folder:
-./getall-relase.sh ...
+./getall-release.sh ...
 use the same parameters as for getall.sh
 items will be downloaded to folder defined in config.sh
 C_CONFIG_ARTEFACTDIR=~/build/artefacts/$C_CONFIG_PRODUCT
 
 to download specific release binaries without affecting distributive folder:
-./getall-relase.sh -release 1.2.3 ...
+./getall-release.sh -release 1.2.3 ...
 
 to download next planned release binaries and copy to distributive folder:
-./getall-relase.sh -dist ...
+./getall-release.sh -dist ...
 }}}
 
 = Prepare configuration updates =
