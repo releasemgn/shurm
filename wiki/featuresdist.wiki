@@ -7,6 +7,27 @@ Explains how to create and maintain distributives using URM.
 <wiki:toc max_depth="2" />
 ----
 
+= Location of distributives =
+
+  * location of distributives is defined in environment specification file
+  * practically physical location can be the same for environments but different environments can be deployed from different administration hosts; e.g. production environment can be deployed from protected host, while specific test environment can be deployed from ordinary administration host, available for developrs
+  * environment specification file defines distributive location using below properties:
+{{{
+if environment administration box and distributive box are the same, add just local path:
+	<property name="distr-path" value="/distr/myproduct"/>
+then calling for release 1.2.3 means accessing folder /distr/myproduct/1.2.3
+
+if deployment box differs from distributive box then you need to define source box and login:
+	<property name="distr-use-local" value="false"/>
+	<property name="distr-remotehost" value="release-reader@myhost"/>
+
+to access this host under provided login URM uses private key
+implicitely user can have private key located in ~/.ssh/id_dsa
+
+otherwise you can specify exactly path to private key file:
+	<property name="keyname" value="/path/to/keyfile/prodlogin.ppk"/>
+}}}
+
 = Define distributive items =
 
   * all possible binary and configuration distributive items are defined in distr.xml
