@@ -49,6 +49,7 @@ Defines features implemented in URM.
 
   * [featuresappaccess Host Access, Operating System Activities and Operation Audit]
    * Operating system accounts
+   * Operating system commands
    * Key-based access to hosts
    * Key management
    * File upload logging
