@@ -198,6 +198,10 @@ to download specific release binaries without affecting distributive folder:
 
 to download next planned release binaries and copy to distributive folder:
 ./getall-release.sh -dist ...
+this will overwrites previous binary content of distributive
+
+note, that any binaries in distributive are not deleted and can be only overwritten by getall
+if some binary was descoped you need manually delete it from distributive
 }}}
   * standard URM release process requires that projects included in product have version in pom.xml equal to last major release; this version is not changed in minor releases - hence not requiring dependency updates; it corresponds to rules of backward compatibility - items having the same build versions are backward compatible with each other
 {{{
@@ -254,8 +258,66 @@ C_CONFIG_SVNOLD_PATH=http://mysvn.com/svn
 
 = Prepare configuration updates =
 
-  * TBD
+  * configuration changes are defined in release folders stored in svn 
+{{{
+svn instance is defined by variable in config.sh:
+C_CONFIG_SOURCE_RELEASEROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/changes
+
+releases are grouped to folders using variable in config.sh, e.g. corresponding to next major release:
+C_CONFIG_RELEASE_GROUPFOLDER=R_${C_CONFIG_VERSION_BRANCH_MAJOR}_${C_CONFIG_VERSION_BRANCH_NEXTMINOR}
+
+configuration files should be commited to config/templates subdirectory of release folder
+cofiguration updates are in fact part of product configuration codebase, store as templates
+}}}
+  * release folder is used to store configuration updates, database updates and other release-related artefacts:
+{{{
+for instance, release 1.2.3 configuration will be stored in
+http://mysvn.com/svn/releases/myproduct/changes/R_1_3/1.2.3/config/templates
+}}}
+  * unit of configuration update is stored in svn as component directory in configuration subfolder in release:
+{{{
+if configuration component is defined as
+<component name="forum.server.conf" subdir="prod" unit="core" type="files" 
+files="server.xml log4j.xml logging.properties" layer="server"/>
+
+then in release we can have one file:
+http://mysvn.com/svn/releases/myproduct/changes/R_1_3/1.2.3/config/templates/forum.server.conf/server.xml
+
+note that we can skip adding log4j.xml file - it means partial configuration component update
+it requires adding to release.xml:
+        <configure>
+                <component partial="true" name="forum.server.conf"/>
+        </configure>
+}}}
+  * template files are downloaded to distributive folder from svn:
+{{{
+target location is $DISTPATH/config
+files are downloaded with unix/windows newlines translation
+components downloaded are verified for correctness
+
+to download to artefact directory only:
+./getall-release.sh config
+
+to download to distributive:
+./getall-release.sh -dist config
+this will replace previous configuration content of distributive
+}}}
+  * see further details on configuration files variables and deployment in Application Deployment
 
 = Prepare database updates =
 
-  * TBD
+  * database changes are stored in svn release folder in sql subfolder
+  * in distributive database changes are stored in SQL subfolder
+  * to download database changes use:
+{{{
+to download changes for next planned release:
+cd $MY_PRODUCT_HOME/master/makedistr/<buildmode>/database
+./getsql.sh
+previous content of SQL folder will be deleted
+
+to download specific release:
+cd $MY_PRODUCT_HOME/master/database
+./getsql.sh prod-patch-1.2.3
+./getsql.sh major-release-1.3
+./getsql.sh demo-exotic-1.3
+}}}
