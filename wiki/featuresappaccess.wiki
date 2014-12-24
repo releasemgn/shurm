@@ -6,6 +6,23 @@ Defines how to access environment hosts and automated audit of application deplo
 <wiki:toc max_depth="2" />
 ----
 
+= Operating system accounts =
+
+  * in process of environment maintenance we need to deal with several types of accounts - root, application user and supplemental accounts (e.g. public reader)
+  * URM makes use of these accounts more systematic by adding keyfiles and using specific options to access hosts:
+{{{
+to login to server using application user
+./login.sh stockprocessor 2
+this will access second node of server stockprocessor defined in environment
+if node 2 is defined as myuser@myhost1 you will login under myuser to myhost1 host
+
+to login to server using root, while application user can be not a root:
+./login.sh -root stockprocessor 2
+
+to login to server under any specific user, execute:
+./login.sh -hostuser myuser stockprocessor 2
+}}}
+
 = Key-based access to hosts =
 
   * Release files are copied to environment hosts using scp
