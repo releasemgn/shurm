@@ -1,4 +1,5 @@
 #summary Functional Capabilities of URM - Distributive Management
+#labels ui
 [home] -> [documentation] -> [features] -> [featuresdist]
 
 Explains how to create and maintain distributives using URM.
@@ -197,6 +198,34 @@ to download specific release binaries without affecting distributive folder:
 
 to download next planned release binaries and copy to distributive folder:
 ./getall-release.sh -dist ...
+}}}
+  * standard URM release process requires that projects included in product have version in pom.xml equal to last major release; this version is not changed in minor releases - hence not requiring dependency updates; it corresponds to rules of backward compatibility - items having the same build versions are backward compatible with each other
+{{{
+getall scripts download from nexus version according to setting in config.sh:
+C_CONFIG_VERSIONBRANCH=$C_CONFIG_VERSION_BRANCH_MAJOR.$C_CONFIG_VERSION_BRANCH_MINOR
+
+this version should be set in pom.xml
+}}}
+  * thirdparty items obviously have their own versions and should be defined separately
+{{{
+use dist item without version:
+<project name="thirdparty" version="branch" group="core">
+	<distitem name="xalan" type="svn" path="releases/fedpgu/thirdparty/xalan.jar"/>
+
+use dist item with version being part of item name:
+	<distitem name="xmlsec" type="svn" path="releases/fedpgu/thirdparty/xmlsec-1.4.3.jar"/>
+
+use dist item with explicitly defined version:
+	<distitem name="solr" type="nexus" extension=".war" path="org/apache/solr" version="3.3.0"/>
+}}}
+  * prebuilt items from another product can be downloaded by specifying version in release.xml:
+{{{
+		<buildset type="prebuilt">
+                        <project name="carcass" buildversion="3.12">
+         	                <distitem name="frgu-integration-inc"/>
+         	                <distitem name="frgu-integration-groovy"/>
+                        </project>
+		</buildset>
 }}}
 
 = Prepare configuration updates =
