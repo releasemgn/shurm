@@ -203,6 +203,17 @@ this will overwrites previous binary content of distributive
 note, that any binaries in distributive are not deleted and can be only overwritten by getall
 if some binary was descoped you need manually delete it from distributive
 }}}
+  * option -release is processed differently depending on release type:
+{{{
+- if release name is X.Y then it is treated as major release
+major release has source folder major-release-X.Y in releases svn
+
+- if release name is like "NNN-demo-ZZZ" then it is regarded as demo release
+demo release has source folder demo-ZZZ-NNN, where ZZZ - demo id and NNN - baseline version
+
+- otherwise release RRR is ordinary patch release
+patch release has source folder prod-patch-RRR
+}}}
   * standard URM release process requires that projects included in product have version in pom.xml equal to last major release; this version is not changed in minor releases - hence not requiring dependency updates; it corresponds to rules of backward compatibility - items having the same build versions are backward compatible with each other
 {{{
 getall scripts download from nexus version according to setting in config.sh:
