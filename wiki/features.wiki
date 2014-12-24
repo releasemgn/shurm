@@ -38,6 +38,7 @@ Defines features implemented in URM.
    * Release tags and branches
   * [featuresdist Distributive Management]
    * Define distributive items
+   * Location of distributives
    * Release planning and updates
    * Prepare binary updates
    * Prepare configuration updates
