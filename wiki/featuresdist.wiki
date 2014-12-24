@@ -56,8 +56,19 @@ should be deployed to corresponding subfolder of deployment location
 	<property name="obsolete" value="false">
 "distname" - if reference name differs from basename of filename then you need to specify distname
 - e.g.:
-<distitem name="privateoffice-ear" type="binary" extension=".ear" distname="privateoffice" deployname="privateoffice"/>
-<distitem name="privateoffice-war" type="binary" extension=".war" distname="privateoffice" deployname="privateoffice"/>
+<distitem name="privateoffice-ear" type="binary" extension=".ear" distname="privateoffice"/>
+<distitem name="privateoffice-war" type="binary" extension=".war" distname="privateoffice"/>
+"folder" - item is located in distibutive in corresponding subfolder 
+- e.g.:
+<distitem name="ojdbc6" type="binary" extension=".jar" folder="thirdparty"/>
+will lead to file path - $DISTPATH/thirdparty/ojdbc6.jar
+"deployname" - distributive item basename will be changed in environment to specified value
+"deployversion" - defines how to add version information
+- see Application Deployment for details
+"extension" - defines extention, including all characters after basename excluding version
+- e.g.:
+<distitem name="backend-pg" type="binary" extension=".war"/>
+<distitem name="frgu-integration-groovy" type="archive.direct" extension="-groovy.tar.gz"/>
 }}}
 
 = Release planning and updates =
