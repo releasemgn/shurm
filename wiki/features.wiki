@@ -69,6 +69,7 @@ Defines features implemented in URM.
    * Direct copy files and directories to environment
   * [featuresconfig Environment configuration]
    * Deployment of configuration files 
+   * Custom configuration components
    * Save and restore overall configuration
    * Configuration categories
   * [featurescontrol Start and Stop Environment Processes]
