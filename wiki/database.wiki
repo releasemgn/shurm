@@ -40,6 +40,7 @@ Defines how to apply changes to database.
   * option: *"-dc dc"* - apply scripts only for specific datacenter
   * option: *"-db db"* - apply scripts only for specific database server
   * option: *"-dbpassword password"* - use given password to authentificate
+  * option: *"-folder folder"* - use specific pending folder
   * option: *"-pending pendingid"* - use given pending source code folder to download scripts
 {{{
 Use source folder $C_CONFIG_SOURCE_SQL_GLOBALPENDING/<pendingid>, not release folder
