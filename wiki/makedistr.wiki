@@ -40,15 +40,12 @@ See also:
   * option: "-showonly" - do not execute operation 
   * option: "-updatenexus" - force to upload to nexus if item exists 
   * option: "-nocheck" - skip source validation
+
+*Parameters:*
   * option: "-release name" - process given release
   * option: "-branch name" - process given branch
   * option: "-tag name" - use given tag
   * option: "-date statedate" - find branch state by date
-
-*Parameters:*
-  * option: "-release release"
-  * option: "-branch branch"
-  * option: "-tag tag"
 
 == Build and Create Distributive ==
 
