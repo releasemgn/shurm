@@ -60,3 +60,8 @@ Download scripts to $C_CONFIG_DISTR_PATH/pending-<pendingid>
   * manage.sh
   * sqlapply.sh
   * sqlmanual.sh
+
+== Database Maintenance Scripts ==
+
+  * export.sh
+  * import.sh
