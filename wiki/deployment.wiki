@@ -56,20 +56,17 @@ Defines how to apply distributives to environments in consistent manner.
   * option: "-tag tag" - use given configuration tag
   * option: "-unit unit" - redist only items which belong to given unit
 
-== Start/Stop/Status Scripts ==
+== Environment Control Scripts ==
 
   * checkenv.sh
-  * getbuildinfo.sh
   * restartenv.sh
   * startenv.sh
   * stopenv.sh
   * waitenv.sh
   * waitweb.sh
 
-== Update Scripts ==
+== Environment Deployment Scripts ==
 
-  * confcheck.sh
-  * configureall.sh
   * deployall.sh
   * deployredist.sh
   * dropredist.sh
@@ -81,9 +78,14 @@ Defines how to apply distributives to environments in consistent manner.
 
 == Environment Maintenance Scripts ==
 
+  * confcheck.sh
+  * configureall.sh
+  * hosts.sh
+  * key.sh
   * login.sh
   * runcmd.sh
+  * scp.sh
   * sendchatmsg.sh
-  * sendchatmsgall.sh
-  * svnrestoreconfig.sh
-  * svnsaveconfig.sh
+  * svnrestoreconfigs.sh
+  * svnsaveconfigs.sh
+  * upgradeenv.sh
