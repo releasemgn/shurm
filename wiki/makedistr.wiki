@@ -75,7 +75,7 @@ See also:
   * codebase-updatetags.sh
   * custom.sh
   * settags.sh
-  * uploadthirdparty.sh
+  * thirdpartyupload.sh
 
 == Version Control System Support ==
 
