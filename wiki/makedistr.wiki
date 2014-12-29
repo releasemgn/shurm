@@ -33,19 +33,19 @@ See also:
 == Script Options ==
 
 *Flags:*
-  * option: "-all" - do not use PROD distributive
-  * option: "-dist" - after getall copy downloaded items to distributive
-  * option: "-get" - after build execute getall 
-  * option: "-showall|-showmain" - set logging level
-  * option: "-showonly" - do not execute operation 
-  * option: "-updatenexus" - force to upload to nexus if item exists 
-  * option: "-nocheck" - skip source validation
+  * option: *"-all"* - do not use PROD distributive
+  * option: *"-dist"* - after getall copy downloaded items to distributive
+  * option: *"-get"* - after build execute getall 
+  * option: *"-showall|-showmain"* - set logging level
+  * option: *"-showonly"* - do not execute operation 
+  * option: *"-updatenexus"* - force to upload to nexus if item exists 
+  * option: *"-nocheck"* - skip source validation
 
 *Parameters:*
-  * option: "-release name" - process given release
-  * option: "-branch name" - process given branch
-  * option: "-tag name" - use given tag
-  * option: "-date statedate" - find branch state by date
+  * option: *"-release name"* - process given release
+  * option: *"-branch name"* - process given branch
+  * option: *"-tag name"* - use given tag
+  * option: *"-date statedate"* - find branch state by date
 
 == Build and Create Distributive ==
 
