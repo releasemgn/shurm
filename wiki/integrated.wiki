@@ -19,6 +19,6 @@ Introduces mixed-mode operations, includind deployment, database and builds.
 
 = Script Options = 
 
-  * option: "-nomsg" - skip adding messages to chat
-  * option: "-showonly" - no actual execution, show commands to be executed
-  * option: "-env" - use given environment with deployment commands
+  * option: *"-nomsg"* - skip adding messages to chat
+  * option: *"-showonly"* - no actual execution, show commands to be executed
+  * option: *"-env"* - use given environment with deployment commands
