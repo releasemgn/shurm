@@ -33,12 +33,14 @@ See also:
 == Script Options ==
 
 *Flags:*
-  * option: "-dist"
-  * option: "-get"
-  * option: "-showall|-showmain"
-  * option: "-showonly"
-  * option: "-updatenexus"
-  * option: "-nocheck"
+  * option: "-all" - do not use PROD distributive
+  * option: "-dist" - after getall copy downloaded items to distributive
+  * option: "-get" - after build execute getall 
+  * option: "-showall|-showmain" - set logging level
+  * option: "-showonly" - do not execute operation 
+  * option: "-updatenexus" - force to upload to nexus if item exists 
+  * option: "-nocheck" - skip source validation
+  * option: "-release <dist_folder>" - process given release
 
 *Parameters:*
   * option: "-release release"
