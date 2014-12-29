@@ -27,6 +27,7 @@ Defines how to apply changes to database.
 
 == Script Options ==
 
+*Flags*:
   * option: *"-showall"* - add debug logging
   * option: *"-execute|-showonly"* - actual execution or show command to be executed
   * option: *"-a|-f|-x"* - apply new (-a), old (-f), all (-x) scripts
@@ -36,12 +37,13 @@ Defines how to apply changes to database.
   * option: *"-l"* - do load files in execution of release set
   * option: *"-nodist"* - do not copy downloaded release scripts to distributive, leave in staging folder
   * option: *"-auth|-noauth"* - strict/simple authentification
+
+*Parameters*:
   * option: *"-aligned alignedid"* - apply only given aligned scripts
   * option: *"-dc dc"* - apply scripts only for specific datacenter
   * option: *"-db db"* - apply scripts only for specific database server
   * option: *"-dbpassword password"* - use given password to authentificate
   * option: *"-folder folder"* - use specific pending folder
-  * option: *"-pending pendingid"* - use given pending source code folder to download scripts
 {{{
 Use source folder $C_CONFIG_SOURCE_SQL_GLOBALPENDING/<pendingid>, not release folder
 Download scripts to $C_CONFIG_DISTR_PATH/pending-<pendingid>
