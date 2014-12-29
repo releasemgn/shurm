@@ -52,22 +52,22 @@ See also:
   * buildall-core-tags.sh
   * buildall-release.sh
   * buildall-tags.sh
-  * buildall-war-tags.sh
-  * buildone-core.sh
-  * buildone-war.sh
   * checkset.sh
   * getall.sh
   * getall-release.sh
 
 == Codebase Maintenance ==
 
+  * codebase-checkout.sh
+  * codebase-commit.sh
   * codebase-copybranch.sh
   * codebase-copynewtags.sh
   * codebase-copytags.sh
+  * codebase-copytagtobranch.sh
   * codebase-dropcandidatetags.sh
   * codebase-dropoldcandidatetags.sh
   * codebase-droptags.sh
-  * codebase-finishtags.sh
+  * codebase-export.sh
   * codebase-renamebranch.sh
   * codebase-renametags.sh
   * codebase-setversion.sh
