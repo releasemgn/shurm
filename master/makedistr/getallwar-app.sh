@@ -30,25 +30,28 @@ fi
 # execute
 S_USE_PROD_DISTR=
 
+S_SERVICECALL_EXT=ear
+S_STORAGESERVICE_EXT=ear
+
 function f_local_download_core() {
 	if [ "$P_DISTR_SRCDIR" = "" ]; then
 		echo downloading core servicecall and storageservice from Nexus - to $P_DOWNLOAD_DIR ...
-		f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.nvg.idecs.servicecall servicecall $DOWNLOAD_VERSION "ear"
-		f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.nvg.idecs.storageservice storageservice $DOWNLOAD_VERSION "ear"
+		f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.nvg.idecs.servicecall servicecall $DOWNLOAD_VERSION "$S_SERVICECALL_EXT"
+		f_downloadnexus war $C_CONFIG_NEXUS_REPO ru.nvg.idecs.storageservice storageservice $DOWNLOAD_VERSION "$S_STORAGESERVICE_EXT"
 	else
 		echo copy servicecall and storageservice from $C_CONFIG_DISTR_PATH/$P_DISTR_SRCDIR - to $P_DOWNLOAD_DIR ...
-		cp -p $C_CONFIG_DISTR_PATH/$P_DISTR_SRCDIR/servicecall-$DOWNLOAD_VERSION.ear servicecall-$DOWNLOAD_VERSION.ear
-		cp -p $C_CONFIG_DISTR_PATH/$P_DISTR_SRCDIR/storageservice-$DOWNLOAD_VERSION.ear servicecall-$DOWNLOAD_VERSION.ear
+		cp -p $C_CONFIG_DISTR_PATH/$P_DISTR_SRCDIR/servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
+		cp -p $C_CONFIG_DISTR_PATH/$P_DISTR_SRCDIR/storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
 	fi
 
-	# unzip servicecall.ear and storageservice.ear
-	unzip servicecall-$DOWNLOAD_VERSION.ear -d servicecall-$DOWNLOAD_VERSION >/dev/null
-	rm servicecall-$DOWNLOAD_VERSION.ear
-	mv servicecall-$DOWNLOAD_VERSION servicecall-$DOWNLOAD_VERSION.ear
+	# unzip servicecall and storageservice
+	unzip servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT -d servicecall-$DOWNLOAD_VERSION > /dev/null
+	rm servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
+	mv servicecall-$DOWNLOAD_VERSION servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
 
-	unzip storageservice-$DOWNLOAD_VERSION.ear -d storageservice-$DOWNLOAD_VERSION >/dev/null
-	rm storageservice-$DOWNLOAD_VERSION.ear
-	mv storageservice-$DOWNLOAD_VERSION storageservice-$DOWNLOAD_VERSION.ear
+	unzip storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT -d storageservice-$DOWNLOAD_VERSION > /dev/null
+	rm storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
+	mv storageservice-$DOWNLOAD_VERSION storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
 }
 
 function f_local_copy_prod() {
@@ -58,8 +61,8 @@ function f_local_copy_prod() {
 		exit 1
 	fi
 
-	echo "copy libraries from $PREV_DISTR_DIR/servicecall.ear to servicecall-prod-libs..."
-	unzip $PREV_DISTR_DIR/servicecall-*.ear 'APP-INF/lib/*' -d servicecall-prod-libs >/dev/null
+	echo "copy libraries from $PREV_DISTR_DIR/servicecall.$S_SERVICECALL_EXT to servicecall-prod-libs..."
+	unzip $PREV_DISTR_DIR/servicecall-*.$S_SERVICECALL_EXT 'APP-INF/lib/*' -d servicecall-prod-libs > /dev/null
 }
 
 function f_local_download_libs() {
@@ -87,11 +90,11 @@ function f_copy_specific_prod() {
 	local P_LIB_PROJECT=$1
 
 	if [ "$P_LIB_PROJECT" = "pgu-pfr" ]; then
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 	elif [ "$P_LIB_PROJECT" = "pgu-fed-common" ]; then
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 	fi
 }
 
@@ -99,11 +102,11 @@ function f_copy_specific_built() {
 	local P_LIB_PROJECT=$1
 
 	if [ "$P_LIB_PROJECT" = "pgu-pfr" ]; then
-		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 	elif [ "$P_LIB_PROJECT" = "pgu-fed-common" ]; then
-		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 	fi
 }
 
@@ -141,8 +144,8 @@ function f_local_get_projectlib() {
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
 				echo copy library $lib from servicecall-prod-libs to servicecall and storageservice...
 			fi
-       			cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-	        	cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+       			cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+	        	cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 
 			f_copy_specific_prod $P_PROJECT
 		else
@@ -153,8 +156,8 @@ function f_local_get_projectlib() {
 		if [ "$P_DISTR_SRCDIR" = "" ]; then
 			if [ -f $lib ]; then
 				echo copy new library $lib from pgu-services-lib to servicecall and storageservice...
-				cp -p $lib ../servicecall-$DOWNLOAD_VERSION.ear/APP-INF/lib
-       				cp -p $lib ../storageservice-$DOWNLOAD_VERSION.ear/APP-INF/lib
+				cp -p $lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
+       				cp -p $lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
 
 				f_copy_specific_built $P_PROJECT
 			else
@@ -181,7 +184,7 @@ function f_local_update_libs() {
 		fi
 	fi
 
-	echo copy libs to servicecall.ear and storageservice.ear from pgu-services-lib and servicecall-prod-libs...
+	echo copy libs to servicecall and storageservice from pgu-services-lib and servicecall-prod-libs...
 	local project
 	for project in $F_LOCAL_PROJECTSET; do
 		f_local_get_projectlib $project
@@ -191,19 +194,19 @@ function f_local_update_libs() {
 }
 
 function f_local_create_binaries() {
-	# Compress modified servicecall.ear and storageservice.ear
+	# Compress modified servicecall and storageservice
 
-	echo compressing patched servicecall.ear ...
-	jar cfvM servicecall-$DOWNLOAD_VERSION.jar -C servicecall-$DOWNLOAD_VERSION.ear/ . >/dev/null
-	rm -rf servicecall-$DOWNLOAD_VERSION.ear
-	mv servicecall-$DOWNLOAD_VERSION.jar servicecall-$DOWNLOAD_VERSION.ear
-	f_md5_and_copydistr servicecall-$DOWNLOAD_VERSION.ear
+	echo compressing patched servicecall.$S_SERVICECALL_EXT ...
+	jar cfvM servicecall-$DOWNLOAD_VERSION.jar -C servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/ . > /dev/null
+	rm -rf servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
+	mv servicecall-$DOWNLOAD_VERSION.jar servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
+	f_md5_and_copydistr servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT
 
-	echo compressing patched storageservice.ear ...
-	jar cfvM storageservice-$DOWNLOAD_VERSION.jar -C storageservice-$DOWNLOAD_VERSION.ear/ . >/dev/null
-	rm -rf storageservice-$DOWNLOAD_VERSION.ear
-	mv storageservice-$DOWNLOAD_VERSION.jar storageservice-$DOWNLOAD_VERSION.ear
-	f_md5_and_copydistr storageservice-$DOWNLOAD_VERSION.ear
+	echo compressing patched storageservice.$S_STORAGESERVICE_EXT ...
+	jar cfvM storageservice-$DOWNLOAD_VERSION.jar -C storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/ . > /dev/null
+	rm -rf storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
+	mv storageservice-$DOWNLOAD_VERSION.jar storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
+	f_md5_and_copydistr storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT
 }
 
 function f_local_download_deps() {
@@ -211,7 +214,7 @@ function f_local_download_deps() {
 }
 
 function f_local_executeall() {
-	echo getallwar-app.sh: create servicecall.ear and storageservice.ear...
+	echo getallwar-app.sh: create servicecall.$S_SERVICECALL_EXT and storageservice.$S_STORAGESERVICE_EXT...
 
 	S_USE_PROD_DISTR=yes
 	if [ "$GETOPT_ALL" = "yes" ] || [ "$VERSION_MODE" != "branch" ]; then
