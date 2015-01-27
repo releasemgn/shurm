@@ -30,8 +30,26 @@ fi
 # execute
 S_USE_PROD_DISTR=
 
-S_SERVICECALL_EXT=ear
-S_STORAGESERVICE_EXT=ear
+# handle war/ear setting
+if [ "$S_SERVICECALL_EXT" != "" ]; then
+	S_SERVICECALL_EXT=ear
+fi
+
+if [ "$S_STORAGESERVICE_EXT" != "" ]; then
+	S_STORAGESERVICE_EXT=ear
+fi
+
+if [ "$S_SERVICECALL_EXT" = "ear" ]; then
+	S_SERVICECALL_DIR=APP-INF
+else
+	S_SERVICECALL_DIR=WEB-INF
+fi
+
+if [ "$S_STORAGESERVICE_EXT" = "ear" ]; then
+	S_STORAGESERVICE_DIR=APP-INF
+else
+	S_STORAGESERVICE_DIR=WEB-INF
+fi
 
 function f_local_download_core() {
 	if [ "$P_DISTR_SRCDIR" = "" ]; then
@@ -62,7 +80,7 @@ function f_local_copy_prod() {
 	fi
 
 	echo "copy libraries from $PREV_DISTR_DIR/servicecall.$S_SERVICECALL_EXT to servicecall-prod-libs..."
-	unzip $PREV_DISTR_DIR/servicecall-*.$S_SERVICECALL_EXT 'APP-INF/lib/*' -d servicecall-prod-libs > /dev/null
+	unzip $PREV_DISTR_DIR/servicecall-*.$S_SERVICECALL_EXT "$S_SERVICECALL_DIR/lib/*" -d servicecall-prod-libs > /dev/null
 }
 
 function f_local_download_libs() {
@@ -90,11 +108,11 @@ function f_copy_specific_prod() {
 	local P_LIB_PROJECT=$1
 
 	if [ "$P_LIB_PROJECT" = "pgu-pfr" ]; then
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+		cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+		cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 	elif [ "$P_LIB_PROJECT" = "pgu-fed-common" ]; then
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-		cp -p ../servicecall-prod-libs/APP-INF/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+		cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+		cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 	fi
 }
 
@@ -102,11 +120,11 @@ function f_copy_specific_built() {
 	local P_LIB_PROJECT=$1
 
 	if [ "$P_LIB_PROJECT" = "pgu-pfr" ]; then
-		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+		cp -p pfr-api-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 	elif [ "$P_LIB_PROJECT" = "pgu-fed-common" ]; then
-		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+		cp -p pgu-fed-common-util-$DOWNLOAD_VERSION.jar ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 	fi
 }
 
@@ -132,7 +150,7 @@ function f_local_get_projectlib() {
 
 	local RELEASED_TO_PROD=no
 	if [ "$S_USE_PROD_DISTR" = "yes" ]; then
-		if [ -f ../servicecall-prod-libs/APP-INF/lib/$lib ]; then
+		if [ -f ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/$lib ]; then
 			RELEASED_TO_PROD=yes
 		fi
 	fi
@@ -140,12 +158,12 @@ function f_local_get_projectlib() {
 	# echo GETOPT_DIST=$GETOPT_DIST - check if $lib exists in $P_DISTR_DSTDIR/$P_PROJECT ...
 	if [ "$S_USE_PROD_DISTR" = "yes" ] && [ ! -f $C_CONFIG_DISTR_PATH/$P_DISTR_DSTDIR/$F_PROJECT_DISTITEM*war ] && [ "$RELEASED_TO_PROD" = "yes" ]; then
 		# if microportal is NOT in current distributive & present in current PROD - then copy lib from PROD
-		if [ -f ../servicecall-prod-libs/APP-INF/lib/$lib ]; then
+		if [ -f ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/$lib ]; then
 			if [ "$GETOPT_SHOWALL" = "yes" ]; then
 				echo copy library $lib from servicecall-prod-libs to servicecall and storageservice...
 			fi
-       			cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-	        	cp -p ../servicecall-prod-libs/APP-INF/lib/$lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+       			cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/$lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+	        	cp -p ../servicecall-prod-libs/$S_SERVICECALL_DIR/lib/$lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 
 			f_copy_specific_prod $P_PROJECT
 		else
@@ -156,8 +174,8 @@ function f_local_get_projectlib() {
 		if [ "$P_DISTR_SRCDIR" = "" ]; then
 			if [ -f $lib ]; then
 				echo copy new library $lib from pgu-services-lib to servicecall and storageservice...
-				cp -p $lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/APP-INF/lib
-       				cp -p $lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/APP-INF/lib
+				cp -p $lib ../servicecall-$DOWNLOAD_VERSION.$S_SERVICECALL_EXT/$S_SERVICECALL_DIR/lib
+       				cp -p $lib ../storageservice-$DOWNLOAD_VERSION.$S_STORAGESERVICE_EXT/$S_STORAGESERVICE_DIR/lib
 
 				f_copy_specific_built $P_PROJECT
 			else
