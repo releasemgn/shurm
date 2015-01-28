@@ -30,9 +30,9 @@ Defines features implemented in URM.
    * Custom operations
    * Find changeset tickets
   * [featuresbuild Build Projects]
-   * Define Java environment
-   * Define Maven environment
-   * Define Nexus environment
+   * Multiple Java environments
+   * Multiple Maven environments
+   * Multiple Nexus environments
    * Build product codebase
    * Build logs
    * Release builds
