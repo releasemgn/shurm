@@ -6,7 +6,7 @@ Explains how to build projects using URM.
 <wiki:toc max_depth="2" />
 ----
 
-= Define Java environment =
+= Multiple Java environments =
 
   * URM is able to build projects using different jdk versions and settings
   * default product jdk is defined in config.sh:
@@ -19,7 +19,7 @@ specific jdk version should be located in folder under /usr/java
 <project name="pgu-techportal" vcs="git" version="branch" javaversion="jdk1.7.0_45" ...
 }}}
     
-= Define Maven environment =
+= Multiple Maven environments =
 
   * URM is able to build projects using different maven versions and settings
   * maven configuration file is defined in config.sh
@@ -50,7 +50,7 @@ C_CONFIG_MAVEN_ADDITIONAL_OPTIONS="-e"
 C_CONFIG_MAVEN_PROFILES="all-components,all-modules"
 }}}
 
-= Define Nexus environment =
+= Multiple Nexus environments =
 
   * secured login to access nexus repository in maven settings file:
 {{{
