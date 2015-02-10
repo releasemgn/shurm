@@ -42,6 +42,7 @@ C_CONFIG_SOURCE_CFG_LIVEROOTDIR	                full root svn path for live conf
 C_CONFIG_SOURCE_CFG_ROOTDIR			full root svn path for configuration (e.g. "http://mysvn-hostport/svn.releases/myproduct/configuration")
 C_CONFIG_SOURCE_RELEASEROOTDIR			full root svn path for release (e.g. "http://mysvn-hostport/svn/releases/myproduct/changes")
 C_CONFIG_SOURCE_SQL_GLOBALPENDING		full root svn path for pending scripts (e.g. "http://mysvn-hostport/svn/releases/myproduct/database")
+C_CONFIG_SOURCE_SQL_LOGDIR			full path to SQL log directory (e.g. $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/database/patches.log)
 C_CONFIG_SVNNEW_AUTH				new sql auth (e.g. "--username=myuser --password=mypassword")
 C_CONFIG_SVNNEW_PATH				new svn path (e.g. "http://mynewsvn-hostport/svn")
 C_CONFIG_SVNOLD_AUTH				old sql auth (e.g. "--username=myuser --password=mypassword")
