@@ -29,6 +29,9 @@ function f_execute_product() {
 
 	local F_STAT
 
+	# update etc directory
+	~/svnget $F_DIR_RUNCOPY/etc
+
 	# execute upgrade script
 	cd $P_DIR_TMP
 	./upgrade.sh $F_DIR_RUNCOPY
