@@ -31,6 +31,8 @@ function f_execute_product() {
 
 	# update etc directory
 	~/svnget $F_DIR_RUNCOPY/etc
+	rm -rf $F_DIR_RUNCOPY/master/*
+	svn update $F_DIR_RUNCOPY/master > /dev/null
 
 	# execute upgrade script
 	cd $P_DIR_TMP
