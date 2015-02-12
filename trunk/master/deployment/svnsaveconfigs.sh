@@ -60,7 +60,7 @@ function f_local_executeconfcomp() {
 	fi
 
 	# save configuration to svn
-	local F_SVNSTATUS=`svn info $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR@" 2>&1 | grep -c 'Not a valid URL'`
+	local F_SVNSTATUS=`svn info $C_CONFIG_SVNOLD_AUTH "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR" 2>&1 | grep -c 'Not a valid URL'`
 	if [ "$F_SVNSTATUS" != "0" ]; then
 		# create directory in svn first
 		svn mkdir --parents $C_CONFIG_SVNOLD_AUTH -m "$C_CONFIG_ADM_TRACKER-0000: create configuration" "$F_SVNSAVE_SVNROOT/$F_SVNSAVE_SVNDIR" > /dev/null
