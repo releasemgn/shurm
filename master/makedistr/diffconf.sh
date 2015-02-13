@@ -87,7 +87,7 @@ function f_local_download_targets() {
 		if [ "$F_CHECK" = "1" ]; then
 			S_DIFF_NEWCOMPS="$S_DIFF_NEWCOMPS $comp"
 		else
-			svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp
+			svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp > /dev/null 2>&1
 			if [ "$?" != "0" ]; then
 				echo "unable to export $F_GETPATH/$comp. Exiting"
 				exit 1
@@ -101,10 +101,10 @@ function f_local_download_targets() {
 	S_DIFF_CHGCOMPS=${S_DIFF_CHGCOMPS# }
 
 	if [ "$S_DIFF_NEWCOMPS" != "" ]; then
-		f_local_out "new components found - ($S_DIFF_NEWCOMPS)"
+		f_local_out "new components found: $S_DIFF_NEWCOMPS"
 	fi
 	if [ "$S_DIFF_CHGCOMPS" != "" ]; then
-		f_local_out "updated components - ($S_DIFF_CHGCOMPS)"
+		f_local_out "updated components: $S_DIFF_CHGCOMPS"
 	fi
 }
 
