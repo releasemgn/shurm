@@ -144,11 +144,13 @@ C_COMMON_DIRLIST=
 function f_getdirfiles() {
 	local P_DIRPATH=$1
 	C_COMMON_DIRLIST=`find $P_DIRPATH -maxdepth 1 -type f -exec basename {} \; | tr "\n" " "`
+	C_COMMON_DIRLIST=${C_COMMON_DIRLIST% }
 }
 
 function f_getdirdirs() {
 	local P_DIRPATH=$1
 	C_COMMON_DIRLIST=`find $P_DIRPATH -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | tr "\n" " "`
+	C_COMMON_DIRLIST=${C_COMMON_DIRLIST% }
 }
 
 function f_getpath_checkrootdir() {
