@@ -76,7 +76,7 @@ function f_local_download_targets() {
 
 		local F_GETPATH=$F_TEMPLATEDIR
 		if [ "$C_DISTR_CONF_SUBDIR" != "" ]; then
-			F_GETPATH="$F_GETPATH/$C_DISTR_CONF_SUBDIR
+			F_GETPATH="$F_GETPATH/$C_DISTR_CONF_SUBDIR"
 		fi
 
 		svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH $P_LIVEDIR > /dev/null
