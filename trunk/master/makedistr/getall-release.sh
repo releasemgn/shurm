@@ -103,7 +103,7 @@ function f_local_get_confdiff() {
 		P_TARGETS=$C_DISTR_CONF_COMPLIST
 	fi
 
-	echo get configuration difference ...
+	echo get configuration difference to $F_OUTPUT_TOFILE ...
 	./diffconf.sh $F_OUTPUT_TODIR "$F_RELEASE_CONFIG_TARGETS" $F_OUTPUT_TOFILE
 }
 
