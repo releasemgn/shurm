@@ -41,8 +41,8 @@ function f_local_check_lists() {
 	fi
 
 	f_getsubsetexact "$F_DIRCOMPS" "$TARGETS"
-	if [ "$C_COMMON_SUBSET" != "$TARGETS" ]; then
-		echo "targets differ from directory components - $TARGETS. Exiting"
+	if [ "$C_COMMON_SUBSET" != "$F_DIRCOMPS" ]; then
+		echo "targets differ from directory components - target=($TARGETS), checked=($F_DIRCOMPS). Exiting"
 		exit 1
 	fi
 
@@ -79,7 +79,7 @@ function f_local_download_targets() {
 			F_GETPATH="$F_GETPATH/$C_DISTR_CONF_SUBDIR"
 		fi
 
-		svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH $P_LIVEDIR > /dev/null
+		svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp > /dev/null
 		if [ "$?" != "0" ]; then
 			echo "unable to export $F_GETPATH. Exiting"
 			exit 1
