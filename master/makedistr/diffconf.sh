@@ -88,6 +88,7 @@ function f_local_download_targets() {
 }
 
 function f_local_check_components() {
+	echo ok
 }
 
 function f_local_execute_all() {
