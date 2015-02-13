@@ -17,6 +17,7 @@ if [ "$CONFDIR" = "" ]; then
 fi
 
 # execute
+S_DIFF_NEWCOMPS=
 
 function f_local_out() {
 	local P_MSG="$1"
@@ -66,10 +67,12 @@ function f_local_download_targets() {
 	local P_LIVEDIR=$1
 
 	mkdir -p $P_LIVEDIR
+	rm -rf $P_LIVEDIR/*
 
 	local F_TEMPLATEDIR=$C_CONFIG_SOURCE_CFG_ROOTDIR/templates
 
 	echo download targets...
+	S_DIFF_NEWCOMPS=
 	for comp in $TARGETS; do
 		# get comp info and download
 		f_distr_getconfcompinfo $comp
@@ -79,12 +82,19 @@ function f_local_download_targets() {
 			F_GETPATH="$F_GETPATH/$C_DISTR_CONF_SUBDIR"
 		fi
 
-		svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp > /dev/null
-		if [ "$?" != "0" ]; then
-			echo "unable to export $F_GETPATH. Exiting"
-			exit 1
+		local F_CHECK=`svn info $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp 2>&1 | grep -c "Not a valid URL"`
+		if [ "$F_CHECK" = "1" ]; then
+			S_DIFF_NEWCOMPS="$S_DIFF_NEWCOMPS $comp"
+		else
+			svn export $C_CONFIG_SVNOLD_AUTH $F_GETPATH/$comp $P_LIVEDIR/$comp
+			if [ "$?" != "0" ]; then
+				echo "unable to export $F_GETPATH/$comp. Exiting"
+				exit 1
+			fi
 		fi
 	done
+
+	echo "new components found - $S_DIFF_NEWCOMPS"
 }
 
 function f_local_check_components() {
@@ -114,9 +124,6 @@ function f_local_execute_all() {
 	# download production configuration targets
 	local F_LIVE=$C_CONFIG_ARTEFACTDIR/config.live
 	f_local_download_targets $F_LIVE
-
-	rm -rf $F_LIVE
-	mkdir -p $F_LIVE
 
 	# check components
 	f_local_check_components $F_LIVE
