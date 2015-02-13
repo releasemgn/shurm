@@ -85,6 +85,28 @@ function f_local_get_projectitems() {
 	fi
 }
 
+function f_local_get_confdiff() {
+	local P_TARGETS="$1"
+
+	local F_OUTPUT_TODIR
+	if [ "$GETOPT_DIST" = "yes" ]; then
+		F_OUTPUT_TODIR=$C_CONFIG_ARTEFACTDIR/config
+	else
+		F_OUTPUT_TODIR=$C_CONFIG_DISTR_PATH/$VERSIONDIR/config
+	fi
+
+	mkdir -p $F_OUTPUT_TODIR
+	local F_OUTPUT_TOFILE=$F_OUTPUT_TODIR/diffconf.txt
+
+	if [ "$P_TARGETS" = "all" ]; then
+		f_distr_getconfcomplist
+		P_TARGETS=$C_DISTR_CONF_COMPLIST
+	fi
+
+	echo get configuration difference ...
+	./diffconf.sh $F_OUTPUT_TODIR "$F_RELEASE_CONFIG_TARGETS" $F_OUTPUT_TOFILE
+}
+
 # read release targets
 function f_local_getall_release() {
 	# find release description
@@ -151,6 +173,9 @@ function f_local_getall_release() {
 			echo executing in makedistr: ./getall.sh $VERSIONDIR $TAG_GETALL config "$F_RELEASE_CONFIG_TARGETS"
 			./getall.sh $VERSIONDIR $TAG_GETALL config ignore "$F_RELEASE_CONFIG_TARGETS"
 		fi
+
+		# automatically create configuration difference
+		f_local_get_confdiff "$C_RELEASE_CONFCOMPLIST"
 	fi
 
 	if [ "$MODULE" = "prebuilt" ] || [ "$MODULE" = "" ]; then
