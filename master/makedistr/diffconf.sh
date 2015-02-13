@@ -40,7 +40,7 @@ function f_local_check_lists() {
 		fi
 	fi
 
-	f_getsubsetexact "$TARGETS" "$F_DIRCOMPS"
+	f_getsubsetexact "$F_DIRCOMPS" "$TARGETS"
 	if [ "$C_COMMON_SUBSET" != "$TARGETS" ]; then
 		echo "targets differ from directory components - $TARGETS. Exiting"
 		exit 1
@@ -55,7 +55,7 @@ function f_local_check_lists() {
 	f_distr_getconfcomplist
 	local F_ALL=$C_DISTR_CONF_COMPLIST
 
-	f_getsubsetexact "$F_ALL" "$TARGETS"
+	f_getsubsetexact "$TARGETS" "$F_ALL"
 	if [ "$C_COMMON_UNKNOWNSUBSET" != "" ]; then
 		echo "unknown components: $C_COMMON_UNKNOWNSUBSET. Exiting"
 		exit 1
