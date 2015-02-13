@@ -72,7 +72,6 @@ function f_local_download_targets() {
 
 	local F_TEMPLATEDIR=$C_CONFIG_SOURCE_CFG_ROOTDIR/templates
 
-	echo download targets...
 	S_DIFF_NEWCOMPS=
 	S_DIFF_CHGCOMPS=
 	for comp in $TARGETS; do

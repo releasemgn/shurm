@@ -90,9 +90,9 @@ function f_local_get_confdiff() {
 
 	local F_OUTPUT_TODIR
 	if [ "$GETOPT_DIST" = "yes" ]; then
-		F_OUTPUT_TODIR=$C_CONFIG_ARTEFACTDIR/config
-	else
 		F_OUTPUT_TODIR=$C_CONFIG_DISTR_PATH/$VERSIONDIR/config
+	else
+		F_OUTPUT_TODIR=$C_CONFIG_ARTEFACTDIR/config
 	fi
 
 	mkdir -p $F_OUTPUT_TODIR
