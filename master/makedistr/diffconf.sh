@@ -18,6 +18,7 @@ fi
 
 # execute
 S_DIFF_NEWCOMPS=
+S_DIFF_CHGCOMPS=
 
 function f_local_out() {
 	local P_MSG="$1"
@@ -73,6 +74,7 @@ function f_local_download_targets() {
 
 	echo download targets...
 	S_DIFF_NEWCOMPS=
+	S_DIFF_CHGCOMPS=
 	for comp in $TARGETS; do
 		# get comp info and download
 		f_distr_getconfcompinfo $comp
@@ -91,10 +93,20 @@ function f_local_download_targets() {
 				echo "unable to export $F_GETPATH/$comp. Exiting"
 				exit 1
 			fi
+
+			S_DIFF_CHGCOMPS="$S_DIFF_CHGCOMPS $comp"
 		fi
 	done
 
-	echo "new components found - $S_DIFF_NEWCOMPS"
+	S_DIFF_NEWCOMPS=${S_DIFF_NEWCOMPS# }
+	S_DIFF_CHGCOMPS=${S_DIFF_CHGCOMPS# }
+
+	if [ "$S_DIFF_NEWCOMPS" != "" ]; then
+		f_local_out "new components found - ($S_DIFF_NEWCOMPS)"
+	fi
+	if [ "$S_DIFF_CHGCOMPS" != "" ]; then
+		f_local_out "updated components - ($S_DIFF_CHGCOMPS)"
+	fi
 }
 
 function f_local_check_components() {
