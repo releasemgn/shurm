@@ -101,15 +101,51 @@ function f_local_download_targets() {
 	S_DIFF_CHGCOMPS=${S_DIFF_CHGCOMPS# }
 
 	if [ "$S_DIFF_NEWCOMPS" != "" ]; then
-		f_local_out "new components found: $S_DIFF_NEWCOMPS"
+		f_local_out "NEW COMPONENTS: $S_DIFF_NEWCOMPS"
 	fi
 	if [ "$S_DIFF_CHGCOMPS" != "" ]; then
-		f_local_out "updated components: $S_DIFF_CHGCOMPS"
+		f_local_out "UPDATED COMPONENTS: $S_DIFF_CHGCOMPS"
 	fi
 }
 
+function f_local_check_component_one() {
+	local P_CHECKDIR=$1
+	local P_COMP=$2
+
+	echo check $P_COMP ...
+	f_local_out "UPDATED COMPONENT: $P_COMP"
+
+	if [ "$OUTFILE" = "" ]; then
+		diff -b $P_CHECKDIR/$P_COMP $P_COMP
+	else
+		diff -b $P_CHECKDIR/$P_COMP $P_COMP >> $OUTFILE
+	fi
+	
+	f_local_out "==="
+}
+
 function f_local_check_components() {
-	echo ok
+	local P_CHECKDIR=$1
+	local P_LIVEDIR=$2
+
+	if [ "$S_DIFF_CHGCOMPS" = "" ]; then
+		echo "no updated components"
+		return 0
+	fi
+		
+	# compare updated by component
+	f_local_out "==="
+	f_local_out "updates:"
+	f_local_out "==="
+
+	local F_SAVEDIR=`pwd`
+	cd $P_LIVEDIR
+
+	for comp in $S_DIFF_CHGCOMPS; do
+		f_local_check_component_one $P_CHECKDIR $comp
+	done
+
+	cd $F_SAVEDIR
 }
 
 function f_local_execute_all() {
@@ -127,6 +163,7 @@ function f_local_execute_all() {
 
 	rm -rf $OUTFILE
 
+	local F_SAVEDIR=`pwd`
 	cd $F_CHECKDIR
 
 	# check actual list
@@ -136,9 +173,10 @@ function f_local_execute_all() {
 	local F_LIVE=$C_CONFIG_ARTEFACTDIR/config.live
 	f_local_download_targets $F_LIVE
 
+	cd $F_SAVEDIR
+
 	# check components
-	f_local_check_components $F_LIVE
-	
+	f_local_check_components $F_CHECKDIR $F_LIVE
 }
 
 f_local_execute_all
