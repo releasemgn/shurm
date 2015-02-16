@@ -41,11 +41,37 @@ fi
 
 . ./common.sh
 
-function f_execute_all() {
+function f_build_uploadstatus() {
+	local MODULE_PROJECT_NAME=$P_MODULENAME
+	local MODULE_ALT_REPO="-DaltDeploymentRepository=nexus2::default::$P_NEXUS_PATH"
+	local MODULE_MSETTINGS="--settings=$C_CONFIG_MAVEN_CFGFILE"
 
-	# get module info
-	f_source_readproject $P_MODULESET $P_MODULENAME
+	local UPLOAD_MAVEN_VERSION=$C_CONFIG_MAVEN_VERSION
 
+	export M2_HOME=/usr/local/apache-maven-$C_CONFIG_MAVEN_VERSION
+	export M2=$M2_HOME/bin
+	export PATH="$M2:$PATH"
+	export MAVEN_OPTS="-Xmx1g -XX:MaxPermSize=300m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled"
+
+	# upload versioninfo
+	echo $P_TAG > versioninfo.txt
+	mvn deploy:deploy-file \
+		$MODULE_MSETTINGS \
+		-Durl=$P_NEXUS_PATH \
+		-DuniqueVersion=false \
+	        -Dversion=$P_VERSION \
+		-DgroupId=release \
+		-DartifactId=$MODULE_PROJECT_NAME \
+		-Dfile=versioninfo.txt \
+		-Dpackaging=txt \
+		-Dclassifier=version \
+		-DgeneratePom=true \
+		-DrepositoryId=nexus2
+
+	rm -rf versioninfo.txt
+}
+
+function f_build_maven() {
 	# maven params
 	local MODULE_PROJECT_NAME=$P_MODULENAME
 	local MODULE_MAVEN_PROFILES=$C_CONFIG_MAVEN_PROFILES
@@ -110,23 +136,68 @@ function f_execute_all() {
 		echo "patch-build.sh: maven build failed. Exiting"
 		exit 1
 	fi
+}
 
-	# upload versioninfo
-	echo $P_TAG > versioninfo.txt
-	mvn deploy:deploy-file \
-		$MODULE_MSETTINGS \
-		-Durl=$P_NEXUS_PATH \
-		-DuniqueVersion=false \
-	        -Dversion=$P_VERSION \
-		-DgroupId=release \
-		-DartifactId=$MODULE_PROJECT_NAME \
-		-Dfile=versioninfo.txt \
-		-Dpackaging=txt \
-		-Dclassifier=version \
-		-DgeneratePom=true \
-		-DrepositoryId=nexus2
+function f_build_gradle() {
+	# set java environment
+	local BUILD_JAVA_VERSION=$C_CONFIG_JAVA_VERSION
+	if [ "$C_SOURCE_JAVAVERSION" != "" ]; then
+		BUILD_JAVA_VERSION=$C_SOURCE_JAVAVERSION
+	fi
 
-	rm -rf versioninfo.txt
+	if [ "$BUILD_JAVA_VERSION" = "" ]; then
+		echo BUILD_JAVA_VERSION is not defined - java version is unknown. Exiting.
+		exit 1
+	fi
+
+	export JAVA_HOME=/usr/java/$BUILD_JAVA_VERSION
+	export PATH=$JAVA_HOME/bin:$PATH
+
+	# set gradle environment
+	local BUILD_GRADLE_VERSION=$C_CONFIG_GRADLE_VERSION
+	if [ "$C_SOURCE_GRADLEVERSION" != "" ]; then
+		BUILD_GRADLE_VERSION=$C_SOURCE_GRADLEVERSION
+	fi
+
+	if [ "$BUILD_GRADLE_VERSION" = "" ]; then
+		echo BUILD_GRADLE_VERSION is not defined - gradle version is unknown. Exiting.
+		exit 1
+	fi
+
+	if [ "$C_CONFIG_GRADLE_VERSION" = "" ]; then
+		echo C_CONFIG_MAVEN_VERSION is not defined - default maven version is unknown. Exiting.
+		exit 1
+	fi
+
+	gradlew clean war
+}
+
+function f_execute_all() {
+	if [ "$C_CONFIG_MAVEN_VERSION" = "" ]; then
+		echo C_CONFIG_MAVEN_VERSION is not defined - default maven version is unknown. Exiting.
+		exit 1
+	fi
+
+	# get module info
+	f_source_readproject $P_MODULESET $P_MODULENAME
+
+	local F_BUILDER=$C_CONFIG_BUILDER
+	if [ "$F_BUILDER" = "" ]; then
+		F_BUILDER="maven"
+	fi
+
+	if [ "$C_SOURCE_BUILDER" != "" ]; then
+		F_BUILDER=$C_SOURCE_BUILDER
+	fi
+
+	# build
+	if [ "$C_SOURCE_BUILDER" = "maven" ] || [ "$C_SOURCE_BUILDER" = "" ]; then
+		f_build_maven
+	elif [ "$C_SOURCE_BUILDER" = "gradle" ]
+		f_build_gradle
+	fi
+
+	f_build_uploadstatus
 }
 
 f_execute_all
