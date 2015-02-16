@@ -25,8 +25,7 @@ fi
 
 . ./common.sh
 
-function f_execute_all() {
-
+function f_execute_checkpomversion() {
 	# check pom version
 	local MAIN_POM_VER=`cat $SOURCE_DIR/pom.xml | sed "s/xmlns/ignore/g;s/xsi://g;s/:xsi/ignore/g" | xmlstarlet sel -t -m "project/version" -v .`
 
@@ -40,6 +39,26 @@ function f_execute_all() {
 	if [ "$MAIN_POM_VER" != "$P_VERSION" ]; then
 		echo "invalid pom.xml version: $MAIN_POM_VER, expected $P_VERSION. Exiting"
 		exit 1
+	fi
+}
+
+function f_execute_all() {
+
+	# get module info
+	f_source_readproject $P_MODULESET $P_MODULENAME
+
+	local F_BUILDER=$C_CONFIG_BUILDER
+	if [ "$F_BUILDER" = "" ]; then
+		F_BUILDER="maven"
+	fi
+
+	if [ "$C_SOURCE_BUILDER" != "" ]; then
+		F_BUILDER=$C_SOURCE_BUILDER
+	fi
+
+	# check maven pom
+	if [ "$F_BUILDER" = "maven" ]; then
+		f_execute_checkpomversion
 	fi
 
 	# all checks passed
