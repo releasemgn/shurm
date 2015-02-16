@@ -164,6 +164,10 @@ function f_build_gradle() {
 		exit 1
 	fi
 
+	export GR_HOME=/usr/local/apache-maven-$BUILD_MAVEN_VERSION
+	export GR=$GR_HOME/bin
+	export PATH="$GR:$PATH"
+
 	local F_GRADLE_CMD="gradle clean war"
 
 	cd $P_PATCHPATH
