@@ -169,6 +169,8 @@ function f_build_gradle() {
 		exit 1
 	fi
 
+	cd $P_PATCHPATH
+
 	gradle clean war
 }
 
