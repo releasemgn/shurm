@@ -55,7 +55,7 @@ function f_build_uploadstatus() {
 
 	# upload versioninfo
 	echo $P_TAG > versioninfo.txt
-	mvn deploy:deploy-file \
+	mvn deploy:deploy-file -B \
 		$MODULE_MSETTINGS \
 		-Durl=$P_NEXUS_PATH \
 		-DuniqueVersion=false \
