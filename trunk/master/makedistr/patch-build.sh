@@ -164,7 +164,7 @@ function f_build_gradle() {
 		exit 1
 	fi
 
-	export GR_HOME=/usr/local/apache-maven-$BUILD_MAVEN_VERSION
+	export GR_HOME=/usr/local/gradle-$BUILD_GRADLE_VERSION
 	export GR=$GR_HOME/bin
 	export PATH="$GR:$PATH"
 
