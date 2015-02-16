@@ -164,11 +164,6 @@ function f_build_gradle() {
 		exit 1
 	fi
 
-	if [ "$C_CONFIG_GRADLE_VERSION" = "" ]; then
-		echo C_CONFIG_MAVEN_VERSION is not defined - default maven version is unknown. Exiting.
-		exit 1
-	fi
-
 	local F_GRADLE_CMD="gradle clean war"
 
 	cd $P_PATCHPATH
