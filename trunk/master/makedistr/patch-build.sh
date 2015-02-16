@@ -169,9 +169,23 @@ function f_build_gradle() {
 		exit 1
 	fi
 
+	local F_GRADLE_CMD="gradle clean war"
+
 	cd $P_PATCHPATH
 
-	gradle clean war
+	echo using gradle:
+	which gradle
+	gradle --version
+
+	# execute gradle
+	cd $P_PATCHPATH
+	echo execute: $F_GRADLE_CMD
+	$F_GRADLE_CMD
+
+	if [ $? -ne 0 ]; then
+		echo "patch-build.sh: gradle build failed. Exiting"
+		exit 1
+	fi
 }
 
 function f_execute_all() {
