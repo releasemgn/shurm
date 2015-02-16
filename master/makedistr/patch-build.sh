@@ -206,10 +206,13 @@ function f_execute_all() {
 	fi
 
 	# build
-	if [ "$C_SOURCE_BUILDER" = "maven" ] || [ "$C_SOURCE_BUILDER" = "" ]; then
+	if [ "$F_BUILDER" = "maven" ] || [ "$F_BUILDER" = "" ]; then
 		f_build_maven
-	elif [ "$C_SOURCE_BUILDER" = "gradle" ]
+	elif [ "$F_BUILDER" = "gradle" ]; then
 		f_build_gradle
+	else
+		echo unknown builder=$F_BUILDER. Exiting.
+		exit 1
 	fi
 
 	f_build_uploadstatus
