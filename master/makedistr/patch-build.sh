@@ -169,7 +169,7 @@ function f_build_gradle() {
 		exit 1
 	fi
 
-	gradlew clean war
+	gradle clean war
 }
 
 function f_execute_all() {
