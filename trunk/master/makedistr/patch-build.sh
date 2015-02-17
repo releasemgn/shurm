@@ -154,7 +154,7 @@ function f_build_gradle() {
 	export PATH=$JAVA_HOME/bin:$PATH
 
 	# set gradle environment
-	local BUILD_GRADLE_VERSION=$C_CONFIG_GRADLE_VERSION
+	local BUILD_GRADLE_VERSION=$C_CONFIG_BUILDER_VERSION
 	if [ "$C_SOURCE_GRADLEVERSION" != "" ]; then
 		BUILD_GRADLE_VERSION=$C_SOURCE_GRADLEVERSION
 	fi
