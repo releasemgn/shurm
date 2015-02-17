@@ -37,7 +37,8 @@ function f_execute_db() {
 	P_FILE=$2
 
 	f_env_getxmlserverinfo $DC $P_DB
-	./tnssys.sh $C_ENV_SERVER_DBTNSNAME $P_FILE $SYSPWD
+
+	./tnssys.sh $C_ENV_SERVER_DBMSTYPE $C_ENV_SERVER_DBTNSNAME $P_FILE $SYSPWD
 	F_STATUS=$?
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "$F_STATUS" != "0" ]; then
 		echo error executing tnssys.sh db=$P_DB file=$P_FILE. Exiting
