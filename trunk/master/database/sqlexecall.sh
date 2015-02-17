@@ -80,7 +80,7 @@ function f_local_tnsexec_sh {
 		fi
 	fi
 
-	./tnsexec.sh -statusfile $S_STATUSFILE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
+	./tnsexec.sh -statusfile $S_STATUSFILE $S_DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
 	RET=$?
 
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "${RET}" != "0" ]; then
