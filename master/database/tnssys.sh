@@ -25,6 +25,7 @@ SYS_PASSWD=$4
 
 # execute
 
+. ./specific/$DBMSTYPE.sh
 . ./common.sh
 
 function f_execute_all() {
