@@ -42,6 +42,7 @@ fi
 
 # execute
 
+S_DBMSTYPE=
 S_TNSNAME=
 S_TNSSCHEMALIST=
 
@@ -58,7 +59,7 @@ function f_local_tnsldr_sh {
 		return 1
 	fi
 
-	./tnsldr.sh $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
+	./tnsldr.sh $S_DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
 	local RET=$?
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ $RET -ne 0 ]; then
 		echo $S_TNSNAME: script $P_SCRIPT was applied with errors. Exiting.
@@ -71,6 +72,7 @@ function f_local_tnsldr_sh {
 function f_local_getenvinfo() {
 	# check db and get used schema list
 	f_env_getxmlserverinfo $DC $DB
+	S_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	S_TNSNAME=$C_ENV_SERVER_DBTNSNAME
 	S_TNSSCHEMALIST=$C_ENV_SERVER_DBSCHEMALIST
 }

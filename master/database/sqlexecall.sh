@@ -63,6 +63,7 @@ fi
 S_FOLDERLIST=
 S_RELSCHEMALIST=
 S_USESCHEMALIST=
+S_DBMSTYPE=
 S_TNSNAME=
 S_TNSSCHEMALIST=
 S_SQLEXECLISTMASK=
@@ -99,7 +100,7 @@ function f_local_tnsldr_sh {
 		fi
 	fi
 
-	./tnsldr.sh -statusfile $S_STATUSFILE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_FILE
+	./tnsldr.sh -statusfile $S_STATUSFILE $S_DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_FILE
 	local RET=$?
 
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "${RET}" != "0" ]; then
@@ -198,6 +199,7 @@ function f_local_getenvinfo() {
 
 	# check db and get used schema list
 	f_env_getxmlserverinfo $DC $DB
+	S_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	S_TNSNAME=$C_ENV_SERVER_DBTNSNAME
 	S_TNSSCHEMALIST=$C_ENV_SERVER_DBSCHEMALIST
 
