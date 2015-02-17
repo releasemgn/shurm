@@ -168,7 +168,7 @@ function f_build_gradle() {
 	export GR=$GR_HOME/bin
 	export PATH="$GR:$PATH"
 
-	local F_GRADLE_CMD="gradle clean war"
+	local F_GRADLE_CMD="gradle clean war publish -Dmaven.settings=~/.m2/settings.branch.xml"
 
 	cd $P_PATCHPATH
 
