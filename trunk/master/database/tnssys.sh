@@ -8,14 +8,20 @@ SCRIPTDIR=`dirname $0`
 cd $SCRIPTDIR
 SCRIPTDIR=`pwd`
 
-TNSNAME=$1
+DBMSTYPE=$1
+TNSNAME=$2
+
+if [ "$DBMSTYPE" = "" ]; then
+	echo tnssys.sh: DBMSTYPE not set
+	exit 1
+fi
 if [ "$TNSNAME" = "" ]; then
 	echo tnssys.sh: TNSNAME not set
 	exit 1
 fi
 
-FNAME=$2
-SYS_PASSWD=$3
+FNAME=$3
+SYS_PASSWD=$4
 
 # execute
 
