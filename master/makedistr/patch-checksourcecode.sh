@@ -47,13 +47,13 @@ function f_execute_all() {
 	# get module info
 	f_source_readproject $P_MODULESET $P_MODULENAME
 
-	local F_BUILDER=$C_CONFIG_BUILDER
+	local F_BUILDER=$C_CONFIG_BUILDER_TYPE
 	if [ "$F_BUILDER" = "" ]; then
 		F_BUILDER="maven"
 	fi
 
-	if [ "$C_SOURCE_BUILDER" != "" ]; then
-		F_BUILDER=$C_SOURCE_BUILDER
+	if [ "$C_SOURCE_BUILDERTYPE" != "" ]; then
+		F_BUILDER=$C_SOURCE_BUILDERTYPE
 	fi
 
 	# check maven pom
