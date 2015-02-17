@@ -8,6 +8,38 @@ if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
 	exit 1
 fi
 
+S_DBMS_TYPE=
+function f_get_dbmstype() {
+	local P_CONFIGPATH=$1
+
+	. $P_CONFIGPATH
+
+	if [ "$C_ENV_CONFIG_ENV" = "" ] || [ "$C_ENV_CONFIG_DC" = "" ] || [ "$C_ENV_CONFIG_DB" = "" ]; then
+		echo "C_ENV_CONFIG_ENV, C_ENV_CONFIG_DC, C_ENV_CONFIG_DB should be set in export configuration file to define database server affected. Exiting"
+		exit 1
+	fi
+
+	C_ENV_FILE=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/env/$C_ENV_CONFIG_ENV.xml
+
+	# set environment file
+	f_env_setpath $C_ENV_FILE
+
+	# get server info
+	f_env_getxmlserverinfo $C_ENV_CONFIG_DC $C_ENV_CONFIG_DB
+
+	if [ "$C_ENV_SERVER_DBMSTYPE" = "" ]; then
+		echo "C_ENV_SERVER_DBMSTYPE is not defined. Exiting"
+		exit 1
+	fi
+
+	if [ ! -f "specific/$C_ENV_SERVER_DBMSTYPE.sh" ]; then
+		echo "unable to find dbms specific code file specific/$C_ENV_SERVER_DBMSTYPE.sh. Exiting"
+		exit 1
+	fi
+
+	S_DBMS_TYPE=$C_ENV_SERVER_DBMSTYPE
+}
+
 S_DB_USE_SCHEMA_PASSWORD=
 function f_get_db_password() {
 	local P_DB_TNSNAME=$1

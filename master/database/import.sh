@@ -31,13 +31,18 @@ function f_execute_all() {
 		exit 1
 	fi
 
+	# check server and define database type
+	f_get_dbmstype $F_CONFIGPATH
+	local F_DBMSTYPE=S_DBMS_TYPE
+
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG-$P_CMD
 	rm -rf $F_EXECUTE_DIR
 	mkdir $F_EXECUTE_DIR
 
 	# create contents
-	cp -R datapump/* $F_EXECUTE_DIR/
+	cp datapump/* $F_EXECUTE_DIR/
+	cp specific/$F_DBMSTYPE.sh $F_EXECUTE_DIR/
 
 	echo "C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT" >> $F_EXECUTE_DIR/datapump-config.sh
 	echo "C_CONFIG_SVNOLD_PATH=$C_CONFIG_SVNOLD_PATH" >> $F_EXECUTE_DIR/datapump-config.sh
