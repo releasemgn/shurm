@@ -34,7 +34,7 @@ function f_execute_all() {
 
 	# create contents
 	# create contents
-	cp datapump/* $F_EXECUTE_DIR/
+	cp -R datapump/* $F_EXECUTE_DIR/
 
 	echo "C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT" >> $F_EXECUTE_DIR/datapump-config.sh
 	echo "C_CONFIG_SVNOLD_PATH=$C_CONFIG_SVNOLD_PATH" >> $F_EXECUTE_DIR/datapump-config.sh
