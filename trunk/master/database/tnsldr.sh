@@ -10,15 +10,20 @@ SCRIPTDIR=`pwd`
 
 . ./getopts.sh
 
-TNSNAME=$1
+DBMSTYPE=$1
+TNSNAME=$2
+if [ "$DBMSTYPE" = "" ]; then
+	echo tnsldr.sh: DBMSTYPE not set
+	exit 1
+fi
 if [ "$TNSNAME" = "" ]; then
 	echo tnsldr.sh: TNSNAME not set
 	exit 1
 fi
 
-OUTDIR_POSTFIX=$2
-RELEASE=$3
-FILE_NAME=$4
+OUTDIR_POSTFIX=$3
+RELEASE=$4
+FILE_NAME=$5
 
 # check parameters
 if [ "$OUTDIR_POSTFIX" = "" ]; then
@@ -37,6 +42,7 @@ fi
 
 # execute
 
+. ./specific/$DBMSTYPE.sh
 . ./common.sh
 . ./commonadmindb.sh
 
