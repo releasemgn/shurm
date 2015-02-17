@@ -12,12 +12,7 @@ fi
 
 P_SCHEMA=$2
 
-. ../../etc/config.sh
-
-if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
-	echo C_CONFIG_PRODUCT_DEPLOYMENT_HOME is not defined. Exiting
-	exit 1
-fi
+. ./common.sh
 
 function f_execute_all() {
 	local F_CONFIGPATH=$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/datapump/$P_RUNCONFIG.sh
@@ -25,6 +20,10 @@ function f_execute_all() {
 		echo $F_CONFIGPATH - configuration file does not exist. Exiting
 		exit 1
 	fi
+
+	# check server and define database type
+	f_get_dbmstype $F_CONFIGPATH
+	local F_DBMSTYPE=S_DBMS_TYPE
 
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG
@@ -34,7 +33,8 @@ function f_execute_all() {
 
 	# create contents
 	# create contents
-	cp -R datapump/* $F_EXECUTE_DIR/
+	cp datapump/* $F_EXECUTE_DIR/
+	cp specific/$F_DBMSTYPE.sh $F_EXECUTE_DIR/
 
 	echo "C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT" >> $F_EXECUTE_DIR/datapump-config.sh
 	echo "C_CONFIG_SVNOLD_PATH=$C_CONFIG_SVNOLD_PATH" >> $F_EXECUTE_DIR/datapump-config.sh
