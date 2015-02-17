@@ -16,15 +16,20 @@ if [ "$GETOPT_EXECUTEMODE" = "" ]; then
 	exit 1
 fi
 
-TNSNAME=$1
+DBMSTYPE=$1
+TNSNAME=$2
+if [ "$DBMSTYPE" = "" ]; then
+	echo tnsexec.sh: DBMSTYPE not set
+	exit 1
+fi
 if [ "$TNSNAME" = "" ]; then
 	echo tnsexec.sh: TNSNAME not set
 	exit 1
 fi
 
-OUTDIR_POSTFIX=$2
-RELEASE=$3
-FNAME=$4
+OUTDIR_POSTFIX=$3
+RELEASE=$4
+FNAME=$5
 
 # check parameters
 if [ "$OUTDIR_POSTFIX" = "" ]; then
@@ -40,6 +45,7 @@ if [ "$FNAME" = "" ]; then
 	exit 1
 fi
 
+. ./specific/$DBMSTYPE.sh
 . ./common.sh
 . ./commonadmindb.sh
 
