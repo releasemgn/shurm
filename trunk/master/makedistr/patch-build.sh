@@ -108,7 +108,7 @@ function f_build_maven() {
 
 	# set maven environment
 	local BUILD_MAVEN_VERSION=$C_CONFIG_BUILDER_VERSION
-	if [ "$BUILD_MAVEN_VERSION" = "" ] && [ 
+	if [ "$BUILD_MAVEN_VERSION" = "" ];
 		BUILD_MAVEN_VERSION=$C_CONFIG_MAVEN_VERSION
 	fi
 	if [ "$C_SOURCE_BUILDERVERSION" != "" ]; then
