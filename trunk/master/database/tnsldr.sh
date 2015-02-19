@@ -82,7 +82,7 @@ function f_local_prepare () {
 	cd $SCRIPTDIR
 
 	# check already executed
-	f_admindb_check_scriptstatus $RELEASE $TNSNAME $S_SCHEMA $F_BASENAME $S_FILENUM
+	f_admindb_check_scriptstatus $DBMSTYPE $RELEASE $TNSNAME $S_SCHEMA $F_BASENAME $S_FILENUM
 	if [ "$C_ADMINDB_SCRIPT_STATUS" != "new" ] && [ "$GETOPT_EXECUTEMODE" != "force" ] && [ "$GETOPT_EXECUTEMODE" != "anyway" ]; then
 		echo "$TNSNAME: $F_BASENAME is already loaded into $S_SCHEMA. Skipped."
 		exit 0
@@ -104,41 +104,41 @@ function f_local_execute_loadctl() {
 	echo $TNSNAME: release=$RELEASE, load data using $FILE_NAME OUTDIR=$S_OUTDIR ...
 
 	if [ "$C_ADMINDB_SCRIPT_STATUS" = "new" ]; then
-		f_admindb_beginscriptstatus $RELEASE $TNSNAME $S_SCHEMA $S_CTLNAME $S_FILENUM
+		f_admindb_beginscriptstatus $DBMSTYPE $RELEASE $TNSNAME $S_SCHEMA $S_CTLNAME $S_FILENUM
 	fi
 
 	local F_EXECNAME=$S_CTLPATH/$S_CTLNAME
-	f_sqlload_ctlfile $TNSNAME $S_SCHEMA $F_EXECNAME $S_OUTDIR
+	f_sqlload_ctlfile $DBMSTYPE $TNSNAME $S_SCHEMA $F_EXECNAME $S_OUTDIR
 	if [ $? -ne 0 ]; then
 		echo tnsldr.sh: errors while loading $F_EXECNAME. Exiting
 		exit 1
 	fi
 
-	f_admindb_updatescriptstatus $RELEASE $TNSNAME $S_SCHEMA $S_CTLNAME $S_FILENUM "A"
+	f_admindb_updatescriptstatus $DBMSTYPE $RELEASE $TNSNAME $S_SCHEMA $S_CTLNAME $S_FILENUM "A"
 }
 
 function f_local_execute_postsql() {
 	local F_EXECNAME=$S_OUTDIR/$S_POSTCTLNAME.run
 	echo $TNSNAME: executing post-load script $S_POSTCTLNAME ...
 	(
-		f_add_sqlheader $S_POSTCTLNAME $S_OUTDIR
+		f_add_sqlheader $DBMSTYPE $S_POSTCTLNAME $S_OUTDIR
 
 		if [ "$C_ADMINDB_SCRIPT_STATUS" = "new" ]; then
-			f_admindb_add_beginscriptstatus $RELEASE $S_SCHEMA $S_POSTCTLNAME $S_FILENUM
+			f_admindb_add_beginscriptstatus $DBMSTYPE $RELEASE $S_SCHEMA $S_POSTCTLNAME $S_FILENUM
 		else
-			f_admindb_add_updatescripttime $RELEASE $S_SCHEMA $S_FILENUM
+			f_admindb_add_updatescripttime $DBMSTYPE $RELEASE $S_SCHEMA $S_FILENUM
 		fi
 
-		f_add_sqlfile $S_CTLPATH/$S_POSTCTLNAME
+		f_add_sqlfile $DBMSTYPE $S_CTLPATH/$S_POSTCTLNAME
 	) > $F_EXECNAME
 	
-	f_exec_sql $TNSNAME $S_SCHEMA $F_EXECNAME $S_OUTDIR
+	f_exec_sql $DBMSTYPE $TNSNAME $S_SCHEMA $F_EXECNAME $S_OUTDIR
 	if [ $? -ne 0 ]; then
 		echo $TNSNAME: error executing post-load script $S_POSTCTLNAME in $S_SCHEMA. Exiting
 		exit 1
 	fi
 
-	f_admindb_updatescriptstatus $RELEASE $TNSNAME $S_SCHEMA $S_POSTCTLNAME $S_FILENUM "A"
+	f_admindb_updatescriptstatus $DBMSTYPE $RELEASE $TNSNAME $S_SCHEMA $S_POSTCTLNAME $S_FILENUM "A"
 }
 
 function f_local_executeall() {
