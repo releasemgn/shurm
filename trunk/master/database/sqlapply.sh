@@ -155,6 +155,7 @@ function f_local_execute_db() {
 
 	# get db info, default align is dc
 	f_env_getxmlserverinfo $DC $P_DB
+	local F_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	local F_TNSNAME=$C_ENV_SERVER_DBTNSNAME
 	local F_DBALIGNEDDIRLIST="$C_ENV_SERVER_ALIGNED"
 	if [ "$F_DBALIGNEDDIRLIST" = "" ]; then
@@ -169,7 +170,10 @@ function f_local_execute_db() {
 	local F_USEALIGNEDDIRLIST=$C_COMMON_SUBSET
 
 	# prepare source scripts to run
-	f_local_createrundirall $P_SRCDIR $P_RUNDIR "$F_USEALIGNEDDIRLIST" "$C_ENV_SERVER_DBREGIONS"
+	f_getdbms_relfolderbytype $F_DBMSTYPE
+	local F_SRCFOLDER=$S_DBMS_VALUE
+
+	f_local_createrundirall $P_SRCDIR/$F_SRCFOLDER $P_RUNDIR "$F_USEALIGNEDDIRLIST" "$C_ENV_SERVER_DBREGIONS"
 
 	# derived schema list
 	local F_REGIONS=
@@ -180,22 +184,25 @@ function f_local_execute_db() {
 	# apply
 	echo "apply release=$S_SQLAPPLY_RELEASE_BASEDIR to db=$P_DB: common, alignedlist=$F_USEALIGNEDDIRLIST ..."
 
-	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
-	f_check_db_connect $F_TNSNAME $C_CONFIG_SCHEMAADMIN
-
-	# create initial status file
-	local F_STATUSFILE=$P_RUNDIR/status.before.$F_TNSNAME.$P_OUTDIR_POSTFIX.txt
-	f_admindb_get_scriptstatusall $S_SQLAPPLY_RELEASE_ID $F_TNSNAME $F_STATUSFILE
+	./dbmanage.sh $F_DBMSTYPE "execbefore" $S_SQLAPPLY_RELEASE_ID $F_TNSNAME "ignore" "$P_RUNDIR $P_OUTDIR_POSTFIX"
+	if [ "$?" != "" ]; then
+		echo unsuccessful dbmanage.sh. Exiting
+		exit 1
+	fi
 
 	# common
 	echo "sqlapply.sh: =================================== apply common scripts to db=$P_DB ..."
 	f_aligned_getidbyname common
+
+	local F_RES
 	if [ "$F_REGIONS" != "" ]; then
-		./sqlexecall.sh -statusfile $F_STATUSFILE -regions "$F_REGIONS" $DC $P_DB $P_OUTDIR_POSTFIX $S_SQLAPPLY_RELEASE_ID $P_RUNDIR $S_COMMON_ALIGNEDID
+		./sqlexecall.sh -statusfile $F_STATUSFILE -regions "$F_REGIONS" $F_DBMSTYPE $DC $P_DB $P_OUTDIR_POSTFIX $S_SQLAPPLY_RELEASE_ID $P_RUNDIR $S_COMMON_ALIGNEDID
+		F_RES="$?"
 	else
-		./sqlexecall.sh -statusfile $F_STATUSFILE $DC $P_DB $P_OUTDIR_POSTFIX $S_SQLAPPLY_RELEASE_ID $P_RUNDIR $S_COMMON_ALIGNEDID
+		./sqlexecall.sh -statusfile $F_STATUSFILE $F_DBMSTYPE $DC $P_DB $P_OUTDIR_POSTFIX $S_SQLAPPLY_RELEASE_ID $P_RUNDIR $S_COMMON_ALIGNEDID
+		F_RES="$?"
 	fi
-	if [ $? -ne 0 ]; then
+	if [ "$F_RES" != "0" ]; then
 		echo sqlapply.sh: unsuccessful sqlexecall.sh. Exiting
 		exit 1
 	fi
@@ -205,12 +212,14 @@ function f_local_execute_db() {
 		echo "sqlapply.sh: =================================== apply aligned dir=$aligneddir scripts to db=$P_DB ..."
 		f_aligned_getidbyname $aligneddir
 		if [ "$F_REGIONS" != "" ]; then
-			./sqlexecall.sh -statusfile $F_STATUSFILE -regions "$F_REGIONS" $DC $P_DB $P_OUTDIR_POSTFIX-aligned-$aligneddir $S_SQLAPPLY_RELEASE_ID $P_RUNDIR/aligned/$aligneddir $S_COMMON_ALIGNEDID
+			./sqlexecall.sh -statusfile $F_STATUSFILE -regions "$F_REGIONS" $F_DBMSTYPE $DC $P_DB $P_OUTDIR_POSTFIX-aligned-$aligneddir $S_SQLAPPLY_RELEASE_ID $P_RUNDIR/aligned/$aligneddir $S_COMMON_ALIGNEDID
+			F_RES="$?"
 		else
-			./sqlexecall.sh -statusfile $F_STATUSFILE $DC $P_DB $P_OUTDIR_POSTFIX-aligned-$aligneddir $S_SQLAPPLY_RELEASE_ID $P_RUNDIR/aligned/$aligneddir $S_COMMON_ALIGNEDID
+			./sqlexecall.sh -statusfile $F_STATUSFILE $F_DBMSTYPE $DC $P_DB $P_OUTDIR_POSTFIX-aligned-$aligneddir $S_SQLAPPLY_RELEASE_ID $P_RUNDIR/aligned/$aligneddir $S_COMMON_ALIGNEDID
+			F_RES="$?"
 		fi
 
-		if [ $? -ne 0 ]; then
+		if [ "$F_RES" != "0" ]; then
 			echo sqlapply.sh: unsuccessful sqlexecall.sh. Exiting
 			exit 1
 		fi
@@ -218,10 +227,11 @@ function f_local_execute_db() {
 
 	echo "sqlapply.sh: =================================== finish release in db=$P_DB"
 
-	# create final status file
-	F_STATUSFILE=$P_RUNDIR/status.after.$F_TNSNAME.$P_OUTDIR_POSTFIX.txt
-	f_admindb_get_scriptstatusall $S_SQLAPPLY_RELEASE_ID $F_TNSNAME $F_STATUSFILE
-	f_admindb_checkandfinishrelease $S_SQLAPPLY_RELEASE_ID $F_TNSNAME
+	./dbmanage.sh $F_DBMSTYPE "execafter" $S_SQLAPPLY_RELEASE_ID $F_TNSNAME "ignore" "$P_RUNDIR $P_OUTDIR_POSTFIX"
+	if [ "$?" != "" ]; then
+		echo unsuccessful dbmanage.sh. Exiting
+		exit 1
+	fi
 }
 
 function f_release_getreleasedir() {
@@ -230,7 +240,7 @@ function f_release_getreleasedir() {
 
 	f_release_getdistrdir $S_SQLAPPLY_RELEASE_BASEDIR
 	S_SQLAPPLY_RELEASE_ID=$C_RELEASE_SRCVER
-	S_SQLAPPLY_RELEASE_SRCDIR=$C_RELEASE_SRCDIR/SQL
+	S_SQLAPPLY_RELEASE_SRCDIR=$C_RELEASE_SRCDIR
 }
 
 function f_local_execute_all() {
