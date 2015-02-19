@@ -15,21 +15,21 @@ if [ "$DC" = "" ]; then
 fi
 
 # check parameters
-DB=$1
-RELEASEDIR=$2
-RELEASEFILE=$3
-SYSPWD=$3
+RELEASEDIR=$1
+RELEASEFILE=$2
+DB=$3
+SYSPWD=$4
 
-if [ "$DB" = "" ]; then
-	echo sqlmanual.sh: invalid DB parameter
-	exit 1
-fi
 if [ "$RELEASEDIR" = "" ]; then
 	echo sqlmanual.sh: invalid RELEASEDIR parameter
 	exit 1
 fi
 if [ "$RELEASEFILE" = "" ]; then
 	echo sqlmanual.sh: invalid RELEASEFILE parameter
+	exit 1
+fi
+if [ "$DB" = "" ]; then
+	echo sqlmanual.sh: invalid DB parameter
 	exit 1
 fi
 
