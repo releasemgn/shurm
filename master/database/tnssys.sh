@@ -54,8 +54,8 @@ function f_execute_all() {
 
 		# create runtime script
 		(       
-			f_add_sqlheader $SCRIPTNAME $OUTDIR
-			f_add_sqlfile $FNAME
+			f_add_sqlheader $DBMSTYPE $SCRIPTNAME $OUTDIR
+			f_add_sqlfile $DBMSTYPE $FNAME
 		) > $OUTDIR/$SCRIPTNAME.run 
 
 		# check showonly status
@@ -64,11 +64,11 @@ function f_execute_all() {
 			exit 0
 		fi
 
-		f_exec_syssql $TNSNAME $OUTDIR/$SCRIPTNAME.run $OUTDIR "no" $SYS_PASSWD
+		f_exec_syssql $DBMSTYPE $TNSNAME $OUTDIR/$SCRIPTNAME.run $OUTDIR "no" $SYS_PASSWD
 
 	else
 		# pivate sys script
-		f_exec_syssql_private $TNSNAME $SYS_PASSWD $GETOPT_SKIPERRORS
+		f_exec_syssql_private $DBMSTYPE $TNSNAME $SYS_PASSWD $GETOPT_SKIPERRORS
 	fi
 }
 

@@ -8,6 +8,8 @@ if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
 	exit 1
 fi
 
+#################################################################### non-specific function
+
 S_DBMS_TYPE=
 function f_get_dbmstype() {
 	local P_CONFIGPATH=$1
@@ -38,37 +40,6 @@ function f_get_dbmstype() {
 	fi
 
 	S_DBMS_TYPE=$C_ENV_SERVER_DBMSTYPE
-}
-
-S_DB_USE_SCHEMA_PASSWORD=
-function f_get_db_password() {
-	local P_DB_TNSNAME=$1
-	local P_DB_SCHEMA=$2
-
-	if [ "$GETOPT_DBAUTH" != "yes" ]; then
-		S_DB_USE_SCHEMA_PASSWORD=$P_DB_SCHEMA
-
-	elif [ "$GETOPT_DBPASSWORD" != "" ]; then
-		S_DB_USE_SCHEMA_PASSWORD=$GETOPT_DBPASSWORD
-
-	elif [ "$C_ENV_PROPERTY_DBAUTHFILE" != "" ]; then
-		# check file
-		local F_FNAME=$C_ENV_PROPERTY_DBAUTHFILE
-		if [ ! -f "$F_FNAME" ]; then
-			echo f_get_db_password: password file $F_FNAME does not exist. Exiting
-			exit 1
-		fi
-
-		# get password
-		S_DB_USE_SCHEMA_PASSWORD=`cat $F_FNAME | grep "^$P_DB_TNSNAME.$P_DB_SCHEMA=" | cut -d "=" -f2 | tr -d "\n\r"`
-		if [ "$S_DB_USE_SCHEMA_PASSWORD" = "" ]; then
-			echo f_get_db_password: unable to find password for tnsname=$P_DB_TNSNAME, schema=$P_DB_SCHEMA in $F_FNAME. Exiting
-			exit 1
-		fi
-	else
-		echo f_get_db_password: unable to derive auth type. Exiting
-		exit 1
-	fi
 }
 
 function f_common_watchcmd() {
@@ -133,153 +104,6 @@ function f_exec_limited() {
 	fi
 
 	return $F_STATUS
-}
-
-function f_check_db_connect() {
-	local P_DB_TNS_NAME=$1
-	local P_SCHEMA=$2
-
-	f_get_db_password $P_DB_TNS_NAME $P_SCHEMA
-
-	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
-	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
-	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
-
-	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_check_db_connect: Can't connect to $P_SCHEMA@$P_DB_TNS_NAME due to ERROR \"$F_CHECK_OUTPUT\""
-		exit 20
-	fi
-}
-
-function f_exec_sql() {
-	local P_DB_TNS_NAME=$1
-	local P_SCHEMA=$2
-	local P_SCRIPTFILE=$3
-	local P_OUTDIR=$4
-	local P_SKIPERROR=$5
-	local P_SPECIAL_CMD=$6
-	local P_SPECIAL_PASSWORD=$7
-
-	local F_SCRIPTNAME=`basename $P_SCRIPTFILE`
-
-	if [ "$P_SPECIAL_PASSWORD" = "" ]; then
-		f_get_db_password $P_DB_TNS_NAME $P_SCHEMA
-	else
-		S_DB_USE_SCHEMA_PASSWORD=$P_SPECIAL_PASSWORD
-	fi
-
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	if [ "$P_SPECIAL_CMD" != "" ]; then
-		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME \"$P_SPECIAL_CMD\"" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
-	else
-		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
-	fi
-
-	local F_CHECK_OUT=$(egrep "(ORA-|PLS-|SP2-)" $P_OUTDIR/$F_SCRIPTNAME.out)
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "${F_CHECK_OUT}" != "" ]; then
-		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA with ERRORs \"$F_CHECK_OUT\""
-		echo "$P_DB_TNS_NAME: "Pls, see" $P_OUTDIR/$F_SCRIPTNAME.out"
-
-		if [ "$P_SKIPERROR" = "yes" ]; then
-			return 1
-		else
-			echo f_exec_sql: found error in strict mode, script=$F_SCRIPTNAME. Exiting.
-			exit 33
-		fi
-	else
-		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA"
-	fi
-
-	return 0
-}
-
-function f_exec_syssql() {
-	local P_DB_TNS_NAME=$1
-	local P_SCRIPTFILE=$2
-	local P_OUTDIR=$3
-	local P_SKIPERROR=$4
-	local P_SPECIALPASSWORD=$5
-
-	f_exec_sql $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "as sysdba" $P_SPECIALPASSWORD
-	return $?
-}
-
-function f_exec_syssql_private() {
-	local P_DB_TNS_NAME=$1
-	local P_PASSWORD=$2
-	local P_SKIPERROR=$3
-
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	F_CHECK_OUT=`sqlplus sys/$P_PASSWORD@$P_DB_TNS_NAME "as sysdba" 2>&1`
-	F_CHECK_OUT=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
-
-	if [ "${F_CHECK_OUT}" != "" ]; then
-		echo "$P_DB_TNS_NAME: private script is applied to sys with ERRORs"
-
-		if [ "$P_SKIPERROR" = "yes" ]; then
-			return 1
-		else
-			echo f_exec_syssql_private: found error in strict mode in private script. Exiting.
-			exit 33
-		fi
-	else
-		echo "$P_DB_TNS_NAME: private script is applied to sys"
-	fi
-}
-
-function f_add_sqlheader() {
-	local P_SCRIPTNAME=$1
-	local P_OUTDIR=$2
-
-	echo -- standard script header
-	echo set define off
-	echo set echo on
-	echo spool $P_OUTDIR/$P_SCRIPTNAME.spool append
-	echo select sysdate from dual\;
-}
-
-function f_add_sqlfile() {
-	local P_FNAME=$1
-
-	if [ -r $P_FNAME ]; then
-		cat $P_FNAME
-		echo ''
-		echo exit
-		echo ''
-	else
-		echo "f_add_sqlfile: Can't find sql-script $P_FNAME"
-		exit 34
-	fi
-}
-
-function f_sqlload_ctlfile() {
-	local P_DB_TNS_NAME=$1
-	local P_SCHEMA=$2
-	local P_FILE_NAME=$3
-	local P_OUTDIR=$4
-
-	local F_CTLNAME=`basename $P_FILE_NAME`
-	local F_CTLDIR=`dirname $P_FILE_NAME`
-
-	mkdir -p $P_OUTDIR
-
-	local F_SAVEDIR=`pwd`
-	cd $F_CTLDIR
-
-	echo "running sqlldr $P_SCHEMA@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.out..." > $P_OUTDIR/$F_CTLNAME.out
-	f_get_db_password $P_DB_TNS_NAME $P_SCHEMA
-
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	sqlldr $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.log bad=$P_OUTDIR/$F_CTLNAME.bad >> $P_OUTDIR/$F_CTLNAME.out
-
-	if [ $? -ne 0 ]; then
-		echo f_sqlload_ctlfile: sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log. Exiting
-		cd $F_SAVEDIR
-		exit 1
-	fi
-
-	cd $F_SAVEDIR
-	echo "$P_DB_TNS_NAME: $P_FILE_NAME is loaded into $P_SCHEMA"
 }
 
 S_ORG_FOLDERID=
@@ -606,6 +430,9 @@ function f_getdbms_typebysrcfolder() {
 	fi
 }
 
+#################################################################### specific functions
+
+
 function f_getdbms_relfolderbytype() {
 	local P_DBMSTYPE=$1
 
@@ -619,6 +446,192 @@ function f_getdbms_relfolderbytype() {
 		echo unknown dbmstype $P_DBMSTYPE. Exiting
 		exit 1
 	fi
+}
+
+S_DB_USE_SCHEMA_PASSWORD=
+function f_get_db_password() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNSNAME=$2
+	local P_DB_SCHEMA=$3
+
+	if [ "$GETOPT_DBAUTH" != "yes" ]; then
+		S_DB_USE_SCHEMA_PASSWORD=$P_DB_SCHEMA
+
+	elif [ "$GETOPT_DBPASSWORD" != "" ]; then
+		S_DB_USE_SCHEMA_PASSWORD=$GETOPT_DBPASSWORD
+
+	elif [ "$C_ENV_PROPERTY_DBAUTHFILE" != "" ]; then
+		# check file
+		local F_FNAME=$C_ENV_PROPERTY_DBAUTHFILE
+		if [ ! -f "$F_FNAME" ]; then
+			echo f_get_db_password: password file $F_FNAME does not exist. Exiting
+			exit 1
+		fi
+
+		# get password
+		S_DB_USE_SCHEMA_PASSWORD=`cat $F_FNAME | grep "^$P_DB_TNSNAME.$P_DB_SCHEMA=" | cut -d "=" -f2 | tr -d "\n\r"`
+		if [ "$S_DB_USE_SCHEMA_PASSWORD" = "" ]; then
+			echo f_get_db_password: unable to find password for tnsname=$P_DB_TNSNAME, schema=$P_DB_SCHEMA in $F_FNAME. Exiting
+			exit 1
+		fi
+	else
+		echo f_get_db_password: unable to derive auth type. Exiting
+		exit 1
+	fi
+}
+
+function f_check_db_connect() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNS_NAME=$2
+	local P_SCHEMA=$3
+
+	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
+
+	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
+	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
+	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
+
+	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
+		echo "f_check_db_connect: Can't connect to $P_SCHEMA@$P_DB_TNS_NAME due to ERROR \"$F_CHECK_OUTPUT\""
+		exit 20
+	fi
+}
+
+function f_exec_sql() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNS_NAME=$2
+	local P_SCHEMA=$3
+	local P_SCRIPTFILE=$4
+	local P_OUTDIR=$5
+	local P_SKIPERROR=$6
+	local P_SPECIAL_CMD=$7
+	local P_SPECIAL_PASSWORD=$8
+
+	local F_SCRIPTNAME=`basename $P_SCRIPTFILE`
+
+	if [ "$P_SPECIAL_PASSWORD" = "" ]; then
+		f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
+	else
+		S_DB_USE_SCHEMA_PASSWORD=$P_SPECIAL_PASSWORD
+	fi
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	if [ "$P_SPECIAL_CMD" != "" ]; then
+		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME \"$P_SPECIAL_CMD\"" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
+	else
+		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
+	fi
+
+	local F_CHECK_OUT=$(egrep "(ORA-|PLS-|SP2-)" $P_OUTDIR/$F_SCRIPTNAME.out)
+	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "${F_CHECK_OUT}" != "" ]; then
+		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA with ERRORs \"$F_CHECK_OUT\""
+		echo "$P_DB_TNS_NAME: "Pls, see" $P_OUTDIR/$F_SCRIPTNAME.out"
+
+		if [ "$P_SKIPERROR" = "yes" ]; then
+			return 1
+		else
+			echo f_exec_sql: found error in strict mode, script=$F_SCRIPTNAME. Exiting.
+			exit 33
+		fi
+	else
+		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA"
+	fi
+
+	return 0
+}
+
+function f_exec_syssql() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNS_NAME=$2
+	local P_SCRIPTFILE=$3
+	local P_OUTDIR=$4
+	local P_SKIPERROR=$5
+	local P_SPECIALPASSWORD=$6
+
+	f_exec_sql $P_DBMSTYPE $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "as sysdba" $P_SPECIALPASSWORD
+	return $?
+}
+
+function f_exec_syssql_private() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNS_NAME=$2
+	local P_PASSWORD=$3
+	local P_SKIPERROR=$4
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	F_CHECK_OUT=`sqlplus sys/$P_PASSWORD@$P_DB_TNS_NAME "as sysdba" 2>&1`
+	F_CHECK_OUT=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
+
+	if [ "${F_CHECK_OUT}" != "" ]; then
+		echo "$P_DB_TNS_NAME: private script is applied to sys with ERRORs"
+
+		if [ "$P_SKIPERROR" = "yes" ]; then
+			return 1
+		else
+			echo f_exec_syssql_private: found error in strict mode in private script. Exiting.
+			exit 33
+		fi
+	else
+		echo "$P_DB_TNS_NAME: private script is applied to sys"
+	fi
+}
+
+function f_add_sqlheader() {
+	local P_DBMSTYPE=$1
+	local P_SCRIPTNAME=$2
+	local P_OUTDIR=$3
+
+	echo -- standard script header
+	echo set define off
+	echo set echo on
+	echo spool $P_OUTDIR/$P_SCRIPTNAME.spool append
+	echo select sysdate from dual\;
+}
+
+function f_add_sqlfile() {
+	local P_DBMSTYPE=$1
+	local P_FNAME=$2
+
+	if [ -r $P_FNAME ]; then
+		cat $P_FNAME
+		echo ''
+		echo exit
+		echo ''
+	else
+		echo "f_add_sqlfile: Can't find sql-script $P_FNAME"
+		exit 34
+	fi
+}
+
+function f_sqlload_ctlfile() {
+	local P_DBMSTYPE=$1
+	local P_DB_TNS_NAME=$2
+	local P_SCHEMA=$3
+	local P_FILE_NAME=$4
+	local P_OUTDIR=$5
+
+	local F_CTLNAME=`basename $P_FILE_NAME`
+	local F_CTLDIR=`dirname $P_FILE_NAME`
+
+	mkdir -p $P_OUTDIR
+
+	local F_SAVEDIR=`pwd`
+	cd $F_CTLDIR
+
+	echo "running sqlldr $P_SCHEMA@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.out..." > $P_OUTDIR/$F_CTLNAME.out
+	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	sqlldr $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.log bad=$P_OUTDIR/$F_CTLNAME.bad >> $P_OUTDIR/$F_CTLNAME.out
+
+	if [ $? -ne 0 ]; then
+		echo f_sqlload_ctlfile: sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log. Exiting
+		cd $F_SAVEDIR
+		exit 1
+	fi
+
+	cd $F_SAVEDIR
+	echo "$P_DB_TNS_NAME: $P_FILE_NAME is loaded into $P_SCHEMA"
 }
 
 # load configuration xml helpers

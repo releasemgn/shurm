@@ -62,7 +62,7 @@ function f_local_check_beforeexecute() {
 	OUTDIR=`dirname $FNAME`/run.$TNSNAME.$OUTDIR_POSTFIX
 	mkdir -p $OUTDIR
 
-	f_admindb_check_scriptstatus $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM
+	f_admindb_check_scriptstatus $DBMSTYPE $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM
 
 	# check showonly status
 	if [ "$GETOPT_EXECUTE" = "no" ]; then
@@ -75,18 +75,18 @@ function f_local_execute_apply() {
 	# first time applied or skip error
 	if [ "$C_ADMINDB_SCRIPT_STATUS" = "new" ] && ( [ $GETOPT_EXECUTEMODE = "apply" ] || [ $GETOPT_EXECUTEMODE = "anyway" ] ); then
 		(
-			f_add_sqlheader $SCRIPTNAME $OUTDIR
-			f_admindb_add_beginscriptstatus $RELEASE $SCHEMA $SCRIPTNAME $SCRIPTNUM
-			f_add_sqlfile $FNAME
+			f_add_sqlheader $DBMSTYPE $SCRIPTNAME $OUTDIR
+			f_admindb_add_beginscriptstatus $DBMSTYPE $RELEASE $SCHEMA $SCRIPTNAME $SCRIPTNUM
+			f_add_sqlfile $DBMSTYPE $FNAME
 		) > $OUTDIR/$SCRIPTNAME.run
 
-		f_exec_sql $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR $OPTION_FINALIZEANY
+		f_exec_sql $DBMSTYPE $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR $OPTION_FINALIZEANY
 		if [ $? -ne 0 ]; then
 			F_STATUS=S
 		else
 			F_STATUS=A
 		fi
-		f_admindb_updatescriptstatus $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM $F_STATUS
+		f_admindb_updatescriptstatus $DBMSTYPE $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM $F_STATUS
 
 	# force or reapplied
 	elif [ "$C_ADMINDB_SCRIPT_STATUS" = "applied" ] && ( [ $GETOPT_EXECUTEMODE = "force" ] || [ $GETOPT_EXECUTEMODE = "anyway" ] || [ $GETOPT_EXECUTEMODE = "correct" ] ); then
@@ -94,18 +94,18 @@ function f_local_execute_apply() {
 			echo "$TNSNAME: $SCRIPTNAME is already applied without errors. Skipped"
 		else
 			(
-				f_add_sqlheader $SCRIPTNAME $OUTDIR
-				f_admindb_add_updatescripttime $RELEASE $SCHEMA $SCRIPTNUM
-				f_add_sqlfile $FNAME
+				f_add_sqlheader $DBMSTYPE $SCRIPTNAME $OUTDIR
+				f_admindb_add_updatescripttime $DBMSTYPE $RELEASE $SCHEMA $SCRIPTNUM
+				f_add_sqlfile $DBMSTYPE $FNAME
 			) > $OUTDIR/$SCRIPTNAME.run 
 
-			f_exec_sql $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR $OPTION_FINALIZEANY
+			f_exec_sql $DBMSTYPE $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR $OPTION_FINALIZEANY
 			if [ $? -ne 0 ]; then
 				F_STATUS=S
 			else
 				F_STATUS=A
 			fi
-			f_admindb_updatescriptstatus $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM $F_STATUS
+			f_admindb_updatescriptstatus $DBMSTYPE $RELEASE $TNSNAME $SCHEMA $SCRIPTNAME $SCRIPTNUM $F_STATUS
 		fi
 
 	# force but not applied yet - error
@@ -115,12 +115,12 @@ function f_local_execute_apply() {
 	# rollback
 	elif [ "$C_ADMINDB_SCRIPT_STATUS" = "new" ] && [ $GETOPT_EXECUTEMODE = "rollback" ]; then
 		(
-			f_add_sqlheader $SCRIPTNAME $OUTDIR
-			f_add_sqlfile $FNAME
+			f_add_sqlheader $DBMSTYPE $SCRIPTNAME $OUTDIR
+			f_add_sqlfile $DBMSTYPE $FNAME
 		) > $OUTDIR/$SCRIPTNAME.run
 
-		f_exec_sql $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR
-		f_admindb_deletestatus $RELEASE $TNSNAME $SCRIPTNUM $SCHEMA
+		f_exec_sql $DBMSTYPE $TNSNAME $SCHEMA $OUTDIR/$SCRIPTNAME.run $OUTDIR
+		f_admindb_deletestatus $DBMSTYPE $RELEASE $TNSNAME $SCRIPTNUM $SCHEMA
 
 	elif [ "$C_ADMINDB_SCRIPT_STATUS" = "applied" ] && [ $GETOPT_EXECUTEMODE = "apply" ]; then
 		echo "$TNSNAME: $SCRIPTNAME is already applied to $SCHEMA. Skipped."
