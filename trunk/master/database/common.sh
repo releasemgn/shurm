@@ -551,8 +551,8 @@ function f_sqlidx_getoraclemask() {
 
 S_DB_ALLSCHEMALIST=
 function f_getregionaldbschemalist() {
-	P_TNSLIST="$1"
-	P_REGIONS="$2"
+	local P_TNSLIST="$1"
+	local P_REGIONS="$2"
 
 	S_DB_ALLSCHEMALIST=
 
@@ -578,9 +578,47 @@ function f_getregionaldbschemalist() {
 }
 
 function f_getalldbschemalist() {
-	P_REGIONS="$1"
+	local P_REGIONS="$1"
 
 	f_getregionaldbschemalist "$C_CONFIG_SCHEMAALLLIST" "$P_REGIONS"
+}
+
+S_DBMS_VALUE=
+function f_getdbms_srcfolders() {
+	local P_LIST="$1"
+
+	f_getsubsetexact "$P_LIST" "sql pgsql"
+	S_DBMS_VALUE="$C_COMMON_SUBSET"
+}
+
+function f_getdbms_typebysrcfolder() {
+	local P_FOLDER=$1
+
+	if [ "$P_FOLDER" = "sql" ]; then
+		S_DBMS_VALUE=oracle
+
+	elif [ "$P_FOLDER" = "pgsql" ]; then
+		S_DBMS_VALUE=postgres
+
+	else
+		echo unknown source folder $P_FOLDER. Exiting
+		exit 1
+	fi
+}
+
+function f_getdbms_relfolderbytype() {
+	local P_DBMSTYPE=$1
+
+	if [ "$P_FOLDER" = "oracle" ]; then
+		S_DBMS_VALUE=SQL
+
+	elif [ "$P_FOLDER" = "postgres" ]; then
+		S_DBMS_VALUE=PGSQL
+
+	else
+		echo unknown dbmstype $P_DBMSTYPE. Exiting
+		exit 1
+	fi
 }
 
 # load configuration xml helpers

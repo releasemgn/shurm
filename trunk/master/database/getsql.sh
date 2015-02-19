@@ -23,7 +23,7 @@ function f_local_usage() {
 	Options:
 		-m      : move incorrect scripts to errors folder
 		-s	: skip (ignore) errors and continue processing
-		-nodist	: do not copy SQL to distributive
+		-nodist	: do not copy to distributive
 "
 }
 
@@ -129,27 +129,23 @@ function f_execute_all() {
 	rm -rf $S_GETSQL_TMP
 	mkdir -p $S_GETSQL_TMP
 
-	folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR $S_GETSQL_TMP/$APP_VERSION_SQL | egrep "^sql/|^pgsql/"`
+	folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR | tr -d "/"`
 	if [ "$?" != "0" ]; then
 		echo unable to access release at $S_SQL_SRCDIR. Exiting
 		exit 1
 	fi
 
+	f_getdbms_srcfolders "$folders"
+	folders="$S_DBMS_VALUE"
+
 	local F_DBMSTYPE
 	local F_RELEASEFOLDER
 	for folder in $folders; do
-		if [ "$folder" = "sql/" ]; then
-			F_DBMSTYPE=oracle
-			F_RELEASEFOLDER=SQL
+		f_getdbms_typebysrcfolder $folder
+		F_DBMSTYPE=$S_DBMS_VALUE
 
-		elif [ "$folder" = "pgsql/" ]; then
-			F_DBMSTYPE=postgres
-			F_RELEASEFOLDER=PGSQL
-
-		else
-			echo unknown dbms folder=$folder. Exiting
-			exit 1
-		fi
+		f_getdbms_relfolderbytype $F_DBMSTYPE
+		F_RELEASEFOLDER=$S_DBMS_VALUE
 
 		f_execute_dbms $F_DBMSTYPE $folder $F_RELEASEFOLDER
 	done
