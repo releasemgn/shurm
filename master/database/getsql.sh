@@ -89,7 +89,6 @@ function f_execute_dbms() {
 	APP_VERSION_SQLPREPARED=$APP_VERSION_SQL.prepared
 	echo preparing scripts from $S_GETSQL_TMP/$APP_VERSION_SQL to $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED ...
 
-	date > ./sqlprepare.out.txt
 	echo "processing $P_DBMSTYPE scripts from svn ($APP_VERSION_SQL) to $APP_VERSION_SQLPREPARED ..." >> ./sqlprepare.out.txt
 	echo "" >> ./sqlprepare.out.txt
 
@@ -129,7 +128,7 @@ function f_execute_all() {
 	rm -rf $S_GETSQL_TMP
 	mkdir -p $S_GETSQL_TMP
 
-	folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR | tr -d "/"`
+	local folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR | tr -d "/"`
 	if [ "$?" != "0" ]; then
 		echo unable to access release at $S_SQL_SRCDIR. Exiting
 		exit 1
@@ -137,6 +136,8 @@ function f_execute_all() {
 
 	f_getdbms_srcfolders "$folders"
 	folders="$S_DBMS_VALUE"
+
+	date > ./sqlprepare.out.txt
 
 	local F_DBMSTYPE
 	local F_RELEASEFOLDER

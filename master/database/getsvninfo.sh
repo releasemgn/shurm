@@ -66,12 +66,13 @@ function f_execute_file() {
 	echo "$P_FILE: $S_LAST_DIRINDEX$xrindex"
 }
 
-function f_execute_all() {
-	f_execute_checkparams
+function f_execute_dbms() {
+	local P_DBMSTYPE=$1
+	local P_SRCFOLDER=$2
 
-	echo listing scripts from $S_SQL_SRCDIR ...
+	echo "DBMS: $P_DBMSTYPE"
 
-	svn list -R $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR/sql > $S_GETSVNINFO_TMP
+	svn list -R $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR/$P_SRCFOLDER > $S_GETSVNINFO_TMP
 	cat $S_GETSVNINFO_TMP | while read line; do
 		line=`echo $line | sed "s/\r//;s/\n//"`
 		if [[ "$line" =~ /$ ]]; then
@@ -82,6 +83,28 @@ function f_execute_all() {
 	done
 
 	rm -rf $S_GETSVNINFO_TMP
+}
+
+function f_execute_all() {
+	f_execute_checkparams
+
+	echo listing scripts from $S_SQL_SRCDIR ...
+
+	local folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR | tr -d "/"`
+	if [ "$?" != "0" ]; then
+		echo unable to access release at $S_SQL_SRCDIR. Exiting
+		exit 1
+	fi
+
+	f_getdbms_srcfolders "$folders"
+	folders="$S_DBMS_VALUE"
+
+	for folder in $folders; do
+		f_getdbms_typebysrcfolder $folder
+		F_DBMSTYPE=$S_DBMS_VALUE
+
+		f_execute_dbms $F_DBMSTYPE $folder
+	done
 }
 
 f_execute_all
