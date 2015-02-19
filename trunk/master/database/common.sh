@@ -436,10 +436,10 @@ function f_getdbms_typebysrcfolder() {
 function f_getdbms_relfolderbytype() {
 	local P_DBMSTYPE=$1
 
-	if [ "$P_FOLDER" = "oracle" ]; then
+	if [ "$P_DBMSTYPE" = "oracle" ]; then
 		S_DBMS_VALUE=SQL
 
-	elif [ "$P_FOLDER" = "postgres" ]; then
+	elif [ "$P_DBMSTYPE" = "postgres" ]; then
 		S_DBMS_VALUE=PGSQL
 
 	else
