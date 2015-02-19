@@ -81,10 +81,9 @@ function f_local_execute_tns_print() {
 		echo "$P_TNSNAME: not finalized scripts - $C_ADMINDB_SQLRES""- executed with errors, see latest logs below - "
 
 		for script in $C_ADMINDB_SQLRES; do
-
 			LOGS=""
 			for logdir in $C_CONFIG_SOURCE_SQL_LOGDIR/$RELEASE-$C_ENV_ID-$DC-*; do
-				LOGS="$LOGS `find $logdir -name $script-*.sql.spool`"
+				LOGS="$LOGS `find $logdir -name \"$script-*.sql.spool\"`"
 			done
 
 			LAST_LOG=`ls -t $LOGS | head -1`
@@ -92,7 +91,6 @@ function f_local_execute_tns_print() {
 			SCRIPT=`echo $SCRIPT | sed -e 's/[0-9]*\([0-9][0-9][0-9]\)/\1/'`
 
 			echo "less $LAST_LOG # *$SCRIPT"
-
 		done
 	fi
 }
