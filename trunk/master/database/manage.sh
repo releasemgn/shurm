@@ -39,85 +39,16 @@ EXECUTE_LIST="$*"
 # execute
 S_ALIGNED_ID=
 
-function f_local_execute_tns_rollback() {
-	local P_TNSNAME=$1
-
-	if [ "$EXECUTE_LIST" = "" ]; then
-		echo $P_TNSNAME: drop release $RELEASE...
-		f_admindb_droprelease $RELEASE $P_TNSNAME
-	else
-		echo $P_TNSNAME: drop release $RELEASE items ...
-		f_admindb_dropreleaseitems $RELEASE $P_TNSNAME "$EXECUTE_LIST" $S_ALIGNED_ID
-	fi
-
-	# finish release
-	f_admindb_checkandfinishrelease $RELEASE $P_TNSNAME
-}
-
-function f_local_execute_tns_correct() {
-	local P_TNSNAME=$1
-
-	if [ "$EXECUTE_LIST" = "" ]; then
-		echo $P_TNSNAME: correct release $RELEASE...
-		f_admindb_fixreleaseall $RELEASE $P_TNSNAME
-	else
-		echo $P_TNSNAME: correct release $RELEASE items...
-		f_admindb_fixreleaseitems $RELEASE $P_TNSNAME "$EXECUTE_LIST" $S_ALIGNED_ID
-	fi
-
-	# finish release
-	f_admindb_checkandfinishrelease $RELEASE $P_TNSNAME
-}
-
-function f_local_execute_tns_print() {
-	local P_TNSNAME=$1
-
-	echo $P_TNSNAME: get status of release $RELEASE...
-	f_admindb_getreleasefailed $RELEASE $P_TNSNAME
-
-	if [ "$C_ADMINDB_SQLRES" = "" ]; then
-		echo $P_TNSNAME: release is successfully finalized.
-	else
-		echo "$P_TNSNAME: not finalized scripts - $C_ADMINDB_SQLRES""- executed with errors, see latest logs below - "
-
-		for script in $C_ADMINDB_SQLRES; do
-			LOGS=""
-			for logdir in $C_CONFIG_SOURCE_SQL_LOGDIR/$RELEASE-$C_ENV_ID-$DC-*; do
-				LOGS="$LOGS `find $logdir -name \"$script-*.sql.spool\"`"
-			done
-
-			LAST_LOG=`ls -t $LOGS | head -1`
-			SCRIPT=`echo $LAST_LOG | sed -e 's/.spool//' | sed -e 's/.*\///'`
-			SCRIPT=`echo $SCRIPT | sed -e 's/[0-9]*\([0-9][0-9][0-9]\)/\1/'`
-
-			echo "less $LAST_LOG # *$SCRIPT"
-		done
-	fi
-}
-
 function f_local_execute_db() {
 	local P_DB=$1
 
 	echo manage.sh: execute in DB=$P_DB ...
 	f_env_getxmlserverinfo $DC $P_DB
+	local F_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	local F_TNSNAME="$C_ENV_SERVER_DBTNSNAME"
 	local F_SCHEMALIST="$C_ENV_SERVER_DBSCHEMALIST"
 
-	f_admindb_getreleasestatus $RELEASE $F_TNSNAME
-	if [ "$C_ADMINDB_RELEASESTATUS" = "" ]; then
-		echo $F_TNSNAME: unknown release=$RELEASE. Exiting
-		exit 1
-	fi
-
-	if [ "$EXECUTEMODE" = "rollback" ]; then
-		f_local_execute_tns_rollback $F_TNSNAME
-
-	elif [ "$EXECUTEMODE" = "correct" ]; then
-		f_local_execute_tns_correct $F_TNSNAME
-
-	elif [ "$EXECUTEMODE" = "print" ]; then
-		f_local_execute_tns_print $F_TNSNAME
-	fi
+	./dbmanage.sh $F_DBMSTYPE "$EXECUTEMODE" $RELEASE $F_TNSNAME $S_ALIGNED_ID "$EXECUTE_LIST"
 }
 
 function f_local_execute_all() {
