@@ -15,10 +15,15 @@ if [ "$DC" = "" ]; then
 fi
 
 # check parameters
-RELEASEDIR=$1
-RELEASEFILE=$2
+DB=$1
+RELEASEDIR=$2
+RELEASEFILE=$3
 SYSPWD=$3
 
+if [ "$DB" = "" ]; then
+	echo sqlmanual.sh: invalid DB parameter
+	exit 1
+fi
 if [ "$RELEASEDIR" = "" ]; then
 	echo sqlmanual.sh: invalid RELEASEDIR parameter
 	exit 1
@@ -32,20 +37,6 @@ fi
 
 . ./common.sh
 
-function f_execute_db() {
-	P_DB=$1
-	P_FILE=$2
-
-	f_env_getxmlserverinfo $DC $P_DB
-
-	./tnssys.sh $C_ENV_SERVER_DBMSTYPE $C_ENV_SERVER_DBTNSNAME $P_FILE $SYSPWD
-	F_STATUS=$?
-	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "$F_STATUS" != "0" ]; then
-		echo error executing tnssys.sh db=$P_DB file=$P_FILE. Exiting
-		exit 1
-	fi
-}
-
 function f_execute_all() {
 	f_release_resolverelease "$RELEASEDIR"
 	RELEASEDIR=$C_RELEASE_DISTRID
@@ -57,9 +48,16 @@ function f_execute_all() {
 		exit 1
 	fi
 
+	f_env_getxmlserverinfo $DC $DB
+	local F_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
+	local F_TNSNAME=$C_ENV_SERVER_DBTNSNAME
+
+	f_getdbms_relfolderbytype $F_DBMSTYPE
+	local F_SRCFOLDER=$S_DBMS_VALUE
+
 	local OUTDIR_POSTFIX=`date "+%Y.%m.%d-%0k.%0M.%0S"`
 	local F_RUNDIR
-	local F_SRCDIR=$F_RELEASEDIR/SQL
+	local F_SRCDIR=$F_RELEASEDIR/$F_SRCFOLDER
 	local F_SRCFILE
 	if [ "$GETOPT_ALIGNED" != "" ]; then
 		F_SRCFILE="$F_SRCDIR/aligned/$GETOPT_ALIGNED/manual/$RELEASEFILE"
@@ -79,15 +77,12 @@ function f_execute_all() {
 	local F_DSTFILE=$F_RUNDIR/$RELEASEFILE
 	cp $F_SRCFILE $F_DSTFILE
 
-	# execute in database list
-	f_env_getxmlserverlist_bytype $DC "database"
-	local F_DBLIST="$C_ENV_XMLVALUE"
-
-	for db in $F_DBLIST; do
-		if [ "$GETOPT_DB" = "" ] || [ "$GETOPT_DB" = "$db" ]; then
-			f_execute_db $db $F_DSTFILE
-		fi
-	done
+	./tnssys.sh $F_DBMSTYPE $F_TNSNAME $P_FILE $SYSPWD
+	F_STATUS=$?
+	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "$F_STATUS" != "0" ]; then
+		echo error executing tnssys.sh db=$DB file=$P_FILE. Exiting
+		exit 1
+	fi
 }
 
 f_execute_all
