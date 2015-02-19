@@ -421,7 +421,6 @@ function f_local_execute_check() {
 	local F_UNKNOWNFOLDERS=`ls | egrep -v "($F_COREMASK|$F_SVCMASK)" | tr "\n" " " | sed "s/ $//"`
 
 	if [ "$F_UNKNOWNFOLDERS" != "" ]; then
-
 		echo "sqlprepare.sh: aligned=$P_ALIGNEDNAME - invalid release folders (files): $F_UNKNOWNFOLDERS, expected: $F_COREMASK|$F_SVCMASK"
 
 		for entry in $F_UNKNOWNFOLDERS; do
@@ -431,6 +430,7 @@ function f_local_execute_check() {
 		if [ "$GETOPT_SKIPERRORS" != "yes" ]; then
 			exit 1
 		fi
+
 		S_CHECK_FAILED=yes
 	fi
 
@@ -548,32 +548,24 @@ function f_local_process_uddi_endpoints() {
 		cat $SVCFILE >> $LOCAL_UDDI_FNAME
 	fi
 
-	(
-		echo -- register endpoints
-		echo begin
-	) >> $FNAME_UAT
-	(
-		echo -- register endpoints
-		echo begin
-	) >> $FNAME_PROD
+	f_specific_uddi_begin $FNAME_UAT
+	f_specific_uddi_begin $FNAME_PROD
 
 	cat $LOCAL_UDDI_FNAME | while read line; do
-
 		f_local_split_uddi_comment "$line"
 
 		if [ "$UDDI_MARK" = "UDDI" ]; then
-
 			f_local_check_uddi_endpoints
 			if [ $? = 1 ]; then
 				echo "sqlprepare.sh: invalid UDDI data: key=$UDDI_KEY, UDDI_UAT=$UDDI_UAT, UDDI_PROD=$UDDI_PROD"
 			fi
 
 			if [ "$UDDI_UAT" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
-				echo 	juddi.j3_setup.set_endpoint\( \'$UDDI_KEY\' , \'$UDDI_UAT\' \)\; >> $FNAME_UAT
+				f_specific_uddi_addendpoint $UDDI_KEY $UDDI_UAT $FNAME_UAT
 			fi
 
 			if [ "$UDDI_PROD" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
-				echo 	juddi.j3_setup.set_endpoint\( \'$UDDI_KEY\' , \'$UDDI_PROD\' \)\; >> $FNAME_PROD
+				f_specific_uddi_addendpoint $UDDI_KEY $UDDI_PROD $FNAME_PROD
 			fi
 		fi
 
@@ -591,18 +583,8 @@ function f_local_process_uddi_endpoints() {
 		return 1
 	fi
 
-	(
-		echo commit\;
-		echo end\;
-		echo /
-		echo --
-	) >> $FNAME_UAT
-	(
-		echo commit\;
-		echo end\;
-		echo /
-		echo --
-	) >> $FNAME_PROD
+	f_specific_uddi_end $FNAME_UAT
+	f_specific_uddi_end $FNAME_PROD
 
 	echo sqlprepare.sh: SVCNUM=$P_SVCNUM - UDDI content has been created for endpoints.
 }
@@ -619,14 +601,8 @@ function f_local_process_uddi_smevattrs() {
 
 	cat $SMEVATTRFILE >> $LOCAL_UDDI_FNAME
 
-	(
-		echo -- register smev attributes
-		echo begin
-	) >> $FNAME_UAT
-	(
-		echo -- register smev attributes
-		echo begin
-	) >> $FNAME_PROD
+	f_specific_smevattr_begin $FNAME_UAT
+	f_specific_smevattr_begin $FNAME_PROD
 
 	cat $LOCAL_UDDI_FNAME | while read line; do
 		local line=`echo $line | sed "s/\"/@/g;s/\n//"`
@@ -640,8 +616,8 @@ function f_local_process_uddi_smevattrs() {
 			echo "sqlprepare.sh: invalid string - line=$line"
 		fi
 
-		echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_UAT
-		echo 	juddi.j3_setup.set_endpoint_smev_attributes\( \'$UDDI_ATTR_ID\' , \'$UDDI_ATTR_NAME\' , \'$UDDI_ATTR_CODE\' , \'$UDDI_ATTR_REGION\' , \'$UDDI_ATTR_ACCESSPOINT\' \)\; >> $FNAME_PROD
+		f_specific_smevattr_addvalue $UDDI_ATTR_ID $UDDI_ATTR_NAME $UDDI_ATTR_CODE $UDDI_ATTR_REGION $UDDI_ATTR_ACCESSPOINT $FNAME_UAT
+		f_specific_smevattr_addvalue $UDDI_ATTR_ID $UDDI_ATTR_NAME $UDDI_ATTR_CODE $UDDI_ATTR_REGION $UDDI_ATTR_ACCESSPOINT $FNAME_PROD
 	done
 
 	if [ `cat $FNAME_UAT | grep set_endpoint_smev_attributes | grep -c "''" ` -ne 0 ]; then
@@ -656,18 +632,8 @@ function f_local_process_uddi_smevattrs() {
 		return 1
 	fi
 
-	(
-		echo commit\;
-		echo end\;
-		echo /
-		echo --
-	) >> $FNAME_UAT
-	(
-		echo commit\;
-		echo end\;
-		echo /
-		echo --
-	) >> $FNAME_PROD
+	f_specific_smevattr_end $FNAME_UAT
+	f_specific_smevattr_end $FNAME_PROD
 
 	echo sqlprepare.sh: SVCNUM=$P_SVCNUM - UDDI content has been created for smev attributes.
 }
@@ -756,7 +722,7 @@ function f_local_execute_uddi() {
 		mkdir -p $P_TARGETDIR/svcrun
 		echo $P_UDDIDIR/svcdic...
 		if [ -f $P_UDDIDIR/svcdic/extdicuddi.txt ]; then
-			grep -he "-- UDDI" $P_UDDIDIR/svcdic/extdicuddi.txt > $SRC_DICFILE_EP
+			f_specific_grepcomments "UDDI" $P_UDDIDIR/svcdic/extdicuddi.txt > $SRC_DICFILE_EP
 		fi
 	fi
 
@@ -772,30 +738,27 @@ function f_local_execute_uddi() {
 		for script in $( find $P_UDDIDIR/svcspec -name *.sql | sort ); do
 
 			# extract required smev attributes
-			grep -he "-- SMEVATTR" $script >> $SRC_SMEVATTRFILE
+			f_specific_grepcomments "SMEVATTR" $script >> $SRC_SMEVATTRFILE
 
 			# extract required uddi endpoints
 			F_CHECK_FAILED_KEYS=""
-			grep -he "-- UDDI" $script | (
-			    while read line; do
-
-				f_local_split_uddi_comment "$line"
-
-				f_local_check_uddi_endpoints
-				if [ $? = 1 ]; then
-					F_CHECK_FAILED_KEYS="$F_CHECK_FAILED_KEYS, $UDDI_KEY"
-				fi
-			    done
+			f_specific_grepcomments "UDDI" $script | (
+				while read line; do
+					f_local_split_uddi_comment "$line"
+					f_local_check_uddi_endpoints
+					if [ $? = 1 ]; then
+						F_CHECK_FAILED_KEYS="$F_CHECK_FAILED_KEYS, $UDDI_KEY"
+					fi
+				done
 	
-			    if [ ! -z "$F_CHECK_FAILED_KEYS" ]; then
-
-				F_CHECK_FAILED_KEYS=${F_CHECK_FAILED_KEYS:2} # trim leading ', '
-				F_ONEFAILED_MSG="invalid UDDI comment: missing PROD or UAT endpoint for keys: $F_CHECK_FAILED_KEYS"
-				f_local_move_errors $P_ALIGNEDNAME $P_ALIGNEDID $script "$F_ONEFAILED_MSG"
-			    fi
+				if [ ! -z "$F_CHECK_FAILED_KEYS" ]; then
+					F_CHECK_FAILED_KEYS=${F_CHECK_FAILED_KEYS:2} # trim leading ', '
+					F_ONEFAILED_MSG="invalid UDDI comment: missing PROD or UAT endpoint for keys: $F_CHECK_FAILED_KEYS"
+					f_local_move_errors $P_ALIGNEDNAME $P_ALIGNEDID $script "$F_ONEFAILED_MSG"
+				fi
 			)
 
-			grep -he "-- UDDI" $script >> $SRC_SVCFILE_EP # may output "No such file" message if script moved to errors
+			f_specific_grepcomments "UDDI" $script >> $SRC_SVCFILE_EP # may output "No such file" message if script moved to errors
 		done
 	fi
 
@@ -812,8 +775,8 @@ function f_local_execute_uddi() {
 	mkdir -p `dirname $DST_FNAME_UAT`
 	mkdir -p `dirname $DST_FNAME_PROD`
 
-	echo -- UAT UDDI setup script > $DST_FNAME_UAT
-	echo -- PROD UDDI setup script > $DST_FNAME_PROD
+	f_specific_addcomment "UAT UDDI setup script" > $DST_FNAME_UAT
+	f_specific_addcomment "PROD UDDI setup script" > $DST_FNAME_PROD
 
 	# process endpoints
 	if [ "$S_DIC_CONTENT" = "yes" ] || [ "$S_SVC_CONTENT" = "yes" ]; then
