@@ -151,13 +151,15 @@ function f_local_execute_db() {
 	local P_SRCDIR=$2
 	local P_RUNDIR=$3
 	local P_OUTDIR_POSTFIX=$4
-	local P_ALIGNEDDIRLIST="$5"
 
-	# get db info, default align is dc
+	# get db info
 	f_env_getxmlserverinfo $DC $P_DB
 	local F_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	local F_TNSNAME=$C_ENV_SERVER_DBTNSNAME
 	local F_DBALIGNEDDIRLIST="$C_ENV_SERVER_ALIGNED"
+	local F_REGIONS="$C_ENV_SERVER_DBREGIONS"
+
+	# default aligned is dc
 	if [ "$F_DBALIGNEDDIRLIST" = "" ]; then
 		F_DBALIGNEDDIRLIST="$DC"
 	fi
@@ -166,21 +168,28 @@ function f_local_execute_db() {
 		F_DBALIGNEDDIRLIST="$F_DBALIGNEDDIRLIST regional"
 	fi
 
-	f_getsubsetexact "$P_ALIGNEDDIRLIST" "$F_DBALIGNEDDIRLIST"
-	local F_USEALIGNEDDIRLIST=$C_COMMON_SUBSET
-
 	# prepare source scripts to run
 	f_getdbms_relfolderbytype $F_DBMSTYPE
 	local F_SRCFOLDER=$S_DBMS_VALUE
 
+	# get release aligned dir list
+	local F_SRCDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR/$F_SRCFOLDER
+	local F_ALIGNEDDIRLIST=
+	if [ -d $F_SRCDIR/aligned ]; then
+		local F_SAVEDIR=`pwd`
+		cd $F_SRCDIR/aligned
+
+		F_ALIGNEDDIRLIST=`find . -maxdepth 1 -type d | grep -v "^.$" | sed "s/.\///" | sort | tr "\n" " "`
+		F_ALIGNEDDIRLIST=${F_ALIGNEDDIRLIST% }
+
+		cd $F_SAVEDIR
+	fi
+
+	f_getsubsetexact "$F_ALIGNEDDIRLIST" "$F_DBALIGNEDDIRLIST"
+	local F_USEALIGNEDDIRLIST=$C_COMMON_SUBSET
+
 	f_local_createrundirall $P_SRCDIR/$F_SRCFOLDER $P_RUNDIR "$F_USEALIGNEDDIRLIST" "$C_ENV_SERVER_DBREGIONS"
 
-	# derived schema list
-	local F_REGIONS=
-	if [ "$C_ENV_SERVER_DBREGIONS" != "" ]; then
-		F_REGIONS="$C_ENV_SERVER_DBREGIONS"
-	fi
-	
 	# apply
 	echo "apply release=$S_SQLAPPLY_RELEASE_BASEDIR to db=$P_DB: common, alignedlist=$F_USEALIGNEDDIRLIST ..."
 
@@ -255,19 +264,6 @@ function f_local_execute_all() {
 		F_DBLIST="$GETOPT_DB"
 	fi
 
-	# get aligned dir list
-	local F_SRCDIR=$C_CONFIG_DISTR_PATH/$RELEASEDIR/SQL
-	local F_ALIGNEDDIRLIST=
-	if [ -d $F_SRCDIR/aligned ]; then
-		local F_SAVEDIR=`pwd`
-		cd $F_SRCDIR/aligned
-
-		F_ALIGNEDDIRLIST=`find . -maxdepth 1 -type d | grep -v "^.$" | sed "s/.\///" | sort | tr "\n" " "`
-		F_ALIGNEDDIRLIST=${F_ALIGNEDDIRLIST% }
-
-		cd $F_SAVEDIR
-	fi
-
 	# create run dirs
 	local OUTDIR_POSTFIX=`date "+%Y.%m.%d-%0k.%0M.%0S"`
 	local F_RUNDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/$S_SQLAPPLY_RELEASE_BASEDIR-$C_ENV_ID-$DC-$OUTDIR_POSTFIX
@@ -275,7 +271,7 @@ function f_local_execute_all() {
 	# execute
 	echo sqlapply.sh: execute scripts dblist=$F_DBLIST, alignedlist=$F_ALIGNEDDIRLIST ...
 	for db in $F_DBLIST; do
-		f_local_execute_db $db $S_SQLAPPLY_RELEASE_SRCDIR $F_RUNDIR/$db $OUTDIR_POSTFIX "$F_ALIGNEDDIRLIST"
+		f_local_execute_db $db $S_SQLAPPLY_RELEASE_SRCDIR $F_RUNDIR/$db $OUTDIR_POSTFIX
 	done
 }
 
