@@ -23,7 +23,7 @@ if [ "$ALIGNEDID" = "" ]; then
 	exit 1
 fi
 
-EXECUTE_LIST="$6"
+EXECUTE_PARAMS="$6"
 
 . ./specific/$DBMSTYPE.sh
 . ./common.sh
@@ -31,12 +31,12 @@ EXECUTE_LIST="$6"
 
 # execute
 function f_local_execute_tns_rollback() {
-	if [ "$EXECUTE_LIST" = "" ]; then
+	if [ "$EXECUTE_PARAMS" = "" ]; then
 		echo $TNSNAME: drop release $RELEASE...
 		f_admindb_droprelease $DBMSTYPE $RELEASE $TNSNAME
 	else
 		echo $TNSNAME: drop release $RELEASE items ...
-		f_admindb_dropreleaseitems $DBMSTYPE $RELEASE $TNSNAME "$EXECUTE_LIST" $ALIGNEDID
+		f_admindb_dropreleaseitems $DBMSTYPE $RELEASE $TNSNAME "$EXECUTE_PARAMS" $ALIGNEDID
 	fi
 
 	# finish release
@@ -44,12 +44,12 @@ function f_local_execute_tns_rollback() {
 }
 
 function f_local_execute_tns_correct() {
-	if [ "$EXECUTE_LIST" = "" ]; then
+	if [ "$EXECUTE_PARAMS" = "" ]; then
 		echo $TNSNAME: correct release $RELEASE...
 		f_admindb_fixreleaseall $DBMSTYPE $RELEASE $TNSNAME
 	else
 		echo $TNSNAME: correct release $RELEASE items...
-		f_admindb_fixreleaseitems $DBMSTYPE $RELEASE $TNSNAME "$EXECUTE_LIST" $ALIGNEDID
+		f_admindb_fixreleaseitems $DBMSTYPE $RELEASE $TNSNAME "$EXECUTE_PARAMS" $ALIGNEDID
 	fi
 
 	# finish release
@@ -80,6 +80,28 @@ function f_local_execute_tns_print() {
 	fi
 }
 
+function f_local_execute_execbefore() {
+	local P_RUNDIR=$1
+	local P_OUTDIR_POSTFIX=$2
+
+	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
+	f_check_db_connect $DBMSTYPE $TNSNAME $C_CONFIG_SCHEMAADMIN
+
+	# create initial status file
+	local F_STATUSFILE=$P_RUNDIR/status.before.$TNSNAME.$P_OUTDIR_POSTFIX.txt
+	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $F_STATUSFILE
+}
+
+function f_local_execute_execbefore() {
+	local P_RUNDIR=$1
+	local P_OUTDIR_POSTFIX=$2
+
+	# create final status file
+	local F_STATUSFILE=$P_RUNDIR/status.after.$TNSNAME.$P_OUTDIR_POSTFIX.txt
+	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $F_STATUSFILE
+	f_admindb_checkandfinishrelease $DBMSTYPE $RELEASE $TNSNAME
+}
+
 function f_local_execute_all() {
 	f_admindb_getreleasestatus $DBMSTYPE $RELEASE $TNSNAME
 	if [ "$C_ADMINDB_RELEASESTATUS" = "" ]; then
@@ -96,7 +118,17 @@ function f_local_execute_all() {
 	elif [ "$OP" = "print" ]; then
 		f_local_execute_tns_print
 
+	elif [ "$OP" = "execbefore" ]; then
+		f_local_execute_execbefore $EXECUTE_PARAMS
+
+	elif [ "$OP" = "execafter" ]; then
+		f_local_execute_execafter $EXECUTE_PARAMS
+
+	else
+		echo unknown operation=$OP. Exiting
+		exit 1
 	fi	
 }
 
 f_local_execute_all
+exit 0
