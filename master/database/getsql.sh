@@ -70,15 +70,13 @@ function f_execute_checkparams() {
 	fi
 }
 
-function f_execute_all() {
-	f_execute_checkparams
+function f_execute_dbms() {
+	local P_DBMSTYPE=$1
+	local P_DBMSFOLDER=$2
+	local P_RELEASEFOLDER=$3
 
-	echo getting scripts from $S_SQL_SRCDIR to $S_GETSQL_TMP/$APP_VERSION_SQL ...
-
-	rm -rf $S_GETSQL_TMP
-	mkdir -p $S_GETSQL_TMP
-
-	svn export $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR/sql $S_GETSQL_TMP/$APP_VERSION_SQL > /dev/null
+	echo download from $S_SQL_SRCDIR/$P_DBMSFOLDER ...
+	svn export $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR/$P_DBMSFOLDER $S_GETSQL_TMP/$APP_VERSION_SQL > /dev/null
 	if [ $? -ne 0 ]; then
 		echo getsql.sh: unsuccessful svn export. Exiting
 		exit 1
@@ -92,11 +90,11 @@ function f_execute_all() {
 	echo preparing scripts from $S_GETSQL_TMP/$APP_VERSION_SQL to $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED ...
 
 	date > ./sqlprepare.out.txt
-	echo "processing SQL scripts from svn ($APP_VERSION_SQL) to $APP_VERSION_SQLPREPARED ..." >> ./sqlprepare.out.txt
+	echo "processing $P_DBMSTYPE scripts from svn ($APP_VERSION_SQL) to $APP_VERSION_SQLPREPARED ..." >> ./sqlprepare.out.txt
 	echo "" >> ./sqlprepare.out.txt
 
 	mkdir -p $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED
-	./sqlprepare.sh $S_GETSQL_TMP/$APP_VERSION_SQL $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED $S_SQL_SRCDIR | tee -a ./sqlprepare.out.txt
+	./sqlprepare.sh $P_DBMSTYPE $S_GETSQL_TMP/$APP_VERSION_SQL $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED $S_SQL_SRCDIR | tee -a ./sqlprepare.out.txt
 	STATUS=$PIPESTATUS # avalable in sh and bash - from http://stackoverflow.com/questions/985876/tee-and-exit-status
 
 	if [ $STATUS -ne 0 ]; then
@@ -107,19 +105,54 @@ function f_execute_all() {
 		# Copy to distibutive
 		if [ "$GETOPT_NODIST" != "yes" ]; then
 			echo
-			echo copying $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED to $C_CONFIG_DISTR_PATH/$S_RELEASE/SQL ...
-			rm -rf $C_CONFIG_DISTR_PATH/$S_RELEASE/SQL
-			mkdir -p $C_CONFIG_DISTR_PATH/$S_RELEASE/SQL
+			echo copying $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED to $C_CONFIG_DISTR_PATH/$S_RELEASE/$P_RELEASEFOLDER ...
+			rm -rf $C_CONFIG_DISTR_PATH/$S_RELEASE/$P_RELEASEFOLDER
+			mkdir -p $C_CONFIG_DISTR_PATH/$S_RELEASE/$P_RELEASEFOLDER
+
 			if [ "`ls $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED`" = "" ]; then
 				echo "release script set is empty, no files found."
 			else
-				cp -R $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED/* $C_CONFIG_DISTR_PATH/$S_RELEASE/SQL
+				cp -R $S_GETSQL_TMP/$APP_VERSION_SQLPREPARED/* $C_CONFIG_DISTR_PATH/$S_RELEASE/$P_RELEASEFOLDER
 			fi
 		fi
 	fi
 
 	# remove temporary directories
 	rm -rf $S_GETSQL_TMP
+}
+
+function f_execute_all() {
+	f_execute_checkparams
+
+	echo getting scripts from $S_SQL_SRCDIR to $S_GETSQL_TMP/$APP_VERSION_SQL ...
+
+	rm -rf $S_GETSQL_TMP
+	mkdir -p $S_GETSQL_TMP
+
+	folders=`svn list $C_CONFIG_SVNOLD_AUTH $S_SQL_SRCDIR $S_GETSQL_TMP/$APP_VERSION_SQL | egrep "^sql/|^pgsql/"`
+	if [ "$?" != "0" ]; then
+		echo unable to access release at $S_SQL_SRCDIR. Exiting
+		exit 1
+	fi
+
+	local F_DBMSTYPE
+	local F_RELEASEFOLDER
+	for folder in $folders; do
+		if [ "$folder" = "sql/" ]; then
+			F_DBMSTYPE=oracle
+			F_RELEASEFOLDER=SQL
+
+		elif [ "$folder" = "pgsql/" ]; then
+			F_DBMSTYPE=postgres
+			F_RELEASEFOLDER=PGSQL
+
+		else
+			echo unknown dbms folder=$folder. Exiting
+			exit 1
+		fi
+
+		f_execute_dbms $F_DBMSTYPE $folder $F_RELEASEFOLDER
+	done
 }
 
 f_execute_all
