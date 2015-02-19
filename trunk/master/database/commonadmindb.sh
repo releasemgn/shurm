@@ -37,7 +37,7 @@ function f_admindb_add_beginscriptstatus() {
 	local P_SCRIPTNAME=$4
 	local P_SCRIPTNUM=$5
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	local F_SCHEMA=`echo $P_SCHEMA | tr '[a-z]' '[A-Z]'`
 
@@ -52,7 +52,7 @@ function f_admindb_add_updatescripttime() {
 	local P_SCHEMA=$3
 	local P_SCRIPTNUM=$4
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
 
@@ -68,9 +68,9 @@ function f_admindb_beginscriptstatus() {
 	local P_SCRIPTNAME=$5
 	local P_SCRIPTNUM=$6
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
-	local F_CTLSQL="`f_admindb_add_beginscriptstatus $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`"
+	local F_CTLSQL="`f_admindb_add_beginscriptstatus $P_DBMSTYPE $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`"
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
 	f_exec_limited 60 "(
@@ -93,7 +93,7 @@ function f_admindb_updatescriptstatus() {
 	local P_SCRIPTNUM=$6
 	local P_STATUS=$7
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
 
@@ -129,7 +129,7 @@ function f_admindb_check_scriptstatus() {
 		local F_NOZERO=`echo $P_SCRIPTNUM | sed "s/^0*//"`
 		X_STATUS=`cat $GETOPT_STATUSFILE | grep "^$F_NOZERO=" | cut -d "=" -f2`
 	else
-		f_admindb_parsereleasenumber $P_RELEASE
+		f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 		local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
 
@@ -169,7 +169,7 @@ function f_admindb_get_scriptstatusall() {
 	local P_STATUSFILE=$4
 
 	echo $P_DB_TNS_NAME: create status file $P_STATUSFILE ...
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 
@@ -197,7 +197,7 @@ function f_admindb_delete_scriptstatus() {
 	local P_SCRIPTNUM=$4
 	local P_SCHEMA=$5
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
 	f_exec_limited 60 "(
@@ -220,7 +220,7 @@ function f_admindb_getreleasestatus() {
 	local P_RELEASE=$2
 	local P_DB_TNS_NAME=$3
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 
@@ -271,7 +271,7 @@ function f_admindb_beginrelease() {
 		return 1
 	fi
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	# INSERT into $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES
 	echo add release...
@@ -294,7 +294,7 @@ function f_admindb_finishrelease() {
 	local P_RELEASE=$2
 	local P_DB_TNS_NAME=$3
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 	f_exec_limited 60 "(
@@ -314,7 +314,7 @@ function f_admindb_droprelease() {
 	local P_RELEASE=$2
 	local P_DB_TNS_NAME=$3
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 	f_exec_limited 60 "(
@@ -339,7 +339,7 @@ function f_admindb_dropreleaseitems() {
 	local P_IDLIST="$4"
 	local P_ALIGNEDID=$5
 
-	f_admindb_parsereleasenumber $P_RELEASE "$P_IDLIST"
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE "$P_IDLIST"
 
 	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
 	F_ORACLEMASK="$S_SQL_LISTMASK"
@@ -365,10 +365,10 @@ function f_admindb_checkandfinishrelease() {
 	local P_DB_TNS_NAME=$3
 
 	# finish release status
-	f_admindb_getreleasestatus $P_RELEASE $P_DB_TNS_NAME
+	f_admindb_getreleasestatus $P_DBMSTYPE $P_RELEASE $P_DB_TNS_NAME
 
 	if [ "$C_ADMINDB_NOT_APPLIED_SCIPTS_COUNT" = "0" ] || [ "$GETOPT_SKIPERRORS" = "yes" ]; then
-		f_admindb_finishrelease $P_RELEASE $P_DB_TNS_NAME
+		f_admindb_finishrelease $P_DBMSTYPE $P_RELEASE $P_DB_TNS_NAME
 		echo "$P_DB_TNS_NAME: release $P_RELEASE is finalized." 
 	else
 		echo ""
@@ -381,7 +381,7 @@ function f_admindb_fixreleaseall() {
 	local P_RELEASE=$2
 	local P_DB_TNS_NAME=$3
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 	f_exec_limited 60 "(
@@ -405,7 +405,7 @@ function f_admindb_fixreleaseitems() {
 	local P_IDLIST="$4"
 	local P_ALIGNEDID=$5
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
 	F_ORACLEMASK="$S_SQL_LISTMASK"
@@ -432,7 +432,7 @@ function f_admindb_getreleasefailed() {
 
 	local F_IDLIST=`echo $P_IDLIST | sed "s/ /,/g"`
 
-	f_admindb_parsereleasenumber $P_RELEASE
+	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 	f_exec_limited 60 "(
