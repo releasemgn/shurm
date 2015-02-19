@@ -92,7 +92,7 @@ function f_local_execute_execbefore() {
 	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $F_STATUSFILE
 }
 
-function f_local_execute_execbefore() {
+function f_local_execute_execafter() {
 	local P_RUNDIR=$1
 	local P_OUTDIR_POSTFIX=$2
 
