@@ -81,24 +81,20 @@ function f_local_execute_tns_print() {
 }
 
 function f_local_execute_execbefore() {
-	local P_RUNDIR=$1
-	local P_OUTDIR_POSTFIX=$2
+	local P_STATUSFILE=$1
 
 	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
 	f_check_db_connect $DBMSTYPE $TNSNAME $C_CONFIG_SCHEMAADMIN
 
 	# create initial status file
-	local F_STATUSFILE=$P_RUNDIR/status.before.$TNSNAME.$P_OUTDIR_POSTFIX.txt
-	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $F_STATUSFILE
+	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $P_STATUSFILE
 }
 
 function f_local_execute_execafter() {
-	local P_RUNDIR=$1
-	local P_OUTDIR_POSTFIX=$2
+	local P_STATUSFILE=$1
 
 	# create final status file
-	local F_STATUSFILE=$P_RUNDIR/status.after.$TNSNAME.$P_OUTDIR_POSTFIX.txt
-	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $F_STATUSFILE
+	f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $TNSNAME $P_STATUSFILE
 	f_admindb_checkandfinishrelease $DBMSTYPE $RELEASE $TNSNAME
 }
 
