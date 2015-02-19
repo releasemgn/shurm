@@ -27,6 +27,7 @@ fi
 
 # execute
 
+. ./specific/$DBMSTYPE.sh
 . ./common.sh
 
 S_CHECK_FAILED=no
@@ -36,16 +37,15 @@ function f_local_check_sql() {
 	local P_ALIGNEDNAME=$1
 	local P_SCRIPT=$2
 
-	local WRONG_END=`sed '/^$/d' $P_SCRIPT | tail -2 | tr -d "\\n\\r" | tr -d " " | tr '[a-z]' '[A-Z]' | grep -ce "END;\$"`
-	if [[ "$WRONG_END" != "0" ]]; then
-		S_CHECK_SQL_MSG="no trailing slash on BEGIN-END block, sqlplus may hang - $script (END;)"
+	f_specific_validate_content $P_SCRIPT
+	if [ "$?" != 0 ]; then
 		return 1
 	fi
 
 	# check if regional
 	if [ "$P_ALIGNEDNAME" = "regional" ]; then
-		local F_REGIONS=`grep "^\-\- REGIONS " $P_SCRIPT`
-		if [ "$F_REGIONS" = "" ]; then
+		f_specific_getcomments $P_SCRIPT "REGIONS " 
+		if [ "$S_SPECIFIC_COMMENT" = "" ]; then
 			S_CHECK_SQL_MSG="script should have REGIONS header property - $P_SCRIPT"
 			return 1
 		fi
