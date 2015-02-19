@@ -266,7 +266,7 @@ function f_admindb_beginrelease() {
 
 	# check release is new
 	echo check release status...
-	f_admindb_getreleasestatus $P_RELEASE $P_DB_TNS_NAME
+	f_admindb_getreleasestatus $P_DBMSTYPE $P_RELEASE $P_DB_TNS_NAME
 	if [ "$C_ADMINDB_RELEASESTATUS" != "" ]; then
 		return 1
 	fi
