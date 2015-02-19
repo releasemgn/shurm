@@ -3,7 +3,7 @@
 
 #D=echo
 
-USAGE="Usage: `basename $0` -afxr(apply, force apply, execute anyway, rollback) [-s (skip errors)] <TNSNAME> <OUTDIR_POSTFIX> <RELEASE> <FILE_NAME.sql>"
+USAGE="Usage: `basename $0` -afxr(apply, force apply, execute anyway, rollback) [-s (skip errors)] <DBMSTYPE> <TNSNAME> <OUTDIR_POSTFIX> <RELEASE> <FILE_NAME.sql>"
 
 SCRIPTDIR=`dirname $0`
 cd $SCRIPTDIR
@@ -71,7 +71,7 @@ function f_local_check_beforeexecute() {
 	fi
 }
 
-function f_local_execute() {
+function f_local_execute_apply() {
 	# first time applied or skip error
 	if [ "$C_ADMINDB_SCRIPT_STATUS" = "new" ] && ( [ $GETOPT_EXECUTEMODE = "apply" ] || [ $GETOPT_EXECUTEMODE = "anyway" ] ); then
 		(
@@ -131,5 +131,9 @@ function f_local_execute() {
 	fi
 }
 
-f_local_check_beforeexecute
+function f_local_execute() {
+	f_local_check_beforeexecute
+	f_local_execute_apply
+}
+
 f_local_execute

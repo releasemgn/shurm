@@ -32,7 +32,6 @@ function f_execute_all() {
 	mkdir $F_EXECUTE_DIR
 
 	# create contents
-	# create contents
 	cp datapump/* $F_EXECUTE_DIR/
 	cp specific/$F_DBMSTYPE.sh $F_EXECUTE_DIR/
 	cp specific/datapump/$F_DBMSTYPE/* $F_EXECUTE_DIR/
