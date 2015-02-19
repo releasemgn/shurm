@@ -194,7 +194,7 @@ function f_local_execute_db() {
 	echo "apply release=$S_SQLAPPLY_RELEASE_BASEDIR to db=$P_DB: common, alignedlist=$F_USEALIGNEDDIRLIST ..."
 
 	./dbmanage.sh $F_DBMSTYPE "execbefore" $S_SQLAPPLY_RELEASE_ID $F_TNSNAME "ignore" "$P_RUNDIR $P_OUTDIR_POSTFIX"
-	if [ "$?" != "" ]; then
+	if [ "$?" != "0" ]; then
 		echo unsuccessful dbmanage.sh. Exiting
 		exit 1
 	fi
@@ -237,7 +237,7 @@ function f_local_execute_db() {
 	echo "sqlapply.sh: =================================== finish release in db=$P_DB"
 
 	./dbmanage.sh $F_DBMSTYPE "execafter" $S_SQLAPPLY_RELEASE_ID $F_TNSNAME "ignore" "$P_RUNDIR $P_OUTDIR_POSTFIX"
-	if [ "$?" != "" ]; then
+	if [ "$?" != "0" ]; then
 		echo unsuccessful dbmanage.sh. Exiting
 		exit 1
 	fi
