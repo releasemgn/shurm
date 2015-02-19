@@ -1,7 +1,5 @@
 #!/bin/bash 
-# Copyright 2011-2013 vsavchik@gmail.com
-
-USAGE="Usage: `basename $0` -afxr(apply, force apply, execute anyway, rollback) [-s (skip errors)] [-l (load data using sqlldr)] <DC> <DB> <OUTDIR_POSTFIX> <RELEASE> <SQLDIRECTORY> [<INDEXLIST>]"
+# Copyright 2011-2015 vsavchik@gmail.com
 
 SCRIPTDIR=`dirname $0`
 cd $SCRIPTDIR
@@ -14,14 +12,19 @@ if [ "$GETOPT_EXECUTEMODE" = "" ]; then
 	exit 1
 fi
 
-DC=$1
-DB=$2
-OUTDIR_POSTFIX=$3
-RELEASE=$4
-SQLDIRECTORY=$5
-ALIGNEDID=$6
+DBMSTYPE=$1
+DC=$2
+DB=$3
+OUTDIR_POSTFIX=$4
+RELEASE=$5
+SQLDIRECTORY=$6
+ALIGNEDID=$7
 
 # check parameters
+if [ "$DBMSTYPE" = "" ]; then
+	echo sqlexecall.sh: invalid DBMSTYPE parameter
+	exit 1
+fi
 if [ "$DC" = "" ]; then
 	echo sqlexecall.sh: invalid DC parameter
 	exit 1
@@ -47,7 +50,7 @@ if [ "$ALIGNEDID" = "" ]; then
 	exit 1
 fi
 
-shift 6
+shift 7
 EXECUTE_LIST=$*
 if [ "$EXECUTE_LIST" = "" ]; then
 	echo "sqlexecall.sh: execute all release scripts ..."
@@ -57,13 +60,13 @@ fi
 
 # execute
 
+. ./specific/$DBMSTYPE.sh
 . ./common.sh
 . ./commonadmindb.sh
 
 S_FOLDERLIST=
 S_RELSCHEMALIST=
 S_USESCHEMALIST=
-S_DBMSTYPE=
 S_TNSNAME=
 S_TNSSCHEMALIST=
 S_SQLEXECLISTMASK=
@@ -80,7 +83,7 @@ function f_local_tnsexec_sh {
 		fi
 	fi
 
-	./tnsexec.sh -statusfile $S_STATUSFILE $S_DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
+	./tnsexec.sh -statusfile $S_STATUSFILE $DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_SCRIPT
 	RET=$?
 
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "${RET}" != "0" ]; then
@@ -100,7 +103,7 @@ function f_local_tnsldr_sh {
 		fi
 	fi
 
-	./tnsldr.sh -statusfile $S_STATUSFILE $S_DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_FILE
+	./tnsldr.sh -statusfile $S_STATUSFILE $DBMSTYPE $S_TNSNAME $OUTDIR_POSTFIX $RELEASE $P_FILE
 	local RET=$?
 
 	if [ "$GETOPT_SKIPERRORS" != "yes" ] && [ "${RET}" != "0" ]; then
@@ -199,7 +202,6 @@ function f_local_getenvinfo() {
 
 	# check db and get used schema list
 	f_env_getxmlserverinfo $DC $DB
-	S_DBMSTYPE=$C_ENV_SERVER_DBMSTYPE
 	S_TNSNAME=$C_ENV_SERVER_DBTNSNAME
 	S_TNSSCHEMALIST=$C_ENV_SERVER_DBSCHEMALIST
 
@@ -218,12 +220,12 @@ function f_local_check() {
 	echo check connect to $S_TNSNAME...
 
 	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
-	f_check_db_connect $S_TNSNAME $C_CONFIG_SCHEMAADMIN
+	f_check_db_connect $DBMSTYPE $S_TNSNAME $C_CONFIG_SCHEMAADMIN
 
 	local schema
 	for schema in $S_USESCHEMALIST; do
 		echo check schema=$schema ...
-		f_check_db_connect $S_TNSNAME $schema
+		f_check_db_connect $DBMSTYPE $S_TNSNAME $schema
 	done
 }
 
@@ -278,7 +280,7 @@ function f_local_apply {
 
 function f_local_applyall() {
 	echo apply all scripts release=$RELEASE from $SQLDIRECTORY to $S_TNSNAME ...
-	f_admindb_beginrelease $RELEASE $S_TNSNAME
+	f_admindb_beginrelease $DBMSTYPE $RELEASE $S_TNSNAME
 
 	# apply scripts
 	for fdir in $S_FOLDERLIST; do
@@ -316,7 +318,7 @@ function f_local_executeall() {
 		S_STATUSFILE=$GETOPT_STATUSFILE
 	else
 		S_STATUSFILE=$SQLDIRECTORY/status.before.$S_TNSNAME.$OUTDIR_POSTFIX.txt
-		f_admindb_get_scriptstatusall $RELEASE $S_TNSNAME $S_STATUSFILE
+		f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $S_TNSNAME $S_STATUSFILE
 	fi
 
 	f_local_applyall
@@ -324,8 +326,8 @@ function f_local_executeall() {
 	# create final status file
 	if [ "$GETOPT_STATUSFILE" = "" ]; then
 		local F_STATUSFILE=$SQLDIRECTORY/status.after.$S_TNSNAME.$OUTDIR_POSTFIX.txt
-		f_admindb_get_scriptstatusall $RELEASE $S_TNSNAME $F_STATUSFILE
-		f_admindb_checkandfinishrelease $RELEASE $S_TNSNAME
+		f_admindb_get_scriptstatusall $DBMSTYPE $RELEASE $S_TNSNAME $F_STATUSFILE
+		f_admindb_checkandfinishrelease $DBMSTYPE $RELEASE $S_TNSNAME
 	fi
 }
 
