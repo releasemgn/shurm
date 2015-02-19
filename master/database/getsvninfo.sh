@@ -8,6 +8,11 @@ cd $SCRIPTDIR
 . ./getopts.sh
 
 APP_VERSION_SQL=$1
+if [ "$APP_VERSION_SQL" = "" ]; then
+	echo getsql.sh: missing APP_VERSION_SQL parameter
+	exit 1
+fi
+
 APP_VERSION_SQL_MAJOR=$2
 
 . ./common.sh
@@ -15,12 +20,6 @@ APP_VERSION_SQL_MAJOR=$2
 S_GETSVNINFO_TMP="/tmp/$HOSTNAME.$USER.getsvninfo.p$$"
 
 function f_execute_checkparams() {
-	# check parameters
-	if [ "$APP_VERSION_SQL" = "" ]; then
-		echo getsql.sh: invalid APP_VERSION_SQL parameter
-		exit 1
-	fi
-
 	if [ "$APP_VERSION_SQL_MAJOR" = "" ]; then
 		APP_VERSION_SQL_MAJOR=$C_CONFIG_RELEASE_GROUPFOLDER
 	fi
