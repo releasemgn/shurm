@@ -100,10 +100,12 @@ function f_local_execute_execafter() {
 }
 
 function f_local_execute_all() {
-	f_admindb_getreleasestatus $DBMSTYPE $RELEASE $TNSNAME
-	if [ "$C_ADMINDB_RELEASESTATUS" = "" ]; then
-		echo $F_TNSNAME: unknown release=$RELEASE. Exiting
-		exit 1
+	if [ "$OP" != "execbefore" ]; then
+		f_admindb_getreleasestatus $DBMSTYPE $RELEASE $TNSNAME
+		if [ "$C_ADMINDB_RELEASESTATUS" = "" ]; then
+			echo $F_TNSNAME: unknown release=$RELEASE. Exiting
+			exit 1
+		fi
 	fi
 
 	if [ "$OP" = "rollback" ]; then
