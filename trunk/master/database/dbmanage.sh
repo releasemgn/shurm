@@ -84,6 +84,7 @@ function f_local_execute_execbefore() {
 	local P_STATUSFILE=$1
 
 	echo check admin schema=$C_CONFIG_SCHEMAADMIN ...
+	f_admindb_beginrelease $DBMSTYPE $RELEASE $TNSNAME
 	f_check_db_connect $DBMSTYPE $TNSNAME $C_CONFIG_SCHEMAADMIN
 
 	# create initial status file

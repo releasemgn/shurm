@@ -280,8 +280,6 @@ function f_local_apply {
 
 function f_local_applyall() {
 	echo apply all scripts release=$RELEASE from $SQLDIRECTORY to $S_TNSNAME ...
-	f_admindb_beginrelease $DBMSTYPE $RELEASE $S_TNSNAME
-
 	# apply scripts
 	for fdir in $S_FOLDERLIST; do
 		echo execute scripts - $fdir ...
