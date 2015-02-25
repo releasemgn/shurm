@@ -232,7 +232,7 @@ generic data import sequence is:
 1. disable constraints referencing loaded data
 2. truncate data if any
 3. load data for all dumps except C_ENV_CONFIG_METAONLYSCHEMALIST
-4. enable constrains and rebuild indexes
+4. enable constraints and rebuild indexes
 
 generic post-refresh sequence is:
 1. iterate C_ENV_CONFIG_POSTREFRESH items, next steps - for every item
