@@ -225,7 +225,7 @@ generic meta import sequence is:
 3. drop schemas and their objects
 4. recreate tablespaces (if C_ENV_CONFIG_RECREATETABLESPACES is set to yes)
 5. load meta and role dumps
-6. recreate all indexes and constrains
+6. recreate all indexes and constraints
 7. make database available for connections
 
 generic data import sequence is:
