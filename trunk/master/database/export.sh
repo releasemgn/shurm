@@ -23,7 +23,7 @@ function f_execute_all() {
 
 	# check server and define database type
 	f_get_dbmstype $F_CONFIGPATH
-	local F_DBMSTYPE=S_DBMS_TYPE
+	local F_DBMSTYPE=$S_DBMS_TYPE
 
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG

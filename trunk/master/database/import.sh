@@ -17,7 +17,7 @@ fi
 
 P_SCHEMA=$3
 
-. ../../etc/config.sh
+. ./common.sh
 
 if [ "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME" = "" ]; then
 	echo C_CONFIG_PRODUCT_DEPLOYMENT_HOME is not defined. Exiting
@@ -33,7 +33,7 @@ function f_execute_all() {
 
 	# check server and define database type
 	f_get_dbmstype $F_CONFIGPATH
-	local F_DBMSTYPE=S_DBMS_TYPE
+	local F_DBMSTYPE=$S_DBMS_TYPE
 
 	# create final execute dir
 	local F_EXECUTE_DIR=execute-$P_RUNCONFIG-$P_CMD
