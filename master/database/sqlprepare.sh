@@ -37,14 +37,14 @@ function f_local_check_sql() {
 	local P_ALIGNEDNAME=$1
 	local P_SCRIPT=$2
 
-	f_specific_validate_content $P_SCRIPT
+	f_specific_validate_content "$P_SCRIPT"
 	if [ "$?" != 0 ]; then
 		return 1
 	fi
 
 	# check if regional
 	if [ "$P_ALIGNEDNAME" = "regional" ]; then
-		f_specific_getcomments $P_SCRIPT "REGIONS " 
+		f_specific_getcomments "$P_SCRIPT" "REGIONS " 
 		if [ "$S_SPECIFIC_COMMENT" = "" ]; then
 			S_CHECK_SQL_MSG="script should have REGIONS header property - $P_SCRIPT"
 			return 1
@@ -548,8 +548,8 @@ function f_local_process_uddi_endpoints() {
 		cat $SVCFILE >> $LOCAL_UDDI_FNAME
 	fi
 
-	f_specific_uddi_begin $FNAME_UAT
-	f_specific_uddi_begin $FNAME_PROD
+	f_specific_uddi_begin "$FNAME_UAT"
+	f_specific_uddi_begin "$FNAME_PROD"
 
 	cat $LOCAL_UDDI_FNAME | while read line; do
 		f_local_split_uddi_comment "$line"
@@ -561,11 +561,11 @@ function f_local_process_uddi_endpoints() {
 			fi
 
 			if [ "$UDDI_UAT" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
-				f_specific_uddi_addendpoint $UDDI_KEY $UDDI_UAT $FNAME_UAT
+				f_specific_uddi_addendpoint "$UDDI_KEY" "$UDDI_UAT" "$FNAME_UAT"
 			fi
 
 			if [ "$UDDI_PROD" != "" ] || [ "$GETOPT_SCRIPTFOLDER" = "" ]; then
-				f_specific_uddi_addendpoint $UDDI_KEY $UDDI_PROD $FNAME_PROD
+				f_specific_uddi_addendpoint "$UDDI_KEY" "$UDDI_PROD" "$FNAME_PROD"
 			fi
 		fi
 
@@ -583,8 +583,8 @@ function f_local_process_uddi_endpoints() {
 		return 1
 	fi
 
-	f_specific_uddi_end $FNAME_UAT
-	f_specific_uddi_end $FNAME_PROD
+	f_specific_uddi_end "$FNAME_UAT"
+	f_specific_uddi_end "$FNAME_PROD"
 
 	echo sqlprepare.sh: SVCNUM=$P_SVCNUM - UDDI content has been created for endpoints.
 }
@@ -601,8 +601,8 @@ function f_local_process_uddi_smevattrs() {
 
 	cat $SMEVATTRFILE >> $LOCAL_UDDI_FNAME
 
-	f_specific_smevattr_begin $FNAME_UAT
-	f_specific_smevattr_begin $FNAME_PROD
+	f_specific_smevattr_begin "$FNAME_UAT"
+	f_specific_smevattr_begin "$FNAME_PROD"
 
 	cat $LOCAL_UDDI_FNAME | while read line; do
 		local line=`echo $line | sed "s/\"/@/g;s/\n//"`
@@ -616,8 +616,8 @@ function f_local_process_uddi_smevattrs() {
 			echo "sqlprepare.sh: invalid string - line=$line"
 		fi
 
-		f_specific_smevattr_addvalue $UDDI_ATTR_ID $UDDI_ATTR_NAME $UDDI_ATTR_CODE $UDDI_ATTR_REGION $UDDI_ATTR_ACCESSPOINT $FNAME_UAT
-		f_specific_smevattr_addvalue $UDDI_ATTR_ID $UDDI_ATTR_NAME $UDDI_ATTR_CODE $UDDI_ATTR_REGION $UDDI_ATTR_ACCESSPOINT $FNAME_PROD
+		f_specific_smevattr_addvalue "$UDDI_ATTR_ID" "$UDDI_ATTR_NAME" "$UDDI_ATTR_CODE" "$UDDI_ATTR_REGION" "$UDDI_ATTR_ACCESSPOINT" "$FNAME_UAT"
+		f_specific_smevattr_addvalue "$UDDI_ATTR_ID" "$UDDI_ATTR_NAME" "$UDDI_ATTR_CODE" "$UDDI_ATTR_REGION" "$UDDI_ATTR_ACCESSPOINT" "$FNAME_PROD"
 	done
 
 	if [ `cat $FNAME_UAT | grep set_endpoint_smev_attributes | grep -c "''" ` -ne 0 ]; then
@@ -632,8 +632,8 @@ function f_local_process_uddi_smevattrs() {
 		return 1
 	fi
 
-	f_specific_smevattr_end $FNAME_UAT
-	f_specific_smevattr_end $FNAME_PROD
+	f_specific_smevattr_end "$FNAME_UAT"
+	f_specific_smevattr_end "$FNAME_PROD"
 
 	echo sqlprepare.sh: SVCNUM=$P_SVCNUM - UDDI content has been created for smev attributes.
 }
@@ -722,7 +722,7 @@ function f_local_execute_uddi() {
 		mkdir -p $P_TARGETDIR/svcrun
 		echo $P_UDDIDIR/svcdic...
 		if [ -f $P_UDDIDIR/svcdic/extdicuddi.txt ]; then
-			f_specific_grepcomments "UDDI" $P_UDDIDIR/svcdic/extdicuddi.txt > $SRC_DICFILE_EP
+			f_specific_grepcomments "UDDI" "$P_UDDIDIR/svcdic/extdicuddi.txt" > $SRC_DICFILE_EP
 		fi
 	fi
 
@@ -738,11 +738,11 @@ function f_local_execute_uddi() {
 		for script in $( find $P_UDDIDIR/svcspec -name *.sql | sort ); do
 
 			# extract required smev attributes
-			f_specific_grepcomments "SMEVATTR" $script >> $SRC_SMEVATTRFILE
+			f_specific_grepcomments "SMEVATTR" "$script" >> $SRC_SMEVATTRFILE
 
 			# extract required uddi endpoints
 			F_CHECK_FAILED_KEYS=""
-			f_specific_grepcomments "UDDI" $script | (
+			f_specific_grepcomments "UDDI" "$script" | (
 				while read line; do
 					f_local_split_uddi_comment "$line"
 					f_local_check_uddi_endpoints
@@ -758,7 +758,7 @@ function f_local_execute_uddi() {
 				fi
 			)
 
-			f_specific_grepcomments "UDDI" $script >> $SRC_SVCFILE_EP # may output "No such file" message if script moved to errors
+			f_specific_grepcomments "UDDI" "$script" >> $SRC_SVCFILE_EP # may output "No such file" message if script moved to errors
 		done
 	fi
 
@@ -780,12 +780,12 @@ function f_local_execute_uddi() {
 
 	# process endpoints
 	if [ "$S_DIC_CONTENT" = "yes" ] || [ "$S_SVC_CONTENT" = "yes" ]; then
-		f_local_process_uddi_endpoints $F_UDDINUM $DST_FNAME_UAT $DST_FNAME_PROD $SRC_DICFILE_EP $SRC_SVCFILE_EP
+		f_local_process_uddi_endpoints "$F_UDDINUM" "$DST_FNAME_UAT" "$DST_FNAME_PROD" "$SRC_DICFILE_EP" "$SRC_SVCFILE_EP"
 	fi
 
 	# process smev attrs
 	if [ "$S_SMEVATTR_CONTENT" = "yes" ]; then
-		f_local_process_uddi_smevattrs $F_UDDINUM $DST_FNAME_UAT $DST_FNAME_PROD $SRC_SMEVATTRFILE
+		f_local_process_uddi_smevattrs "$F_UDDINUM" "$DST_FNAME_UAT" "$DST_FNAME_PROD" "$SRC_SMEVATTRFILE"
 	fi
 }
 
