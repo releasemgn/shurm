@@ -94,18 +94,106 @@ function f_specific_smevattr_end() {
 	) >> $P_FNAME
 }
 
+########################
+
 function f_specific_check_connect() {
 	local P_DB_TNS_NAME=$1
 	local P_SCHEMA=$2
 	local P_DB_USE_SCHEMA_PASSWORD=$3
 
-	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
+	S_SPECIFIC_VALUE=""
+
+	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
 	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
 	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
 
 	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
 		S_SPECIFIC_VALUE="$F_CHECK_OUTPUT"
-	else
-		S_SPECIFIC_VALUE=""
+	fi
+}
+
+function f_specific_check_output() {
+	local P_FILE=$1
+
+	S_SPECIFIC_VALUE=""
+
+	local F_CHECK_OUT=$(egrep "(ORA-|PLS-|SP2-)" $P_FILE)
+	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "${F_CHECK_OUT}" != "" ]; then
+		S_SPECIFIC_VALUE="$F_CHECK_OUTPUT"
+	fi
+}
+
+function f_specific_exec_sqlcmd() {
+	local P_DB_TNS_NAME=$1
+	local P_SCHEMA=$2
+	local P_DB_USE_SCHEMA_PASSWORD=$3
+	local P_CMD="$4"
+	local P_OUTFILE="$5"
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	f_exec_limited 600 "sqlplus $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME \"$P_CMD\"" $P_OUTFILE
+	f_specific_check_output $P_OUTFILE
+}
+
+function f_specific_exec_sqlfile() {
+	local P_DB_TNS_NAME=$1
+	local P_SCHEMA=$2
+	local P_DB_USE_SCHEMA_PASSWORD=$3
+	local P_SCRIPTFILE="$4"
+	local P_OUTFILE="$5"
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	f_exec_limited 600 "sqlplus $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME" $P_OUTFILE $P_SCRIPTFILE
+	f_specific_check_output $P_OUTFILE
+}
+
+function f_specific_exec_sqlsys() {
+	local P_DB_TNS_NAME=$1
+	local P_PASSWORD=$2
+
+	S_SPECIFIC_VALUE=""
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	F_CHECK_OUT=`sqlplus sys/$P_PASSWORD@$P_DB_TNS_NAME "as sysdba" 2>&1`
+	F_CHECK_OUT=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
+
+	if [ "${F_CHECK_OUT}" != "" ]; then
+		S_SPECIFIC_VALUE="$F_CHECK_OUT"
+	fi
+}
+
+function f_specific_add_sqlheader() {
+	local P_SCRIPTNAME=$1
+	local P_OUTDIR=$2
+
+	echo -- standard script header
+	echo set define off
+	echo set echo on
+	echo spool $P_OUTDIR/$P_SCRIPTNAME.spool append
+	echo select sysdate from dual\;
+}
+
+function f_specific_add_forceexit() {
+	echo ''
+	echo exit
+	echo ''
+}
+
+function f_specific_loadfile() {
+	local P_DB_TNS_NAME=$1
+	local P_SCHEMA=$2
+	local P_DB_USE_SCHEMA_PASSWORD=$3
+	local P_FILE_NAME=$4
+	local P_OUTDIR=$5
+
+	S_SPECIFIC_VALUE=""
+
+	local F_CTLNAME=`basename $P_FILE_NAME`
+
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+	sqlldr $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.log bad=$P_OUTDIR/$F_CTLNAME.bad >> $P_OUTDIR/$F_CTLNAME.out
+
+	if [ $? -ne 0 ]; then
+		S_SPECIFIC_VALUE="sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log"
 	fi
 }

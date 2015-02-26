@@ -513,16 +513,14 @@ function f_exec_sql() {
 		S_DB_USE_SCHEMA_PASSWORD=$P_SPECIAL_PASSWORD
 	fi
 
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
 	if [ "$P_SPECIAL_CMD" != "" ]; then
-		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME \"$P_SPECIAL_CMD\"" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
+		f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$P_SPECIAL_CMD" $P_OUTDIR/$F_SCRIPTNAME.out
 	else
-		f_exec_limited 600 "sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME" $P_OUTDIR/$F_SCRIPTNAME.out $P_SCRIPTFILE
+		f_specific_exec_sqlfile $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$P_SCRIPTFILE" $P_OUTDIR/$F_SCRIPTNAME.out
 	fi
 
-	local F_CHECK_OUT=$(egrep "(ORA-|PLS-|SP2-)" $P_OUTDIR/$F_SCRIPTNAME.out)
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "${F_CHECK_OUT}" != "" ]; then
-		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA with ERRORs \"$F_CHECK_OUT\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA with ERRORs \"$S_SPECIFIC_VALUE\""
 		echo "$P_DB_TNS_NAME: "Pls, see" $P_OUTDIR/$F_SCRIPTNAME.out"
 
 		if [ "$P_SKIPERROR" = "yes" ]; then
@@ -556,11 +554,9 @@ function f_exec_syssql_private() {
 	local P_PASSWORD=$3
 	local P_SKIPERROR=$4
 
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	F_CHECK_OUT=`sqlplus sys/$P_PASSWORD@$P_DB_TNS_NAME "as sysdba" 2>&1`
-	F_CHECK_OUT=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
+	f_specific_exec_sqlsys $P_DB_TNS_NAME $P_PASSWORD
 
-	if [ "${F_CHECK_OUT}" != "" ]; then
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "$P_DB_TNS_NAME: private script is applied to sys with ERRORs"
 
 		if [ "$P_SKIPERROR" = "yes" ]; then
@@ -579,11 +575,7 @@ function f_add_sqlheader() {
 	local P_SCRIPTNAME=$2
 	local P_OUTDIR=$3
 
-	echo -- standard script header
-	echo set define off
-	echo set echo on
-	echo spool $P_OUTDIR/$P_SCRIPTNAME.spool append
-	echo select sysdate from dual\;
+	f_specific_add_sqlheader $P_SCRIPTNAME $P_OUTDIR
 }
 
 function f_add_sqlfile() {
@@ -592,9 +584,7 @@ function f_add_sqlfile() {
 
 	if [ -r $P_FNAME ]; then
 		cat $P_FNAME
-		echo ''
-		echo exit
-		echo ''
+		f_specific_add_forceexit
 	else
 		echo "f_add_sqlfile: Can't find sql-script $P_FNAME"
 		exit 34
@@ -616,14 +606,13 @@ function f_sqlload_ctlfile() {
 	local F_SAVEDIR=`pwd`
 	cd $F_CTLDIR
 
-	echo "running sqlldr $P_SCHEMA@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.out..." > $P_OUTDIR/$F_CTLNAME.out
+	echo "load data file to $P_SCHEMA@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.out ..." > $P_OUTDIR/$F_CTLNAME.out
+
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
+	f_specific_loadfile $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD $P_FILE_NAME $P_OUTDIR
 
-	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	sqlldr $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.log bad=$P_OUTDIR/$F_CTLNAME.bad >> $P_OUTDIR/$F_CTLNAME.out
-
-	if [ $? -ne 0 ]; then
-		echo f_sqlload_ctlfile: sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log. Exiting
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_specific_loadfile failed - $S_SPECIFIC_VALUE. Exiting"
 		cd $F_SAVEDIR
 		exit 1
 	fi
