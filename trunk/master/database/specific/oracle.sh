@@ -1,5 +1,7 @@
 # Oracle-specific implementations
 
+S_SPECIFIC_VALUE=
+
 function f_specific_validate_content() {
 	local P_SCRIPT=$1
 
@@ -90,4 +92,20 @@ function f_specific_smevattr_end() {
 		echo /
 		echo --
 	) >> $P_FNAME
+}
+
+function f_specific_check_connect() {
+	local P_DB_TNS_NAME=$1
+	local P_SCHEMA=$2
+	local P_DB_USE_SCHEMA_PASSWORD=$3
+
+	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
+	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
+	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
+
+	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
+		S_SPECIFIC_VALUE="$F_CHECK_OUTPUT"
+	else
+		S_SPECIFIC_VALUE=""
+	fi
 }

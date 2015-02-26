@@ -487,12 +487,10 @@ function f_check_db_connect() {
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
 
-	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
-	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
-	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
+	f_specific_check_connect $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD
 
-	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_check_db_connect: Can't connect to $P_SCHEMA@$P_DB_TNS_NAME due to ERROR \"$F_CHECK_OUTPUT\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_check_db_connect: Can't connect to $P_SCHEMA@$P_DB_TNS_NAME due to ERROR \"$S_SPECIFIC_VALUE\""
 		exit 20
 	fi
 }
