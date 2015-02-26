@@ -41,9 +41,7 @@ function f_admindb_add_beginscriptstatus() {
 
 	local F_SCHEMA=`echo $P_SCHEMA | tr '[a-z]' '[A-Z]'`
 
-	echo "INSERT INTO $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS (RELEASE, SCHEMA, ID, FILENAME, UPDATETIME, UPDATEUSERID, SCRIPT_STATUS)"
-	echo "VALUES ('$C_ADMINDB_REL_FULL', '$F_SCHEMA', $P_SCRIPTNUM, '$P_SCRIPTNAME', SYSDATE, sys_context('USERENV','OS_USER') , 'S');"
-	echo "COMMIT;"
+	f_specific_admin_add_insert_script $C_ADMINDB_REL_FULL $F_SCHEMA $P_SCRIPTNUM $P_SCRIPTNAME
 }
 
 function f_admindb_add_updatescripttime() {
@@ -53,11 +51,7 @@ function f_admindb_add_updatescripttime() {
 	local P_SCRIPTNUM=$4
 
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
-
-	local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
-
-	echo "update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set UPDATETIME=SYSDATE where RELEASE='$C_ADMINDB_REL_FULL' and ID=$P_SCRIPTNUM;"
-	echo "commit;"
+	f_specific_admin_add_update_script $C_ADMINDB_REL_FULL $P_SCRIPTNUM
 }
 
 function f_admindb_beginscriptstatus() {
@@ -73,6 +67,8 @@ function f_admindb_beginscriptstatus() {
 	local F_CTLSQL="`f_admindb_add_beginscriptstatus $P_DBMSTYPE $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`"
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
+	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$F_CTLSQL" 
+
 	f_exec_limited 60 "(
 		echo \"$F_CTLSQL\"
 	) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""

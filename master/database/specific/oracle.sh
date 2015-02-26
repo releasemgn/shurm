@@ -104,11 +104,11 @@ function f_specific_check_connect() {
 	S_SPECIFIC_VALUE=""
 
 	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"ORA-\""
-	local F_CHECK_OUTPUT=$S_EXEC_LIMITED_OUTPUT
-	local F_CHECK=`echo $F_CHECK_OUTPUT | egrep "ORA-"`
 
-	if [ "$F_CHECK_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		S_SPECIFIC_VALUE="$F_CHECK_OUTPUT"
+	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
+		S_SPECIFIC_VALUE="KILLED"
+	else
+		S_SPECIFIC_VALUE=`echo $S_EXEC_LIMITED_OUTPUT | egrep "ORA-"`
 	fi
 }
 
@@ -117,9 +117,10 @@ function f_specific_check_output() {
 
 	S_SPECIFIC_VALUE=""
 
-	local F_CHECK_OUT=$(egrep "(ORA-|PLS-|SP2-)" $P_FILE)
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "${F_CHECK_OUT}" != "" ]; then
-		S_SPECIFIC_VALUE="$F_CHECK_OUTPUT"
+	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
+		S_SPECIFIC_VALUE="KILLED"
+	else
+		S_SPECIFIC_VALUE=$(egrep "(ORA-|PLS-|SP2-)" $P_FILE)
 	fi
 }
 
@@ -130,9 +131,16 @@ function f_specific_exec_sqlcmd() {
 	local P_CMD="$4"
 	local P_OUTFILE="$5"
 
+	S_SPECIFIC_VALUE=""
+
 	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
 	f_exec_limited 600 "sqlplus $P_SCHEMA/$P_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME \"$P_CMD\"" $P_OUTFILE
-	f_specific_check_output $P_OUTFILE
+
+	if [ "$P_OUTFILE" != "" ]; then
+		f_specific_check_output $P_OUTFILE
+	else
+		S_SPECIFIC_VALUE=$(echo $S_EXEC_LIMITED_OUTPUT | egrep "(ORA-|PLS-|SP2-)")
+	fi		
 }
 
 function f_specific_exec_sqlfile() {
@@ -155,11 +163,8 @@ function f_specific_exec_sqlsys() {
 
 	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
 	F_CHECK_OUT=`sqlplus sys/$P_PASSWORD@$P_DB_TNS_NAME "as sysdba" 2>&1`
-	F_CHECK_OUT=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
 
-	if [ "${F_CHECK_OUT}" != "" ]; then
-		S_SPECIFIC_VALUE="$F_CHECK_OUT"
-	fi
+	S_SPECIFIC_VALUE=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
 }
 
 function f_specific_add_sqlheader() {
@@ -196,4 +201,25 @@ function f_specific_loadfile() {
 	if [ $? -ne 0 ]; then
 		S_SPECIFIC_VALUE="sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log"
 	fi
+}
+
+#################################
+
+function f_specific_admin_add_insert_script() {
+	local P_RELEASE=$1
+	local P_SCHEMA=$2
+	local P_SCRIPTNUM=$3
+	local P_SCRIPTNAME=$4
+
+	echo "INSERT INTO $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS (RELEASE, SCHEMA, ID, FILENAME, UPDATETIME, UPDATEUSERID, SCRIPT_STATUS)"
+	echo "VALUES ('$P_RELEASE', '$P_SCHEMA', $P_SCRIPTNUM, '$P_SCRIPTNAME', SYSDATE, sys_context('USERENV','OS_USER') , 'S');"
+	echo "COMMIT;"
+}
+
+function f_specific_admin_add_update_script() {
+	local P_RELEASE=$1
+	local P_SCRIPTNUM=$2
+
+	echo "update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set UPDATETIME=SYSDATE where RELEASE='$P_RELEASE' and ID=$P_SCRIPTNUM;"
+	echo "commit;"
 }
