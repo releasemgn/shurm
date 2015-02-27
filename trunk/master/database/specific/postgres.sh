@@ -201,6 +201,7 @@ function f_specific_add_sqlheader() {
 }
 
 function f_specific_add_forceexit() {
+	return 0
 }
 
 function f_specific_loadfile() {
