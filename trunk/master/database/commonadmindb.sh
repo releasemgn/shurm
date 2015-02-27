@@ -67,15 +67,10 @@ function f_admindb_beginscriptstatus() {
 	local F_CTLSQL="`f_admindb_add_beginscriptstatus $P_DBMSTYPE $P_RELEASE $P_SCHEMA $P_SCRIPTNAME $P_SCRIPTNUM`"
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
-	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$F_CTLSQL" 
+	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 
-	f_exec_limited 60 "(
-		echo \"$F_CTLSQL\"
-	) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
-
-	local F_UPD_A=$S_EXEC_LIMITED_OUTPUT
-	if [ "$F_UPD_A" != "" ]; then
-		echo "$P_DB_TNS_NAME: $P_SCRIPTNAME script_status is not finalized due to ERRORs \"$F_UPD_A\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "$P_DB_TNS_NAME: $P_SCRIPTNAME script_status is not finalized due to ERRORs \"$S_SPECIFIC_VALUE\""
 		exit 37
 	fi
 }
@@ -94,14 +89,10 @@ function f_admindb_updatescriptstatus() {
 	local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
-	f_exec_limited 60 "(
-		echo \"update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set SCRIPT_STATUS='$P_STATUS' where RELEASE='$C_ADMINDB_REL_FULL' and ID=$P_SCRIPTNUM;\"
-		echo commit;
-	) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
+	f_specific_admin_update_scriptstatus $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL $P_SCRIPTNUM $P_STATUS
 
-	local F_UPD_A=$S_EXEC_LIMITED_OUTPUT
-	if [ "$F_UPD_A" != "" ]; then
-		echo "$P_DB_TNS_NAME: $P_SCRIPTNAME script_status is not finalized due to ERRORs \"$F_UPD_A\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "$P_DB_TNS_NAME: $P_SCRIPTNAME script_status is not finalized due to ERRORs \"$S_SPECIFIC_VALUE\""
 		exit 37
 	fi
 }
@@ -130,20 +121,8 @@ function f_admindb_check_scriptstatus() {
 		local F_SCHEMA=`echo $P_SCHEMA | awk '{print toupper($0)}'`
 
 		f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
-		f_exec_limited 60 "(
-			echo \"select 'VALUE=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL' and ID=$P_SCRIPTNUM;\"
-		) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
-
-		local F_COUNT_OUTPUT=$S_EXEC_LIMITED_OUTPUT
-		local F_COUNT_ERR=`echo $F_COUNT_OUTPUT| egrep "(ORA-|PLS-)"`
-		if [ "$F_COUNT_OUTPUT" = "KILLED" ] || [ "$F_COUNT_ERR" != "" ]; then
-			echo "$P_DB_TNS_NAME: can't apply $P_SCRIPTNAME. Skipped."    
-			echo "$P_DB_TNS_NAME: maybe grants not present on $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS, $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES were not given to application schemas"
-			echo "$F_COUNT_OUTPUT"
-			exit 38
-		fi 
-
-		X_STATUS=`echo $F_COUNT_OUTPUT | grep VALUE | cut -d "=" -f2`
+		f_specific_admin_get_scriptstatus $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL $P_SCRIPTNUM
+		X_STATUS=$S_SPECIFIC_VALUE
 	fi
 
 	if [ "$X_STATUS" = "" ]; then
@@ -167,19 +146,15 @@ function f_admindb_get_scriptstatusall() {
 	echo $P_DB_TNS_NAME: create status file $P_STATUSFILE ...
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
-	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
+	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN 
 
 	rm -rf $P_STATUSFILE
 	rm -rf $P_STATUSFILE.tmp
-	f_exec_limited 300 "(
-		echo set pagesize 0
-		echo \"select ID || '=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL' order by ID;\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME" $P_STATUSFILE.tmp
+	f_specific_admin_get_releasestatuses $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL $P_STATUSFILE.tmp
 
-	local F_COUNT_ERR=`cat $P_STATUSFILE.tmp | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_COUNT_ERR" != "" ]; then
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "$P_DB_TNS_NAME: Can't get status of scripts execution. Exiting."    
-		echo "$F_COUNT_ERR"
+		echo "$S_SPECIFIC_VALUE"
 		exit 38
 	fi
 
@@ -196,14 +171,10 @@ function f_admindb_delete_scriptstatus() {
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
-	f_exec_limited 60 "(
-		echo \"delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where RELEASE = '$C_ADMINDB_REL_FULL' and ID = $P_SCRIPTNUM;\"
-		echo commit\; 
-	) | sqlplus -S $P_SCHEMA/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
+	f_specific_admin_delete_scriptstatus $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL $P_SCRIPTNUM
 
-	local F_RUN="$S_EXEC_LIMITED_OUTPUT"
-	if [ "$F_RUN" != "" ]; then
-		echo "f_admindb_delete_scriptstatus: $P_SCRIPTNUM script_status is not finalized due to ERRORs \"$F_RUN\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_delete_scriptstatus: $P_SCRIPTNUM script_status is not finalized due to ERRORs \"$S_SPECIFIC_VALUE\""
 		exit 37
 	fi
 }
@@ -221,38 +192,29 @@ function f_admindb_getreleasestatus() {
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
 
 	echo $P_DB_TNS_NAME: get release $P_RELEASE status ...
-	f_exec_limited 60 "(
-		echo \"select 'VALUE=' || rel_status || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES where release='$C_ADMINDB_REL_FULL';\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | grep VALUE | cut -d \"=\" -f2"
-
-	C_ADMINDB_RELEASESTATUS="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_RELEASESTATUS" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_getreleasestatus: error executing query: $F_CHECK. Exiting"
+	f_specific_admin_get_releasestatus $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL 
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_getreleasestatus: error executing f_specific_admin_get_releasestatus - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	f_exec_limited 60 "(
-		echo \"select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL';\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | grep VALUE | cut -d \"=\" -f2"
+	C_ADMINDB_RELEASESTATUS="$S_SPECIFIC_OUTPUT"
 
-	C_ADMINDB_ALL_SCIPTS_COUNT="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_ALL_SCIPTS_COUNT" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_getreleasestatus: error executing query: $F_CHECK. Exiting"
+	f_specific_admin_get_releasescriptcount $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_getreleasestatus: error executing f_specific_admin_get_releasescriptcount - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	f_exec_limited 60 "(
-		echo \"select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL' and script_status='S';\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | grep VALUE | cut -d \"=\" -f2"
+	C_ADMINDB_ALL_SCIPTS_COUNT="$S_SPECIFIC_OUTPUT"
 
-	C_ADMINDB_NOT_APPLIED_SCIPTS_COUNT="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_NOT_APPLIED_SCIPTS_COUNT" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_getreleasestatus: error executing query: $F_CHECK. Exiting"
+	f_specific_admin_get_releasescriptfailedcount $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_getreleasestatus: error executing f_specific_admin_get_releasescriptfailedcount - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
+
+	C_ADMINDB_NOT_APPLIED_SCIPTS_COUNT="$S_SPECIFIC_OUTPUT"
 }
 
 function f_admindb_beginrelease() {
@@ -269,18 +231,12 @@ function f_admindb_beginrelease() {
 
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
-	# INSERT into $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES
 	echo add release...
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"INSERT INTO $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES (release, rel_p1, rel_p2, rel_p3, rel_p4, begin_apply_time, end_apply_time, rel_status ) \"
-		echo \"VALUES ( '$C_ADMINDB_REL_FULL', $C_ADMINDB_REL_P1, $C_ADMINDB_REL_P2, $C_ADMINDB_REL_P3, $C_ADMINDB_REL_P4, SYSDATE, NULL, 'S' );\"
-		echo \"COMMIT;\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
+	f_specific_admin_create_release $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL $C_ADMINDB_REL_P1 $C_ADMINDB_REL_P2 $C_ADMINDB_REL_P3 $C_ADMINDB_REL_P4
 
-	local F_RUN="$S_EXEC_LIMITED_OUTPUT"
-	if [ "$F_RUN" != "" ]; then
-		echo "f_admindb_beginrelease: can't insert $C_ADMINDB_REL_FULL value into $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES due to ERROR \"$F_RUN\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_beginrelease: can't insert $C_ADMINDB_REL_FULL value into $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES due to ERROR \"$S_SPECIFIC_VALUE\""
 		exit 2
 	fi
 }
@@ -293,14 +249,10 @@ function f_admindb_finishrelease() {
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"UPDATE $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES set end_apply_time=sysdate, rel_status='A' where release='$C_ADMINDB_REL_FULL';\"
-		echo \"COMMIT;\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME | egrep \"(ORA-|PLS-)\""
+	f_specific_admin_finish_release $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
 
-	local F_RUN="$S_EXEC_LIMITED_OUTPUT"
-	if [ "$F_RUN" != "" ]; then
-		echo "$f_admindb_finishrelease: can't update rel_status field for $C_ADMINDB_REL_FULL in $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES due to ERROR \"$F_RUN\""
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "$f_admindb_finishrelease: can't update rel_status field for $C_ADMINDB_REL_FULL in $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES due to ERROR \"$S_SPECIFIC_VALUE\""
 		exit 3
 	fi
 }
@@ -313,19 +265,14 @@ function f_admindb_droprelease() {
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL';\"
-		echo \"delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES where release='$C_ADMINDB_REL_FULL';\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
+	f_specific_admin_drop_release $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
 
-	C_ADMINDB_SQLRES="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_SQLRES" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_droprelease: error executing query: $F_CHECK. Exiting"
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_droprelease: error - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	echo $P_DB_TNS_NAME: delete release $P_RELEASE - $C_ADMINDB_SQLRES
+	echo "$P_DB_TNS_NAME: delete release $P_RELEASE - $S_SPECIFIC_OUTPUT"
 }
 
 function f_admindb_dropreleaseitems() {
@@ -337,22 +284,15 @@ function f_admindb_dropreleaseitems() {
 
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE "$P_IDLIST"
 
-	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-	F_ORACLEMASK="$S_SQL_LISTMASK"
-
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$C_ADMINDB_REL_FULL' and ( $F_ORACLEMASK );\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
+	f_specific_admin_deletescripts $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL "$P_IDLIST" $P_ALIGNEDID
 
-	C_ADMINDB_SQLRES="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_SQLRES" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_dropreleaseitems: error executing query: $F_CHECK. Exiting"
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_dropreleaseitems: error - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	echo $P_DB_TNS_NAME: delete release $P_RELEASE items - $C_ADMINDB_SQLRES
+	echo "$P_DB_TNS_NAME: delete release $P_RELEASE items - $S_SPECIFIC_OUTPUT"
 }
 
 function f_admindb_checkandfinishrelease() {
@@ -380,18 +320,14 @@ function f_admindb_fixreleaseall() {
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$C_ADMINDB_REL_FULL' and script_status <> 'A';\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
+	f_specific_admin_fixall_release $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
 
-	C_ADMINDB_SQLRES="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_SQLRES" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_fixreleaseall: error executing query: $F_CHECK. Exiting"
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_fixreleaseall: error - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	echo $P_DB_TNS_NAME: fix release $P_RELEASE - $C_ADMINDB_SQLRES
+	echo "$P_DB_TNS_NAME: fix release $P_RELEASE - $S_SPECIFIC_OUTPUT"
 }
 
 function f_admindb_fixreleaseitems() {
@@ -403,22 +339,15 @@ function f_admindb_fixreleaseitems() {
 
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
-	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-	F_ORACLEMASK="$S_SQL_LISTMASK"
-
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$C_ADMINDB_REL_FULL' and script_status <> 'A' and ( $F_ORACLEMASK );\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
+	f_specific_admin_fix_releaseitems $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL "$P_IDLIST" $P_ALIGNEDID
 
-	C_ADMINDB_SQLRES="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_SQLRES" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_fixreleaseitems: error executing query: $F_CHECK. Exiting"
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_fixreleaseitems: error - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	echo $P_DB_TNS_NAME: delete release $P_RELEASE items - $C_ADMINDB_SQLRES
+	echo "$P_DB_TNS_NAME: delete release $P_RELEASE items - $S_SPECIFIC_OUTPUT"
 }
 
 function f_admindb_getreleasefailed() {
@@ -426,21 +355,15 @@ function f_admindb_getreleasefailed() {
 	local P_RELEASE=$2
 	local P_DB_TNS_NAME=$3
 
-	local F_IDLIST=`echo $P_IDLIST | sed "s/ /,/g"`
-
 	f_admindb_parsereleasenumber $P_DBMSTYPE $P_RELEASE
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN
-	f_exec_limited 60 "(
-		echo \"select 'SCRIPT=' || ID as script from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where script_status <> 'A' and release='$C_ADMINDB_REL_FULL' order by 1;\"
-	) | sqlplus -S $C_CONFIG_SCHEMAADMIN/$S_DB_USE_SCHEMA_PASSWORD@$P_DB_TNS_NAME"
+	f_specific_admin_get_failedscripts $P_DB_TNS_NAME $C_CONFIG_SCHEMAADMIN "$S_DB_USE_SCHEMA_PASSWORD" $C_ADMINDB_REL_FULL
 
-	C_ADMINDB_SQLRES="$S_EXEC_LIMITED_OUTPUT"
-	local F_CHECK=`echo "$C_ADMINDB_SQLRES" | egrep "(ORA-|PLS-)"`
-	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ] || [ "$F_CHECK" != "" ]; then
-		echo "f_admindb_getreleasefailed: error executing query: $F_CHECK. Exiting"
+	if [ "$S_SPECIFIC_VALUE" != "" ]; then
+		echo "f_admindb_getreleasefailed: error - $S_SPECIFIC_VALUE. Exiting"
 		exit 1
 	fi
 
-	C_ADMINDB_SQLRES=`echo "$C_ADMINDB_SQLRES" | grep "SCRIPT=" | cut -d "=" -f2 | tr "\n" " "`
+	C_ADMINDB_SQLRES="$S_SPECIFIC_OUTPUT"
 }
