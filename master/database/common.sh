@@ -458,7 +458,7 @@ function f_get_db_password() {
 		S_DB_USE_SCHEMA_PASSWORD=$P_DB_SCHEMA
 
 	elif [ "$GETOPT_DBPASSWORD" != "" ]; then
-		S_DB_USE_SCHEMA_PASSWORD=$GETOPT_DBPASSWORD
+		S_DB_USE_SCHEMA_PASSWORD="$GETOPT_DBPASSWORD"
 
 	elif [ "$C_ENV_PROPERTY_DBAUTHFILE" != "" ]; then
 		# check file
@@ -487,7 +487,7 @@ function f_check_db_connect() {
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
 
-	f_specific_check_connect $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD
+	f_specific_check_connect $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD"
 
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "f_check_db_connect: Can't connect to $P_SCHEMA@$P_DB_TNS_NAME due to ERROR \"$S_SPECIFIC_VALUE\""
@@ -503,20 +503,20 @@ function f_exec_sql() {
 	local P_OUTDIR=$5
 	local P_SKIPERROR=$6
 	local P_SPECIAL_CMD=$7
-	local P_SPECIAL_PASSWORD=$8
+	local P_SPECIAL_PASSWORD="$8"
 
 	local F_SCRIPTNAME=`basename $P_SCRIPTFILE`
 
 	if [ "$P_SPECIAL_PASSWORD" = "" ]; then
 		f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
 	else
-		S_DB_USE_SCHEMA_PASSWORD=$P_SPECIAL_PASSWORD
+		S_DB_USE_SCHEMA_PASSWORD="$P_SPECIAL_PASSWORD"
 	fi
 
 	if [ "$P_SPECIAL_CMD" != "" ]; then
-		f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$P_SPECIAL_CMD" $P_OUTDIR/$F_SCRIPTNAME.out
+		f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$P_SPECIAL_CMD" 600 $P_OUTDIR/$F_SCRIPTNAME.out
 	else
-		f_specific_exec_sqlfile $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD "$P_SCRIPTFILE" $P_OUTDIR/$F_SCRIPTNAME.out
+		f_specific_exec_sqlfile $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$P_SCRIPTFILE" 600 $P_OUTDIR/$F_SCRIPTNAME.out
 	fi
 
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
@@ -542,19 +542,19 @@ function f_exec_syssql() {
 	local P_SCRIPTFILE=$3
 	local P_OUTDIR=$4
 	local P_SKIPERROR=$5
-	local P_SPECIALPASSWORD=$6
+	local P_SPECIALPASSWORD="$6"
 
-	f_exec_sql $P_DBMSTYPE $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "as sysdba" $P_SPECIALPASSWORD
+	f_exec_sql $P_DBMSTYPE $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "as sysdba" "$P_SPECIALPASSWORD"
 	return $?
 }
 
 function f_exec_syssql_private() {
 	local P_DBMSTYPE=$1
 	local P_DB_TNS_NAME=$2
-	local P_PASSWORD=$3
+	local P_PASSWORD="$3"
 	local P_SKIPERROR=$4
 
-	f_specific_exec_sqlsys $P_DB_TNS_NAME $P_PASSWORD
+	f_specific_exec_sqlsys $P_DB_TNS_NAME "$P_PASSWORD"
 
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "$P_DB_TNS_NAME: private script is applied to sys with ERRORs"
@@ -609,7 +609,7 @@ function f_sqlload_ctlfile() {
 	echo "load data file to $P_SCHEMA@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.out ..." > $P_OUTDIR/$F_CTLNAME.out
 
 	f_get_db_password $P_DBMSTYPE $P_DB_TNS_NAME $P_SCHEMA
-	f_specific_loadfile $P_DB_TNS_NAME $P_SCHEMA $S_DB_USE_SCHEMA_PASSWORD $P_FILE_NAME $P_OUTDIR
+	f_specific_loadfile $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" $P_FILE_NAME $P_OUTDIR
 
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "f_specific_loadfile failed - $S_SPECIFIC_VALUE. Exiting"
