@@ -42,23 +42,10 @@ function f_execute_exportdata_one() {
 
 	if [ "$F_EXPORT_ALL" = "yes" ]; then
 		# simple export
-		if [[ "$S_LOADCONNECTION" =~ "sys/" ]] || [ "$S_LOADCONNECTION" = "/" ]; then
-			echo "execute expdp \"$S_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY ..."
-			expdp \"$S_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY
-		else
-			echo "execute expdp $S_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY ..."
-			expdp $S_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY
-		fi
+		f_specific_export_schemadata_all $S_LOADCONNECTION $F_TSCHEMA_LOWER.dmp $F_TSCHEMA_LOWER.log $F_TSCHEMA_UPPER
 	else
 		# export using table set
-		# impossible to adopt to oracle quotes and shell !
-		if [[ "$S_LOADCONNECTION" =~ "sys/" ]] || [ "$S_LOADCONNECTION" = "/" ]; then
-			echo "execute expdp \"$S_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$F_TSCHEMA_UPPER\'\)\" ..."
-			expdp \"$S_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$F_TSCHEMA_UPPER\'\)\"
-		else
-			echo "execute expdp $S_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$F_TSCHEMA_UPPER\'\)\" ..."
-			expdp $S_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$F_TSCHEMA_LOWER.dmp LOGFILE=$F_TSCHEMA_LOWER.log schemas=$F_TSCHEMA_UPPER CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$F_TSCHEMA_UPPER\'\)\"
-		fi
+		f_specific_export_schemadata_selected $S_LOADCONNECTION $F_TSCHEMA_LOWER.dmp $F_TSCHEMA_LOWER.log $F_TSCHEMA_UPPER
 	fi
 
 	# move to store
@@ -96,11 +83,8 @@ function f_execute_all_exportmeta() {
         rm -f $S_LOAD_STAGINGDIR/meta.*
         rm -f $S_LOAD_STAGINGDIR/role.*
 
-	#----------------- export ORACLE METADATA
-	f_expdp $S_LOADCONNECTION "CONTENT=METADATA_ONLY schemas=$P_SCHEMA_SET exclude=STATISTICS DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=meta.dmp LOGFILE=meta.log"
-
-	#----------------- export role data
-	f_expdp $S_LOADCONNECTION "full=y INCLUDE=role DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=role.dmp LOGFILE=role.log"
+	#----------------- export METADATA
+	f_specific_exportmeta
 
 	#----------------- copy to $S_LOAD_STAGINGDIR
 	mkdir -p $S_LOAD_STAGINGDIR
