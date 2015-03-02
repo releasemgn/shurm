@@ -9,6 +9,7 @@ if [ -f ~/.profile ]; then
 fi
 
 . ./datapump-config.sh
+. ./specific.sh
 
 S_FINAL_SCHEMA=
 S_FINAL_SCHEMALIST=
@@ -65,16 +66,8 @@ function f_expdp() {
 	local P_LOADCONNECTION=$1
 	local P_PARAMS="$2"
 
-	local F_STATUS=
-	if [[ "$P_LOADCONNECTION" =~ "sys/" ]] || [ "$P_LOADCONNECTION" = "/" ]; then
-		echo execute expdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS ...
-		expdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS
-		F_STATUS="$?"
-	else
-		echo execute expdp $P_LOADCONNECTION $P_PARAMS ...
-		expdp $P_LOADCONNECTION $P_PARAMS
-		F_STATUS="$?"
-	fi
+	f_specific_expdp $P_LOADCONNECTION "$P_PARAMS"
+	local F_STATUS=$?
 
 	if [ "$F_STATUS" != "0" ]; then
 		echo expdp failed. Exiting
@@ -87,15 +80,8 @@ function f_impdp() {
 	local P_PARAMS="$2"
 	local P_IGNOREERRORS="$3"
 
-	if [[ "$P_LOADCONNECTION" =~ "sys/" ]] || [ "$P_LOADCONNECTION" = "/" ]; then
-		echo execute impdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS ...
-		impdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS
-		F_STATUS="$?"
-	else
-		echo execute impdp $P_LOADCONNECTION $P_PARAMS ...
-		impdp $P_LOADCONNECTION $P_PARAMS
-		F_STATUS="$?"
-	fi
+	f_specific_impdp $P_LOADCONNECTION "$P_PARAMS"
+	local F_STATUS="$?"
 
 	if [ "$F_STATUS" != "0" ]; then
 		if [ "$P_IGNOREERRORS" = "" ]; then
@@ -113,11 +99,7 @@ function f_sqlexec() {
 	local P_SCRIPT_RUN=$2
 	local P_SCRIPT_OUT=$3
 
-	if [[ "$P_CONNECTION" =~ "sys/" ]] || [ "$P_CONNECTION" = "/" ]; then
-		sqlplus $P_CONNECTION "as sysdba" < $P_SCRIPT_RUN > $P_SCRIPT_OUT
-	else
-		sqlplus $P_CONNECTION < $P_SCRIPT_RUN > $P_SCRIPT_OUT
-	fi
+	f_specific_sqlexec $P_CONNECTION $P_SCRIPT_RUN $P_SCRIPT_OUT
 }
 
 function f_remote_sqlexec() {
@@ -127,11 +109,7 @@ function f_remote_sqlexec() {
 
 	scp $P_SCRIPT_RUN $C_ENV_CONFIG_REMOTE_HOSTLOGIN:$C_ENV_CONFIG_REMOTE_ROOT
 
-	if [[ "$P_CONNECTION" =~ "sys/" ]] || [ "$P_CONNECTION" = "/" ]; then
-		ssh $C_ENV_CONFIG_REMOTE_HOSTLOGIN "cd $C_ENV_CONFIG_REMOTE_ROOT; rm -rf $P_SCRIPT_OUT; . $C_ENV_CONFIG_REMOTE_SETORAENV $C_ENV_CONFIG_ENV $C_ENV_CONFIG_DB; sqlplus $P_CONNECTION "as sysdba" < $P_SCRIPT_RUN > $P_SCRIPT_OUT 2>&1"
-	else
-		ssh $C_ENV_CONFIG_REMOTE_HOSTLOGIN "cd $C_ENV_CONFIG_REMOTE_ROOT; rm -rf $P_SCRIPT_OUT; . $C_ENV_CONFIG_REMOTE_SETORAENV $C_ENV_CONFIG_ENV $C_ENV_CONFIG_DB; sqlplus $P_CONNECTION < $P_SCRIPT_RUN > $P_SCRIPT_OUT 2>&1"
-	fi
+	f_specific_remote_sqlexec $P_CONNECTION $P_SCRIPT_RUN $P_SCRIPT_OUT
 
 	scp $C_ENV_CONFIG_REMOTE_HOSTLOGIN:$C_ENV_CONFIG_REMOTE_ROOT/$P_SCRIPT_OUT $P_SCRIPT_OUT
 }
@@ -147,17 +125,14 @@ function f_execute_fillinitial() {
 	# dynamic oracle dir
 	if [ "$C_ENV_CONFIG_DATAPUMP_DIR" = "ORACLE_DYNAMICDATADIR" ]; then
 		local F_LOADDIR=`echo $C_ENV_CONFIG_LOADDIR | tr " " "\n" | grep "$P_DBC=" | cut -d "=" -f2`
-		echo "-- create export dir" >> $C_CONFIG_CREATEDATA_SQLFILE
-		echo "create or replace directory ORACLE_DYNAMICDATADIR as '$C_ENV_CONFIG_REMOTE_ROOT/$F_LOADDIR';" >> $C_CONFIG_CREATEDATA_SQLFILE
+		f_specific_createloaddir $F_LOADDIR
 	fi
 
 	if [ "$C_ENV_CONFIG_TABLESET" = "" ]; then
 		return 0
 	fi
 
-	echo "-- setup table with uat table data" >> $C_CONFIG_CREATEDATA_SQLFILE
-	echo "drop table $C_ENV_CONFIG_TABLESET;" >> $C_CONFIG_CREATEDATA_SQLFILE
-	echo "create table $C_ENV_CONFIG_TABLESET ( tschema varchar2(128) , rschema varchar2(128), tname varchar2(128) , status char(1) );" >> $C_CONFIG_CREATEDATA_SQLFILE
+	f_specific_createloadinfotable
 
 	local line
 	local pschema
@@ -190,7 +165,7 @@ function f_execute_fillinitial() {
 			rschema_lower=$S_FINAL_SCHEMA
 			rschema_upper=`echo $rschema_lower | tr '[a-z]' '[A-Z]'`
 
-			echo "insert into $C_ENV_CONFIG_TABLESET ( tschema , rschema , tname , status ) values ( '$tschema_upper' , '$rschema_upper' , '$table_upper' , '$status' );" >> $C_CONFIG_CREATEDATA_SQLFILE
+			f_specific_addloadinforecord $tschema_upper $rschema_upper $table_upper $status
 		fi
 	done
 
