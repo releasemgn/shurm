@@ -2,6 +2,28 @@
 
 S_SPECIFIC_VALUE=
 S_SPECIFIC_OUTPUT=
+S_SPECIFIC_MASK=
+
+function f_oracle_sqlidx_getmask() {
+	local P_FIELD=$1
+	local P_EXECUTE_LIST="$2"
+	local P_ALIGNEDID=$3
+
+	local F_GREP="1 = 2"
+	for index in $EXECUTE_LIST; do
+		if [[ "$index" =~ ^[0-9] ]]; then
+			F_GREP="$F_GREP OR $P_FIELD like '$index-%'"
+		else
+			# treat index as source folder name
+			f_sqlidx_getmask $index $P_ALIGNEDID
+			F_GREP="$F_GREP OR regexp_count( $P_FIELD , '^$S_SQL_DIRMASK' ) = 1"
+		fi
+	done
+
+	S_SPECIFIC_MASK="$F_GREP"
+}
+
+###########################################
 
 function f_specific_validate_content() {
 	local P_SCRIPT=$1
@@ -391,8 +413,8 @@ function f_specific_admin_deletescripts() {
 	local P_IDLIST="$5"
 	local P_ALIGNEDID=$6
 
-	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-	local F_ORACLEMASK="$S_SQL_LISTMASK"
+	f_oracle_sqlidx_getmask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
+	local F_ORACLEMASK="$S_SPECIFIC_MASK"
 
 	local F_CTLSQL="delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and ( $F_ORACLEMASK );"
 
@@ -418,8 +440,8 @@ function f_specific_admin_fix_releaseitems() {
 	local P_IDLIST="$5"
 	local P_ALIGNEDID=$6
 
-	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-	local F_ORACLEMASK="$S_SQL_LISTMASK"
+	f_oracle_sqlidx_getmask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
+	local F_ORACLEMASK="$S_SPECIFIC_MASK"
 
 	local F_CTLSQL="update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$P_RELEASE' and script_status <> 'A' and ( $F_ORACLEMASK );"
 
