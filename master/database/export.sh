@@ -33,7 +33,7 @@ function f_execute_all() {
 
 	# create contents
 	cp datapump/* $F_EXECUTE_DIR/
-	cp specific/$F_DBMSTYPE.sh $F_EXECUTE_DIR/
+	cp specific/$F_DBMSTYPE.sh $F_EXECUTE_DIR/specific.sh
 	cp specific/datapump/$F_DBMSTYPE/* $F_EXECUTE_DIR/
 
 	echo "C_CONFIG_PRODUCT=$C_CONFIG_PRODUCT" >> $F_EXECUTE_DIR/datapump-config.sh

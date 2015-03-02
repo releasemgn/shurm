@@ -354,25 +354,6 @@ function f_sqlidx_getegrepexecmask() {
 	S_SQL_LISTMASK="$F_GREP"
 }
 
-function f_sqlidx_getoraclemask() {
-	local P_FIELD=$1
-	local P_EXECUTE_LIST="$2"
-	local P_ALIGNEDID=$3
-
-	local F_GREP="1 = 2"
-	for index in $EXECUTE_LIST; do
-		if [[ "$index" =~ ^[0-9] ]]; then
-			F_GREP="$F_GREP OR $P_FIELD like '$index-%'"
-		else
-			# treat index as source folder name
-			f_sqlidx_getmask $index $P_ALIGNEDID
-			F_GREP="$F_GREP OR regexp_count( $P_FIELD , '^$S_SQL_DIRMASK' ) = 1"
-		fi
-	done
-
-	S_SQL_LISTMASK="$F_GREP"
-}
-
 S_DB_ALLSCHEMALIST=
 function f_getregionaldbschemalist() {
 	local P_TNSLIST="$1"
