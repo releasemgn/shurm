@@ -1,5 +1,17 @@
 # PostgreSQL-specific implementations
 
+S_SPECIFIC_CONNECT=
+function f_postgres_getconnect() {
+	local P_DB_TNS_NAME=$1
+	
+	local DBNAME=${P_DB_TNS_NAME%%@*}
+	local DBHOST=${P_DB_TNS_NAME#*@}
+
+	S_SPECIFIC_CONNECT="-d $DBNAME -h $DBHOST"
+}
+
+###########################################
+
 function f_specific_validate_content() {
 	local P_SCRIPT=$1
 
@@ -94,17 +106,17 @@ function f_specific_check_connect() {
 	local P_SCHEMA=$2
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
 	S_SPECIFIC_VALUE=""
 
-#	f_exec_limited 30 "(echo select 1 from dual\;) | sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME | egrep \"ORA-\""
+	f_postgres_getconnect $P_DB_TNS_NAME
+	f_exec_limited 30 "export PGPASSWORD=$P_DB_USE_SCHEMA_PASSWORD; (echo select 'value=ok' as x\;) | psql ;S_SPECIFIC_CONNECT -U $P_SCHEMA | egrep \"ORA-\""
 
 	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
 		S_SPECIFIC_VALUE="KILLED"
-#	else
-#		S_SPECIFIC_VALUE=`echo $S_EXEC_LIMITED_OUTPUT | egrep "ORA-"`
+	else
+		if [[ ! "$S_EXEC_LIMITED_OUTPUT" =~ "value=ok" ]]; then
+			S_SPECIFIC_VALUE="$S_EXEC_LIMITED_OUTPUT"
+		fi
 	fi
 }
 
