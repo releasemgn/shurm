@@ -24,7 +24,7 @@ function f_postgres_sqlidx_getmask() {
 		else
 			# treat index as source folder name
 			f_sqlidx_getmask $index $P_ALIGNEDID
-			F_GREP="$F_GREP OR regexp_count( $P_FIELD , '^$S_SQL_DIRMASK' ) = 1"
+			F_GREP="$F_GREP OR $P_FIELD ~ '^$S_SQL_DIRMASK'"
 		fi
 	done
 
