@@ -39,7 +39,7 @@ C_CONFIG_DEFAULT_TABLESET=system.admindb_uatdata
 # C_ENV_CONFIG_REMOTE_SETORAENV=<script to setup access to oracle sid on remote>
 # C_ENV_CONFIG_SCHMAPPING="<original schema>=<real schema> <...>=<...> ..."
 # C_ENV_CONFIG_RECREATETABLESPACES=yes/no
-# C_ENV_CONFIG_DATAPUMP_DIR=<oracle data pump dir name>
+# C_ENV_CONFIG_DATAPUMP_DIR=<load data pump dir name>
 # C_ENV_CONFIG_USETRANSFORM=yes/no
 # import dumpset format: dump1:<schema1>,<schema2>;dump2:<schema3>,<schema4>;...
 # default import dumpset format: meta.dmp:meta;role.dmp:role;<schema1>.dmp:<schema1>;...
