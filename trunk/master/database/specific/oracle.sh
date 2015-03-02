@@ -479,3 +479,94 @@ function f_specific_check_dbms_available() {
 
 	return $RES
 }
+
+###########################################
+
+function f_specific_expdp() {
+	local P_LOADCONNECTION=$1
+	local P_PARAMS="$2"
+
+	if [[ "$P_LOADCONNECTION" =~ "sys/" ]] || [ "$P_LOADCONNECTION" = "/" ]; then
+		echo execute expdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS ...
+		expdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+	else
+		echo execute expdp $P_LOADCONNECTION $P_PARAMS ...
+		expdp $P_LOADCONNECTION $P_PARAMS
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+	fi
+
+	return 0
+}
+
+function f_specific_impdp() {
+	local P_LOADCONNECTION=$1
+	local P_PARAMS="$2"
+
+	if [[ "$P_LOADCONNECTION" =~ "sys/" ]] || [ "$P_LOADCONNECTION" = "/" ]; then
+		echo execute impdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS ...
+		impdp \"$P_LOADCONNECTION as sysdba\" $P_PARAMS
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+	else
+		echo execute impdp $P_LOADCONNECTION $P_PARAMS ...
+		impdp $P_LOADCONNECTION $P_PARAMS
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+	fi
+
+	return 0
+}
+
+function f_specific_sqlexec() {
+	local P_CONNECTION=$1
+	local P_SCRIPT_RUN=$2
+	local P_SCRIPT_OUT=$3
+
+	if [[ "$P_CONNECTION" =~ "sys/" ]] || [ "$P_CONNECTION" = "/" ]; then
+		sqlplus $P_CONNECTION "as sysdba" < $P_SCRIPT_RUN > $P_SCRIPT_OUT
+	else
+		sqlplus $P_CONNECTION < $P_SCRIPT_RUN > $P_SCRIPT_OUT
+	fi
+}
+
+function f_specific_remote_sqlexec() {
+	local P_CONNECTION=$1
+	local P_SCRIPT_RUN=$2
+	local P_SCRIPT_OUT=$3
+
+	if [[ "$P_CONNECTION" =~ "sys/" ]] || [ "$P_CONNECTION" = "/" ]; then
+		ssh $C_ENV_CONFIG_REMOTE_HOSTLOGIN "cd $C_ENV_CONFIG_REMOTE_ROOT; rm -rf $P_SCRIPT_OUT; . $C_ENV_CONFIG_REMOTE_SETORAENV $C_ENV_CONFIG_ENV $C_ENV_CONFIG_DB; sqlplus $P_CONNECTION "as sysdba" < $P_SCRIPT_RUN > $P_SCRIPT_OUT 2>&1"
+	else
+		ssh $C_ENV_CONFIG_REMOTE_HOSTLOGIN "cd $C_ENV_CONFIG_REMOTE_ROOT; rm -rf $P_SCRIPT_OUT; . $C_ENV_CONFIG_REMOTE_SETORAENV $C_ENV_CONFIG_ENV $C_ENV_CONFIG_DB; sqlplus $P_CONNECTION < $P_SCRIPT_RUN > $P_SCRIPT_OUT 2>&1"
+	fi
+
+}
+
+function f_specific_createloaddir() {
+	local P_LOADDIR=$1
+
+	echo "-- create export dir" >> $C_CONFIG_CREATEDATA_SQLFILE
+	echo "create or replace directory ORACLE_DYNAMICDATADIR as '$C_ENV_CONFIG_REMOTE_ROOT/$P_LOADDIR';" >> $C_CONFIG_CREATEDATA_SQLFILE
+}
+
+function f_specific_createloadinfotable() {
+	echo "-- setup table with uat table data" >> $C_CONFIG_CREATEDATA_SQLFILE
+	echo "drop table $C_ENV_CONFIG_TABLESET;" >> $C_CONFIG_CREATEDATA_SQLFILE
+	echo "create table $C_ENV_CONFIG_TABLESET ( tschema varchar2(128) , rschema varchar2(128), tname varchar2(128) , status char(1) );" >> $C_CONFIG_CREATEDATA_SQLFILE
+}
+
+function f_specific_addloadinforecord() {
+	local tschema_upper=$1
+	local rschema_upper=$2
+	local table_upper=$3
+	local status=$4
+
+	echo "insert into $C_ENV_CONFIG_TABLESET ( tschema , rschema , tname , status ) values ( '$tschema_upper' , '$rschema_upper' , '$table_upper' , '$status' );" >> $C_CONFIG_CREATEDATA_SQLFILE
+}
