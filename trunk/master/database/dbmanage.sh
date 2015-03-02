@@ -1,21 +1,30 @@
 #!/bin/bash 
 # Copyright 2011-2015 vsavchik@gmail.com
 
+cd `dirname $0`
+
 DBMSTYPE=$1
-OP=$2
-RELEASE=$3
-TNSNAME=$4
-ALIGNEDID=$5
+TNSNAME=$2
+OP=$3
+
 if [ "$DBMSTYPE" = "" ]; then
 	echo dbmanage.sh: DBMSTYPE not set
 	exit 1
 fi
-if [ "$RELEASE" = "" ]; then
-	echo dbmanage.sh: RELEASE not set
-	exit 1
-fi
 if [ "$TNSNAME" = "" ]; then
 	echo dbmanage.sh: TNSNAME not set
+	exit 1
+fi
+if [ "$OP" = "" ]; then
+	echo dbmanage.sh: OP not set
+	exit 1
+fi
+
+RELEASE=$4
+ALIGNEDID=$5
+
+if [ "$RELEASE" = "" ]; then
+	echo dbmanage.sh: RELEASE not set
 	exit 1
 fi
 if [ "$ALIGNEDID" = "" ]; then
@@ -99,6 +108,13 @@ function f_local_execute_execafter() {
 	f_admindb_checkandfinishrelease $DBMSTYPE $RELEASE $TNSNAME
 }
 
+function f_local_execute_checkconnect() {
+	f_specific_check_dbms_available $DBMSTYPE $TNSNAME $C_CONFIG_SCHEMAADMIN
+	local RES=$?
+
+	return $RES
+}
+
 function f_local_execute_all() {
 	if [ "$OP" != "execbefore" ]; then
 		f_admindb_getreleasestatus $DBMSTYPE $RELEASE $TNSNAME
@@ -122,6 +138,9 @@ function f_local_execute_all() {
 
 	elif [ "$OP" = "execafter" ]; then
 		f_local_execute_execafter $EXECUTE_PARAMS
+
+	elif [ "$OP" = "checkconnect" ]; then
+		f_local_execute_checkconnect
 
 	else
 		echo unknown operation=$OP. Exiting
