@@ -286,6 +286,7 @@ function f_specific_admin_get_releasestatuses() {
 		select ID || '=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' order by ID;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 300 $P_FILE
+	sed -i "s/^ *//" $P_FILE
 }
 
 function f_specific_admin_delete_scriptstatus() {
