@@ -93,7 +93,7 @@ function f_exec_limited() {
 		sh -c "MARKER=$F_MARKER; ./$F_MARKER < $P_INFILE > $P_RESFILE 2>&1"
 		F_STATUS=$?
 	else
-		S_EXEC_LIMITED_OUTPUT=`sh -c "MARKER=$F_MARKER; ./$F_MARKER < $P_INFILE"`
+		S_EXEC_LIMITED_OUTPUT=`sh -c "MARKER=$F_MARKER; ./$F_MARKER 2>&1 < $P_INFILE"`
 		F_STATUS=$?
 	fi
 
