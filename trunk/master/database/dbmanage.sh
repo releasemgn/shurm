@@ -116,7 +116,7 @@ function f_local_execute_checkconnect() {
 }
 
 function f_local_execute_all() {
-	if [ "$OP" != "execbefore" ]; then
+	if [ "$OP" = "rollback" ] || [ "$OP" = "correct" ] || [ "$OP" = "print" ] || [ "$OP" = "execafter" ]; then
 		f_admindb_getreleasestatus $DBMSTYPE $RELEASE $TNSNAME
 		if [ "$C_ADMINDB_RELEASESTATUS" = "" ]; then
 			echo $F_TNSNAME: unknown release=$RELEASE. Exiting
