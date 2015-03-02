@@ -475,3 +475,20 @@ function f_specific_admin_get_failedscripts() {
 #		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep "SCRIPT=" | cut -d "=" -f2 | tr "\n" " "`
 #	fi
 }
+
+function f_specific_check_dbms_available() {
+	local P_DB_TNS_NAME=$1
+	local P_SCHEMA=$2
+
+	# check tnsname is sql client is available
+	local F_FINDSQLPLUS=`which sqlplus 2>&1`
+	if [ "$F_FINDSQLPLUS" = "" ] || [[ "$F_FINDSQLPLUS" =~ "no sqlplus" ]]; then
+		return 0
+	fi
+
+	echo check schema=$P_SCHEMA ...
+	f_check_db_connect "oracle" $P_DB_TNS_NAME $P_SCHEMA
+	local RES=$?
+
+	return $RES
+}
