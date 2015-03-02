@@ -204,7 +204,7 @@ function f_specific_add_sqlheader() {
 	exit 1
 
 	echo -- standard script header
-	echo select now();
+	echo "select now();"
 }
 
 function f_specific_add_forceexit() {
