@@ -1,6 +1,8 @@
 # PostgreSQL-specific implementations
 
 S_SPECIFIC_CONNECT=
+S_SPECIFIC_MASK=
+
 function f_postgres_getconnect() {
 	local P_DB_TNS_NAME=$1
 	
@@ -8,6 +10,25 @@ function f_postgres_getconnect() {
 	local DBHOST=${P_DB_TNS_NAME#*@}
 
 	S_SPECIFIC_CONNECT="-d $DBNAME -h $DBHOST"
+}
+
+function f_postgres_sqlidx_getmask() {
+	local P_FIELD=$1
+	local P_EXECUTE_LIST="$2"
+	local P_ALIGNEDID=$3
+
+	local F_GREP="1 = 2"
+	for index in $EXECUTE_LIST; do
+		if [[ "$index" =~ ^[0-9] ]]; then
+			F_GREP="$F_GREP OR $P_FIELD like '$index-%'"
+		else
+			# treat index as source folder name
+			f_sqlidx_getmask $index $P_ALIGNEDID
+			F_GREP="$F_GREP OR regexp_count( $P_FIELD , '^$S_SQL_DIRMASK' ) = 1"
+		fi
+	done
+
+	S_SPECIFIC_MASK="$F_GREP"
 }
 
 ###########################################
@@ -397,13 +418,10 @@ function f_specific_admin_deletescripts() {
 	local P_IDLIST="$5"
 	local P_ALIGNEDID=$6
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
+	f_postgres_sqlidx_getmask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
+	local F_POSTGRESMASK="$S_SPECIFIC_MASK"
 
-#	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-#	local F_POSTGRESMASK="$S_SQL_LISTMASK"
-
-	local F_CTLSQL="delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and ( $F_POSTGRESMASK );"
+	local F_CTLSQL="delete from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and ( $F_POSTGRESMASK );"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 }
@@ -427,13 +445,10 @@ function f_specific_admin_fix_releaseitems() {
 	local P_IDLIST="$5"
 	local P_ALIGNEDID=$6
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
+	f_postgres_sqlidx_getmask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
+	local F_POSTGRESMASK="$S_SPECIFIC_MASK"
 
-#	f_sqlidx_getoraclemask "FILENAME" "$P_IDLIST" $P_ALIGNEDID
-#	local F_POSTGRESMASK="$S_SQL_LISTMASK"
-
-	local F_CTLSQL="update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$P_RELEASE' and script_status <> 'A' and ( $F_POSTGRESMASK );"
+	local F_CTLSQL="update $C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$P_RELEASE' and script_status <> 'A' and ( $F_POSTGRESMASK );"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 }
