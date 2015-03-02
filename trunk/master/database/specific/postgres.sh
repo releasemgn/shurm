@@ -109,7 +109,8 @@ function f_specific_check_connect() {
 	S_SPECIFIC_VALUE=""
 
 	f_postgres_getconnect $P_DB_TNS_NAME
-	f_exec_limited 30 "export PGPASSWORD=$P_DB_USE_SCHEMA_PASSWORD; (echo select \'value=ok\' as x\;) | psql $S_SPECIFIC_CONNECT -U $P_SCHEMA | egrep \"ORA-\""
+	export PGPASSWORD=$P_DB_USE_SCHEMA_PASSWORD
+	f_exec_limited 30 "(echo select \'value=ok\' as x\;) | psql $S_SPECIFIC_CONNECT -U $P_SCHEMA | egrep \"ORA-\""
 
 	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
 		S_SPECIFIC_VALUE="KILLED"
@@ -130,8 +131,8 @@ function f_specific_check_output() {
 
 	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
 		S_SPECIFIC_VALUE="KILLED"
-#	else
-#		S_SPECIFIC_VALUE=$(egrep "(ORA-|PLS-|SP2-)" $P_FILE)
+	else
+		S_SPECIFIC_VALUE=$(grep "^ERROR:" $P_FILE)
 	fi
 }
 
