@@ -109,7 +109,7 @@ function f_local_execute_execafter() {
 }
 
 function f_local_execute_checkconnect() {
-	f_specific_check_dbms_available $DBMSTYPE $TNSNAME $C_CONFIG_SCHEMAADMIN
+	f_specific_check_dbms_available $TNSNAME $C_CONFIG_SCHEMAADMIN
 	local RES=$?
 
 	return $RES
