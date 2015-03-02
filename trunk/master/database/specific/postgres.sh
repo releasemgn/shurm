@@ -481,8 +481,8 @@ function f_specific_check_dbms_available() {
 	local P_SCHEMA=$2
 
 	# check tnsname is sql client is available
-	local F_FINDSQLPLUS=`which sqlplus 2>&1`
-	if [ "$F_FINDSQLPLUS" = "" ] || [[ "$F_FINDSQLPLUS" =~ "no sqlplus" ]]; then
+	local F_FINDSQLPLUS=`which psql 2>&1`
+	if [ "$F_FINDSQLPLUS" = "" ] || [[ "$F_FINDSQLPLUS" =~ "no psql" ]]; then
 		return 0
 	fi
 
