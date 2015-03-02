@@ -229,17 +229,6 @@ function f_specific_loadfile() {
 
 	echo NOT IMPLEMENTED. Exiting
 	exit 1
-
-	S_SPECIFIC_VALUE=""
-
-	local F_CTLNAME=`basename $P_FILE_NAME`
-
-#	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-#	sqlldr $P_SCHEMA/"$P_DB_USE_SCHEMA_PASSWORD"@$P_DB_TNS_NAME control=$P_FILE_NAME log=$P_OUTDIR/$F_CTLNAME.log bad=$P_OUTDIR/$F_CTLNAME.bad >> $P_OUTDIR/$F_CTLNAME.out
-
-#	if [ $? -ne 0 ]; then
-#		S_SPECIFIC_VALUE="sqlldr failed - see $P_OUTDIR/$F_CTLNAME.log"
-#	fi
 }
 
 #################################
