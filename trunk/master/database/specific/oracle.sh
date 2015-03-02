@@ -570,3 +570,35 @@ function f_specific_addloadinforecord() {
 
 	echo "insert into $C_ENV_CONFIG_TABLESET ( tschema , rschema , tname , status ) values ( '$tschema_upper' , '$rschema_upper' , '$table_upper' , '$status' );" >> $C_CONFIG_CREATEDATA_SQLFILE
 }
+
+function f_specific_export_schemadata_all() {
+	local P_LOADCONNECTION=$1
+	local P_DUMP=$2
+	local P_LOG=$3
+	local P_SCHEMA=$4
+
+	f_specific_expdp $P_LOADCONNECTION "DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$P_DUMP LOGFILE=$P_LOG schemas=$P_SCHEMA CONTENT=DATA_ONLY"
+}
+
+function f_specific_export_schemadata_selected() {
+	local P_LOADCONNECTION=$1
+	local P_DUMP=$2
+	local P_LOG=$3
+	local P_SCHEMA=$4
+
+	# impossible to adopt to oracle quotes and shell !
+	if [[ "$P_LOADCONNECTION" =~ "sys/" ]] || [ "$P_LOADCONNECTION" = "/" ]; then
+		echo "execute expdp \"$P_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$P_DUMP LOGFILE=$P_LOG schemas=$P_SCHEMA CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$P_SCHEMA\'\)\" ..."
+		expdp \"$P_LOADCONNECTION as sysdba\" DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$P_DUMP LOGFILE=$P_LOG schemas=$P_SCHEMA CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$P_SCHEMA\'\)\"
+	else
+		echo "execute expdp $P_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$P_DUMP LOGFILE=$P_LOG schemas=$P_SCHEMA CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$P_SCHEMA\'\)\" ..."
+		expdp $P_LOADCONNECTION DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=$P_DUMP LOGFILE=$P_LOG schemas=$P_SCHEMA CONTENT=DATA_ONLY include=TABLE:\"IN \(select tname from $C_ENV_CONFIG_TABLESET where status = \'S\' and tschema = \'$P_SCHEMA\'\)\"
+	fi
+}
+
+function f_specific_exportmeta() {
+	f_expdp $S_LOADCONNECTION "CONTENT=METADATA_ONLY schemas=$P_SCHEMA_SET exclude=STATISTICS DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=meta.dmp LOGFILE=meta.log"
+
+	#----------------- export role data
+	f_expdp $S_LOADCONNECTION "full=y INCLUDE=role DIRECTORY=$C_ENV_CONFIG_DATAPUMP_DIR DUMPFILE=role.dmp LOGFILE=role.log"
+}
