@@ -181,8 +181,10 @@ function f_specific_exec_sqlfile() {
 		P_LIMIT=600
 	fi
 
-#	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-#	f_exec_limited $P_LIMIT "sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME" $P_OUTFILE $P_SCRIPTFILE
+	export PGCLIENTENCODING=WIN1251
+	export PGPASSWORD=$P_DB_USE_SCHEMA_PASSWORD
+	f_postgres_getconnect $P_DB_TNS_NAME
+	f_exec_limited $P_LIMIT "psql $S_SPECIFIC_CONNECT -U $P_SCHEMA -e" $P_OUTFILE $P_SCRIPTFILE
 	f_specific_check_output $P_OUTFILE
 }
 
@@ -192,13 +194,6 @@ function f_specific_exec_sqlsys() {
 
 	echo NOT IMPLEMENTED. Exiting
 	exit 1
-
-	S_SPECIFIC_VALUE=""
-
-#	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-#	F_CHECK_OUT=`sqlplus sys/"$P_PASSWORD"@$P_DB_TNS_NAME "as sysdba" 2>&1`
-
-#	S_SPECIFIC_VALUE=`echo $F_CHECK_OUT | egrep "(ORA-|PLS-|SP2-)"`
 }
 
 function f_specific_add_sqlheader() {
@@ -209,10 +204,7 @@ function f_specific_add_sqlheader() {
 	exit 1
 
 	echo -- standard script header
-#	echo set define off
-#	echo set echo on
-#	echo spool $P_OUTDIR/$P_SCRIPTNAME.spool append
-#	echo select sysdate from dual\;
+	echo select now();
 }
 
 function f_specific_add_forceexit() {
