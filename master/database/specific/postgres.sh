@@ -124,9 +124,6 @@ function f_specific_check_connect() {
 function f_specific_check_output() {
 	local P_FILE=$1
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
 	S_SPECIFIC_VALUE=""
 
 	if [ "$S_EXEC_LIMITED_OUTPUT" = "KILLED" ]; then
@@ -143,9 +140,6 @@ function f_specific_exec_sqlcmd() {
 	local P_CMD="$4"
 	local P_LIMIT=$5
 	local P_OUTFILE="$6"
-
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
 
 	S_SPECIFIC_VALUE=""
 
@@ -174,9 +168,6 @@ function f_specific_exec_sqlfile() {
 	local P_LIMIT=$5
 	local P_OUTFILE="$6"
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
 	if [ "$P_LIMIT" = "" ]; then
 		P_LIMIT=600
 	fi
@@ -199,9 +190,6 @@ function f_specific_exec_sqlsys() {
 function f_specific_add_sqlheader() {
 	local P_SCRIPTNAME=$1
 	local P_OUTDIR=$2
-
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
 
 	echo -- standard script header
 	echo "select now();"
