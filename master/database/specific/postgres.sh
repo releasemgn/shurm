@@ -241,7 +241,7 @@ function f_specific_admin_add_insert_script() {
 	local P_SCRIPTNUM=$3
 	local P_SCRIPTNAME=$4
 
-	echo "INSERT INTO $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS (RELEASE, SCHEMA, ID, FILENAME, UPDATETIME, UPDATEUSERID, SCRIPT_STATUS)"
+	echo "INSERT INTO $C_CONFIG_SCHEMAADMIN_SCRIPTS (RELEASE, SCHEMA, ID, FILENAME, UPDATETIME, UPDATEUSERID, SCRIPT_STATUS)"
 	echo "VALUES ('$P_RELEASE', '$P_SCHEMA', $P_SCRIPTNUM, '$P_SCRIPTNAME', now(), current_user , 'S');"
 	echo "COMMIT;"
 }
@@ -250,7 +250,7 @@ function f_specific_admin_add_update_script() {
 	local P_RELEASE=$1
 	local P_SCRIPTNUM=$2
 
-	echo "update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set UPDATETIME=now() where RELEASE='$P_RELEASE' and ID=$P_SCRIPTNUM;"
+	echo "update $C_CONFIG_SCHEMAADMIN_SCRIPTS set UPDATETIME=now() where RELEASE='$P_RELEASE' and ID=$P_SCRIPTNUM;"
 	echo "commit;"
 }
 
@@ -263,7 +263,7 @@ function f_specific_admin_update_scriptstatus() {
 	local P_STATUS=$6
 	
 	local F_CTLSQL="
-		update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set SCRIPT_STATUS='$P_STATUS' where RELEASE='$P_RELEASE' and ID=$P_SCRIPTNUM;
+		update $C_CONFIG_SCHEMAADMIN_SCRIPTS set SCRIPT_STATUS='$P_STATUS' where RELEASE='$P_RELEASE' and ID=$P_SCRIPTNUM;
 		commit;"
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 }
@@ -275,10 +275,7 @@ function f_specific_admin_get_scriptstatus() {
 	local P_RELEASE=$4
 	local P_SCRIPTNUM=$5
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="select 'VALUE=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and ID=$P_SCRIPTNUM;"
+	local F_CTLSQL="select 'VALUE=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and ID=$P_SCRIPTNUM;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
@@ -297,12 +294,8 @@ function f_specific_admin_get_releasestatuses() {
 	local P_RELEASE=$4
 	local P_FILE=$5
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="
-#		set pagesize 0
-#		select ID || '=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' order by ID;"
+	local F_CTLSQL="
+		select ID || '=' || SCRIPT_STATUS || '=' as x from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' order by ID;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 300 $P_FILE
 }
@@ -315,7 +308,7 @@ function f_specific_admin_delete_scriptstatus() {
 	local P_SCRIPTNUM=$5
 
 	local F_CTLSQL="
-		delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where RELEASE = '$P_RELEASE' and ID = $P_SCRIPTNUM;
+		delete from $C_CONFIG_SCHEMAADMIN_SCRIPTS where RELEASE = '$P_RELEASE' and ID = $P_SCRIPTNUM;
 		echo commit;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
@@ -327,15 +320,12 @@ function f_specific_admin_get_releasestatus() {
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 	local P_RELEASE=$4
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="select 'VALUE=' || rel_status || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES where release='$P_RELEASE';"
+	local F_CTLSQL="select 'VALUE=' || rel_status || '=' as x from $C_CONFIG_SCHEMAADMIN_RELEASES where release='$P_RELEASE';"
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 
-#	if [ "$S_SPECIFIC_VALUE" = "" ]; then
-#		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
-#	fi
+	if [ "$S_SPECIFIC_VALUE" = "" ]; then
+		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
+	fi
 }
 
 function f_specific_admin_get_releasescriptcount() {
@@ -344,15 +334,12 @@ function f_specific_admin_get_releasescriptcount() {
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 	local P_RELEASE=$4
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE';"
+	local F_CTLSQL="select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE';"
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 
-#	if [ "$S_SPECIFIC_VALUE" = "" ]; then
-#		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
-#	fi
+	if [ "$S_SPECIFIC_VALUE" = "" ]; then
+		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
+	fi
 }
 
 function f_specific_admin_get_releasescriptfailedcount() {
@@ -361,15 +348,12 @@ function f_specific_admin_get_releasescriptfailedcount() {
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 	local P_RELEASE=$4
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and script_status='S';"
+	local F_CTLSQL="select 'VALUE=' || count(*) || '=' as x from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE' and script_status='S';"
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 
-#	if [ "$S_SPECIFIC_VALUE" = "" ]; then
-#		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
-#	fi
+	if [ "$S_SPECIFIC_VALUE" = "" ]; then
+		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep VALUE | cut -d "=" -f2`
+	fi
 }
 
 function f_specific_admin_create_release() {
@@ -383,7 +367,7 @@ function f_specific_admin_create_release() {
 	local P_REL_P4=$8
 
 	local F_CTLSQL="
-		INSERT INTO $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES (release, rel_p1, rel_p2, rel_p3, rel_p4, begin_apply_time, end_apply_time, rel_status )
+		INSERT INTO $C_CONFIG_SCHEMAADMIN_RELEASES (release, rel_p1, rel_p2, rel_p3, rel_p4, begin_apply_time, end_apply_time, rel_status )
 		VALUES ( '$P_RELEASE', $P_REL_P1, $P_REL_P2, $P_REL_P3, $P_REL_P4, now(), NULL, 'S' );
 		COMMIT;"
 
@@ -397,7 +381,7 @@ function f_specific_admin_finish_release() {
 	local P_RELEASE=$4
 
 	local F_CTLSQL="
-		UPDATE $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES set end_apply_time=now(), rel_status='A' where release='$P_RELEASE';
+		UPDATE $C_CONFIG_SCHEMAADMIN_RELEASES set end_apply_time=now(), rel_status='A' where release='$P_RELEASE';
 		COMMIT;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
@@ -410,8 +394,8 @@ function f_specific_admin_drop_release() {
 	local P_RELEASE=$4
 
 	local F_CTLSQL="
-		delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE';
-		delete from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_RELEASES where release='$P_RELEASE';"
+		delete from $C_CONFIG_SCHEMAADMIN_SCRIPTS where release='$P_RELEASE';
+		delete from $C_CONFIG_SCHEMAADMIN_RELEASES where release='$P_RELEASE';"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 }
@@ -441,7 +425,7 @@ function f_specific_admin_fixall_release() {
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 	local P_RELEASE=$4
 
-	local F_CTLSQL="update $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$P_RELEASE' and script_status <> 'A';"
+	local F_CTLSQL="update $C_CONFIG_SCHEMAADMIN_SCRIPTS set script_status = 'A' where release='$P_RELEASE' and script_status <> 'A';"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 }
@@ -471,16 +455,13 @@ function f_specific_admin_get_failedscripts() {
 	local P_DB_USE_SCHEMA_PASSWORD="$3"
 	local P_RELEASE=$4
 
-	echo NOT IMPLEMENTED. Exiting
-	exit 1
-
-#	local F_CTLSQL="select 'SCRIPT=' || ID as script from $C_CONFIG_SCHEMAADMIN.$C_CONFIG_SCHEMAADMIN_SCRIPTS where script_status <> 'A' and release='$P_RELEASE' order by 1;"
+	local F_CTLSQL="select 'SCRIPT=' || ID as script from $C_CONFIG_SCHEMAADMIN_SCRIPTS where script_status <> 'A' and release='$P_RELEASE' order by 1;"
 
 	f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$P_DB_USE_SCHEMA_PASSWORD" "$F_CTLSQL" 60
 
-#	if [ "$S_SPECIFIC_VALUE" = "" ]; then
-#		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep "SCRIPT=" | cut -d "=" -f2 | tr "\n" " "`
-#	fi
+	if [ "$S_SPECIFIC_VALUE" = "" ]; then
+		S_SPECIFIC_OUTPUT=`echo "$S_SPECIFIC_OUTPUT" | grep "SCRIPT=" | cut -d "=" -f2 | tr "\n" " "`
+	fi
 }
 
 function f_specific_check_dbms_available() {
