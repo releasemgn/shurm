@@ -122,8 +122,8 @@ function f_execute_fillinitial() {
 
 	echo "-- prepare" > $C_CONFIG_CREATEDATA_SQLFILE
 
-	# dynamic oracle dir
-	if [ "$C_ENV_CONFIG_DATAPUMP_DIR" = "ORACLE_DYNAMICDATADIR" ]; then
+	# dynamic load dir
+	if [ "$C_ENV_CONFIG_DATAPUMP_DIR" = "ORACLE_DYNAMICDATADIR" ] || [ "$C_ENV_CONFIG_DATAPUMP_DIR" = "DYNAMICDATADIR" ]; then
 		local F_LOADDIR=`echo $C_ENV_CONFIG_LOADDIR | tr " " "\n" | grep "$P_DBC=" | cut -d "=" -f2`
 		f_specific_createloaddir $F_LOADDIR
 	fi
