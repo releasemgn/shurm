@@ -48,7 +48,7 @@ function f_local_execute_db() {
 	local F_TNSNAME="$C_ENV_SERVER_DBTNSNAME"
 	local F_SCHEMALIST="$C_ENV_SERVER_DBSCHEMALIST"
 
-	./dbmanage.sh $F_DBMSTYPE "$EXECUTEMODE" $RELEASE $F_TNSNAME $S_ALIGNED_ID "$EXECUTE_LIST"
+	./dbmanage.sh $F_DBMSTYPE $F_TNSNAME "$EXECUTEMODE" $RELEASE $S_ALIGNED_ID "$EXECUTE_LIST"
 }
 
 function f_local_execute_all() {

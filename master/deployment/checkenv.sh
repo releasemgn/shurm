@@ -337,8 +337,9 @@ function f_local_checkenv_database_one() {
 
 function f_local_checkenv_database() {
 	local P_PROGRAMNAME=$1
-	local P_TNSNAME=$2
-	local P_ENV_HOSTLOGINLIST="$3"
+	local P_DBMSTYPE=$2
+	local P_TNSNAME=$3
+	local P_ENV_HOSTLOGINLIST="$4"
 
 	echo check $P_PROGRAMNAME...
 
@@ -363,15 +364,11 @@ function f_local_checkenv_database() {
 		return 1
 	fi
 
-	# check tnsname is sql client is available
-	local F_FINDSQLPLUS=`which sqlplus 2>&1`
-	if [ "$F_FINDSQLPLUS" != "" ] && [[ ! "$F_FINDSQLPLUS" =~ "no sqlplus" ]]; then
-		local F_TNSSTATUS=`sqlplus wrong/wrong@$P_TNSNAME < /dev/null | grep ORA`
-		if [[ ! "$F_TNSSTATUS" =~ "invalid username/password" ]]; then
-			echo "database server tnsname=$P_TNSNAME is not available"
-			S_CHECKENV_SERVER_FAILED=tnsname
-			return 1
-		fi
+	$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/master/database/dbmanage.sh $P_DBMSTYPE $P_TNSNAME "checkconnect" "ignore" "ignore"
+	if [ "$?" != "0" ]; then
+		echo "database server tnsname=$P_TNSNAME is not available"
+		S_CHECKENV_SERVER_FAILED=tnsname
+		return 1
 	fi
 
 	return 0
@@ -434,7 +431,7 @@ function f_local_execute_server_single() {
 		f_local_check_endpoints $F_GENERIC_PROGRAMNAME "$F_NLB_WEBDOMAIN" "$F_GENERIC_HOSTLOGIN_LIST" $F_GENERIC_PORT "$F_GENERIC_COMPONENT_LIST"
 
 	elif [ "$F_SERVER_TYPE" = "database" ]; then
-		f_local_checkenv_database $P_SRVNAME $C_ENV_SERVER_DBTNSNAME "$C_ENV_SERVER_HOSTLOGIN_LIST"
+		f_local_checkenv_database $P_SRVNAME $C_ENV_SERVER_DBMSTYPE $C_ENV_SERVER_DBTNSNAME "$C_ENV_SERVER_HOSTLOGIN_LIST"
 
 	else
 		echo unknown server type=$F_SERVER_TYPE. Exiting

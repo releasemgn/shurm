@@ -5,8 +5,8 @@
 	rel_p2 integer default 0,
 	rel_p3 integer default 0,
 	rel_p4 integer default 0,
-	begin_apply_time date,
-	end_apply_time date,
+	begin_apply_time timestamp without time zone,
+	end_apply_time timestamp without time zone,
 	rel_status char(1)
    ) ;
 
@@ -19,7 +19,7 @@
 	schema varchar(30),
 	id numeric(100,0),
 	filename varchar(255),
-	updatetime date,
+	updatetime timestamp without time zone,
 	updateuserid varchar(30),
 	script_status char(1)
    );
