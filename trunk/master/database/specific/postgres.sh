@@ -153,14 +153,16 @@ function f_specific_exec_sqlcmd() {
 		P_LIMIT=600
 	fi
 
-#	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-#	f_exec_limited $P_LIMIT "sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME \"$P_CMD\"" $P_OUTFILE
+	export PGCLIENTENCODING=WIN1251
+	export PGPASSWORD=$P_DB_USE_SCHEMA_PASSWORD
+	f_postgres_getconnect $P_DB_TNS_NAME
+	f_exec_limited $P_LIMIT "echo \"$P_CMD\" | psql $S_SPECIFIC_CONNECT -U $P_SCHEMA" $P_OUTFILE
 
 	if [ "$P_OUTFILE" != "" ]; then
 		f_specific_check_output $P_OUTFILE
 	else
 		S_SPECIFIC_OUTPUT="$S_EXEC_LIMITED_OUTPUT"
-#		S_SPECIFIC_VALUE=$(echo $S_EXEC_LIMITED_OUTPUT | egrep "(ORA-|PLS-|SP2-)")
+		S_SPECIFIC_VALUE=$(echo $S_EXEC_LIMITED_OUTPUT | grep "^ERROR:")
 	fi		
 }
 
