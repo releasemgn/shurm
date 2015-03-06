@@ -6,9 +6,10 @@ cd `dirname $0`
 . ./getopts.sh
 
 P_MODULENAME=$1
-P_MODULEPATH=$2
-P_BRANCH=$3
-P_VERSION=$4
+P_REPOSITORY=$2
+P_MODULEPATH=$3
+P_BRANCH=$4
+P_VERSION=$5
 
 . ./common.sh
 
@@ -20,10 +21,10 @@ function f_local_setvesion() {
 	fi
 
 	local PATCHPATH=$C_CONFIG_BUILDPATH/$F_MODE/$P_MODULENAME
-	echo setversion.sh MODULENAME=$P_MODULENAME, MODULEPATH=$P_MODULEPATH, BRANCH=$P_BRANCH, VERSION=$P_VERSION, PATCHPATH=$PATCHPATH ...
+	echo setversion.sh MODULENAME=$P_MODULENAME, REPOSITORY=$P_REPOSITORY MODULEPATH=$P_MODULEPATH, BRANCH=$P_BRANCH, VERSION=$P_VERSION, PATCHPATH=$PATCHPATH ...
 
 	rm -rf $PATCHPATH
-	./vcscheckout.sh "$PATCHPATH" "$P_MODULENAME" "$P_MODULEPATH" "$P_BRANCH" > /dev/null
+	./vcscheckout.sh "$PATCHPATH" "$P_MODULENAME" "$P_REPOSITORY" "$P_MODULEPATH" "$P_BRANCH" > /dev/null
 
 	if [ "$?" != "0" ]; then
 		echo error calling vcscheckout.sh. Exiting
@@ -66,7 +67,7 @@ function f_local_setvesion() {
 
 	cd $F_SAVEDIR
 	
-	./vcscommit.sh $PATCHPATH "$P_MODULENAME" "$P_MODULEPATH" "PGU-0000: set version $P_VERSION"
+	./vcscommit.sh $PATCHPATH "$P_MODULENAME" "$P_REPOSITORY" "$P_MODULEPATH" "PGU-0000: set version $P_VERSION"
 
 	if [ "$?" != "0" ]; then
 		echo error calling vcscommit.sh. Exiting

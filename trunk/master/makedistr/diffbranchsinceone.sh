@@ -8,8 +8,9 @@ SINCE_SUB=$1
 TILL_SUB=$2
 OUTDIR=$3
 MODULE=$4
-MODULE_PATH=$5
-JIRA_PROJECT=$6
+REPOSITORY=$5
+MODULE_PATH=$6
+JIRA_PROJECT=$7
 
 . ./common.sh
 
@@ -38,7 +39,7 @@ echo VERSION CONTROL - `date`: > $FINFO
 echo COMMITS DONE: > $FINFO.commits
 echo differerence list: > $FDIFF
 
-./vcsdiff.sh MARKER $FINFO $FDIFF $MODULE $MODULE_PATH $TILL_SUB $SINCE_SUB
+./vcsdiff.sh MARKER $FINFO $FDIFF $MODULE $REPOSITORY $MODULE_PATH $TILL_SUB $SINCE_SUB
 
 echo JIRA LIST: > $FINFO.jira
 grep "$JIRA_PROJECT-" $FINFO.commits | cut -d":" -f1,2 | sort --unique >> $FINFO.jira

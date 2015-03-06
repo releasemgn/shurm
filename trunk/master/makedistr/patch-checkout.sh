@@ -7,8 +7,9 @@ cd `dirname $0`
 P_PATCHPATH=$1
 P_MODULESET=$2
 P_MODULENAME=$3
-P_MODULEPATH=$4
-P_TAG=$5
+P_REPOSITORY=$4
+P_MODULEPATH=$5
+P_TAG=$6
 
 # check params
 if [ "$P_PATCHPATH" = "" ]; then
@@ -23,6 +24,10 @@ if [ "$P_MODULENAME" = "" ]; then
 	echo patch-checkout.sh: P_MODULENAME not set
 	exit 1
 fi
+if [ "$P_REPOSITORY" = "" ]; then
+	echo patch-checkout.sh: P_REPOSITORY not set
+	exit 1
+fi
 if [ "$P_MODULEPATH" = "" ]; then
 	echo patch-checkout.sh: P_MODULEPATH not set
 	exit 1
@@ -34,7 +39,7 @@ fi
 
 function f_execute_all() {
 	# checkout
-	./vcscheckout.sh $P_PATCHPATH $P_MODULENAME $P_MODULEPATH ignore $P_TAG
+	./vcscheckout.sh $P_PATCHPATH $P_MODULENAME "$P_REPOSITORY" "$P_MODULEPATH" ignore $P_TAG
 	if [ $? -ne 0 ]; then
         	echo "patch-checkout.sh: having problem to check out"
 	        exit 1

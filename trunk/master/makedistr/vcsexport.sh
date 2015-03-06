@@ -6,10 +6,11 @@ cd `dirname $0`
 
 PATCHPATH=$1
 MODULE=$2
-MODULEPATH=$3
-BRANCH=$4
-TAG=$5
-DOWNLOADFILE=$6
+REPOSITORY=$3
+MODULEPATH=$4
+BRANCH=$5
+TAG=$6
+DOWNLOADFILE=$7
 
 . ./common.sh
 
@@ -27,12 +28,12 @@ function f_local_vcs_export_svn() {
 
 	local CO_PATH
 	if [ "$TAG" != "" ]; then
-		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG/$DOWNLOADFILE
+		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG/$DOWNLOADFILE
 	else
 		if [ "$BRANCH" = "trunk" ]; then
-			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/trunk/$DOWNLOADFILE
+			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$REPOSITORY/trunk/$DOWNLOADFILE
 		else
-			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/branches/$BRANCH/$DOWNLOADFILE
+			CO_PATH=$P_SVNPATH/$P_VCS_PATH/$REPOSITORY/branches/$BRANCH/$DOWNLOADFILE
 		fi
 	fi
 
@@ -48,7 +49,7 @@ function f_local_vcs_export_svn() {
 function f_local_vcs_export_git() {
 	local P_VCS_PATH=$1
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 	local CO_PATH=$C_GIT_REPONAME
 
 	echo "vcsexport.sh: export sources from $CO_PATH (branch=$BRANCH, tag=$TAG) to $PATCHPATH..."

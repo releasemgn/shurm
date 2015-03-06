@@ -16,7 +16,8 @@ function f_execute_buildone_core_tags() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_BUILD_OUTDIR" = "" ]; then
 		echo f_execute_buildone_core_tags: C_BUILD_OUTDIR is not set
@@ -29,14 +30,15 @@ function f_execute_buildone_core_tags() {
 
 	local BUILD_OPTIONS="$C_CONFIG_MODULE_BUILD_OPTIONS_CORE"
 	export MODULE_MAVEN_CMD=$C_SOURCE_PROJECT_MVNCMD
-	./buildone-tags.sh $C_BUILD_OUTDIR "$P_EXECUTE_SET" "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG "$BUILD_OPTIONS" $C_BUILD_APPVERSION
+	./buildone-tags.sh $C_BUILD_OUTDIR "$P_EXECUTE_SET" "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG "$BUILD_OPTIONS" $C_BUILD_APPVERSION
 }
 
 function f_execute_buildone_war_tags() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_BUILD_OUTDIR" = "" ]; then
 		echo f_execute_buildone_war_tags: C_BUILD_OUTDIR is not set
@@ -49,12 +51,13 @@ function f_execute_buildone_war_tags() {
 
 	local BUILD_OPTIONS="$C_CONFIG_MODULE_BUILD_OPTIONS_WAR"
 	export MODULE_MAVEN_CMD=$C_SOURCE_PROJECT_MVNCMD
-	./buildone-tags.sh $C_BUILD_OUTDIR "$P_EXECUTE_SET" "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG "$BUILD_OPTIONS" $C_BUILD_APPVERSION
+	./buildone-tags.sh $C_BUILD_OUTDIR "$P_EXECUTE_SET" "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG "$BUILD_OPTIONS" $C_BUILD_APPVERSION
 }
 
 function f_execute_download_wardistr() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
+	local P_REPOSITORY=$3
 
 	if [ "$C_VERSION" = "" ]; then
 		echo f_execute_download_wardistr: C_VERSION is not set
@@ -102,6 +105,7 @@ function f_execute_download_wardistr() {
 function f_execute_download_lib() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
+	local P_REPOSITORY=$3
 
 	if [ "$C_VERSION" = "" ]; then
 		echo f_execute_download_lib: C_VERSION is not set
@@ -130,6 +134,7 @@ function f_execute_download_lib() {
 function f_execute_copy_release_to_release() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
+	local P_REPOSITORY=$3
 
 	./copy-releaseproject.sh $P_EXECUTE_SET $P_PROJECT
 }
@@ -138,8 +143,9 @@ function f_execute_vcssetbranchtag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	if [ "$C_TAG" = "" ]; then
 		echo f_execute_vcssetbranchtag: C_TAG is not set
@@ -155,14 +161,15 @@ function f_execute_vcssetbranchtag() {
 		F_BRANCHNAME=branches/$F_BRANCHNAME
 	fi
 
-	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCHNAME $C_TAG "$GETOPT_DATE"
+	./vcssettag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCHNAME $C_TAG "$GETOPT_DATE"
 }
 
 function f_execute_vcscopytag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_TAG1" = "" ]; then
 		echo f_execute_vcscopytag: C_TAG1 is not set
@@ -172,14 +179,15 @@ function f_execute_vcscopytag() {
 		echo f_execute_vcscopytag: C_TAG2 is not set
 		exit 1
 	fi
-	./vcscopytag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "tags/$C_TAG2"
+	./vcscopytag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "tags/$C_TAG2"
 }
 
 function f_execute_vcscopytagtobranch() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_TAG1" = "" ]; then
 		echo f_execute_vcscopytagtobranch: C_TAG1 is not set
@@ -189,14 +197,15 @@ function f_execute_vcscopytagtobranch() {
 		echo f_execute_vcscopytagtobranch: C_BRANCH2 is not set
 		exit 1
 	fi
-	./vcscopytag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "branches/$C_BRANCH2"
+	./vcscopytag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 "branches/$C_BRANCH2"
 }
 
 function f_execute_vcscopynewtag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_TAG1" = "" ]; then
 		echo f_execute_vcscopynewtag: C_TAG1 is not set
@@ -206,27 +215,29 @@ function f_execute_vcscopynewtag() {
 		echo f_execute_vcscopynewtag: C_TAG2 is not set
 		exit 1
 	fi
-	./vcscopynewtag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 $C_TAG2
+	./vcscopynewtag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 $C_TAG2
 }
 
 function f_execute_vcsdroptag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_TAG" = "" ]; then
 		echo f_execute_vcsdroptag: C_TAG is not set
 		exit 1
 	fi
-	./vcsdroptag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG
+	./vcsdroptag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG
 }
 
 function f_execute_vcsrenametag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	if [ "$C_TAG1" = "" ]; then
 		echo f_execute_vcsrenametag: C_TAG1 is not set
@@ -237,15 +248,16 @@ function f_execute_vcsrenametag() {
 		exit 1
 	fi
 
-	./vcsrenametag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 $C_TAG2
+	./vcsrenametag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_TAG1 $C_TAG2
 }
 
 function f_execute_vcscopybranch() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	if [ "$C_BRANCH1" = "" ] || [ "$C_BRANCH2" = "" ]; then
 		echo "f_execute_vcscopybranch: C_BRANCH1, C_BRANCH2 not set"
@@ -261,15 +273,16 @@ function f_execute_vcscopybranch() {
 		X_BRANCH2=$P_PROD_BRANCH
 	fi
 
-	./vcscopybranch.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $X_BRANCH1 $X_BRANCH2
+	./vcscopybranch.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $X_BRANCH1 $X_BRANCH2
 }
 
 function f_execute_vcsrenamebranch() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	if [ "$C_BRANCH1" = "" ] || [ "$C_BRANCH2" = "" ]; then
 		echo "f_execute_vcsrenamebranch: C_BRANCH1, C_BRANCH2 not set"
@@ -285,25 +298,27 @@ function f_execute_vcsrenamebranch() {
 		X_BRANCH2=$P_PROD_BRANCH
 	fi
 
-	./vcsrenamebranch.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $X_BRANCH1 $X_BRANCH2
+	./vcsrenamebranch.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $X_BRANCH1 $X_BRANCH2
 }
 
 function f_execute_start_settag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
 
 	local CANDIDATETAG=$C_CONFIG_APPVERSION_TAG
-	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_CONFIG_BRANCHNAME $CANDIDATETAG
+	./vcssettag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_CONFIG_BRANCHNAME $CANDIDATETAG
 }
 
 function f_execute_update_settag() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	F_BRANCH=$P_PROD_BRANCH
 	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
@@ -319,30 +334,32 @@ function f_execute_update_settag() {
 	fi
 
 	local F_TAG=$C_TAG
-	./vcssettag.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCH $F_TAG
+	./vcssettag.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $F_BRANCH $F_TAG
 }
 
 function f_execute_setversion() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	F_BRANCH=$P_PROD_BRANCH
 	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
 		F_BRANCH=$C_CONFIG_BRANCHNAME
 	fi
 
-	./setversion.sh "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$C_VERSION"
+	./setversion.sh "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$C_VERSION"
 }
 
 function f_execute_checkout() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	F_BRANCH=$P_PROD_BRANCH
 	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
@@ -356,15 +373,16 @@ function f_execute_checkout() {
 		exit 1
 	fi
 
-	./vcscheckout.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
+	./vcscheckout.sh $F_PATH "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH"
 }
 
 function f_execute_export() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	F_BRANCH=$P_PROD_BRANCH
 	if [ "$C_CONFIG_BRANCHNAME" != "" ]; then
@@ -379,15 +397,16 @@ function f_execute_export() {
 		exit 1
 	fi
 
-	./vcsexport.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$GETOPT_TAG"
+	./vcsexport.sh $F_PATH "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" "$F_BRANCH" "$GETOPT_TAG"
 }
 
 function f_execute_commit() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_PROD_BRANCH=$5
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_PROD_BRANCH=$6
 
 	local F_PATH=$C_TARGETDIR/$P_PROJECT
 	mkdir -p $F_PATH
@@ -400,7 +419,7 @@ function f_execute_commit() {
 		C_COMMITMSG="default commit message"
 	fi
 
-	./vcscommit.sh $F_PATH "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" "$C_COMMITMSG"
+	./vcscommit.sh $F_PATH "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" "$C_COMMITMSG"
 }
 
 function f_execute_diffbranchtag() {
@@ -408,8 +427,9 @@ function f_execute_diffbranchtag() {
 	local P_VCSTYPE=$2
 	local P_EXECUTE_SET=$3
 	local P_PROJECT=$4
-	local P_VCSPATH=$5
-	local P_PROD_BRANCH=$6
+	local P_REPOSITORY=$5
+	local P_VCSPATH=$6
+	local P_PROD_BRANCH=$7
 
 	if [ "$C_DIFF_SINCE" = "" ]; then
 		echo f_execute_diffbranchtag: C_DIFF_SINCE is not set
@@ -428,27 +448,29 @@ function f_execute_diffbranchtag() {
 		exit 1
 	fi
 
-	./vcsdiff.sh MARKER $C_FINFO $C_FDIFF "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $C_DIFF_TILL $C_DIFF_SINCE
+	./vcsdiff.sh MARKER $C_FINFO $C_FDIFF "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $C_DIFF_TILL $C_DIFF_SINCE
 }
 
 function f_execute_diffbranchsinceone() {
 	local P_VCSTYPE=$1
 	local P_EXECUTE_SET=$2
 	local P_PROJECT=$3
-	local P_VCSPATH=$4
-	local P_JIRA=$5
-	local P_PROD_BRANCH=$6
+	local P_REPOSITORY=$4
+	local P_VCSPATH=$5
+	local P_JIRA=$6
+	local P_PROD_BRANCH=$7
 
 	if [ "$C_BUILD_OUTDIR" = "" ]; then
 		echo f_diffbranchsinceone: C_BUILD_OUTDIR is not set
 		exit 1
 	fi
-	./diffbranchsinceone.sh prod-$C_CONFIG_VERSION_LAST_FULL $C_BUILD_OUTDIR "$P_PROJECT" "$P_VCSTYPE:$P_VCSPATH" $P_PROD_BRANCH $P_JIRA
+	./diffbranchsinceone.sh prod-$C_CONFIG_VERSION_LAST_FULL $C_BUILD_OUTDIR "$P_PROJECT" "$P_REPOSITORY" "$P_VCSTYPE:$P_VCSPATH" $P_PROD_BRANCH $P_JIRA
 }
 
 function f_execute_custom() {
 	local P_EXECUTE_SET=$1
 	local P_PROJECT=$2
+	local P_REPOSITORY=$3
 
 	if [ ! -f "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/custom/$C_CUSTOM_SCRIPT" ]; then
 		echo unknown custom script: $C_CUSTOM_SCRIPT. Exiting
@@ -477,6 +499,7 @@ function f_execute_one() {
 	local P_PROJECT=$4
 
 	f_source_readproject $P_EXECUTE_SET $project
+	local P_REPOSITORY=$C_SOURCE_REPOSITORY
 	local P_EXECUTE_MODE=$C_SOURCE_VERSION
 	local P_GROUP=$C_SOURCE_GROUP
 	local P_VCSTYPE=$C_SOURCE_VCS
@@ -504,71 +527,71 @@ function f_execute_one() {
 	case "$P_FUNCTION" in
 # build operations
 		CUSTOM)
-			f_execute_custom $P_EXECUTE_SET $P_PROJECT
+			f_execute_custom $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY
 			;;
 		BUILDCORE)
-			f_execute_buildone_core_tags $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_buildone_core_tags $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		BUILDWAR)
-			f_execute_buildone_war_tags $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_buildone_war_tags $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		DOWNLOADWAR)
-			f_execute_download_wardistr $P_EXECUTE_SET $P_PROJECT
+			f_execute_download_wardistr $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY
 			;;
 		DOWNLOADLIB)
-			f_execute_download_lib $P_EXECUTE_SET $P_PROJECT
+			f_execute_download_lib $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY
 			;;
 		COPYRELEASETORELEASE)
-			f_execute_copy_release_to_release $P_EXECUTE_SET $P_PROJECT
+			f_execute_copy_release_to_release $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY
 			;;
 # vcs operations
 		VCSSETBRANCHTAG)
-			f_execute_vcssetbranchtag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_vcssetbranchtag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSCOPYTAG)
-			f_execute_vcscopytag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcscopytag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		VCSCOPYTAGTOBRANCH)
-			f_execute_vcscopytagtobranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcscopytagtobranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		VCSCOPYNEWTAG)
-			f_execute_vcscopynewtag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcscopynewtag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		VCSDROPTAG)
-			f_execute_vcsdroptag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcsdroptag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		VCSRENAMETAG)
-			f_execute_vcsrenametag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_vcsrenametag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		VCSCOPYBRANCH)
-			f_execute_vcscopybranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_vcscopybranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSRENAMEBRANCH)
-			f_execute_vcsrenamebranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_vcsrenamebranch $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSCHECKOUT)
-			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_checkout $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSEXPORT)
-			f_execute_export $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_export $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		VCSCOMMIT)
-			f_execute_commit $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_commit $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		STARTCANDIDATETAGS)
-			f_execute_start_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH
+			f_execute_start_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH
 			;;
 		UPDATETAGS)
-			f_execute_update_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_update_settag $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		SETVERSION)
-			f_execute_setversion $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_setversion $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		DIFFBRANCHTAG)
-			f_execute_diffbranchtag $P_GROUP $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_PROD_BRANCH
+			f_execute_diffbranchtag $P_GROUP $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_PROD_BRANCH
 			;;
 		DIFFBRANCHSINCEONE)
-			f_execute_diffbranchsinceone $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_VCSPATH $P_JIRA $P_PROD_BRANCH
+			f_execute_diffbranchsinceone $P_VCSTYPE $P_EXECUTE_SET $P_PROJECT $P_REPOSITORY $P_VCSPATH $P_JIRA $P_PROD_BRANCH
 			;;
 	esac
 }
