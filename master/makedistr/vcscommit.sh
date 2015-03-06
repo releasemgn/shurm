@@ -6,8 +6,9 @@ cd `dirname $0`
 
 PATCHPATH=$1
 MODULE=$2
-MODULEPATH=$3
-COMMENT=$4
+REPOSITORY=$3
+MODULEPATH=$4
+COMMENT=$5
 
 . ./common.sh
 
@@ -57,7 +58,7 @@ function f_local_vcs_commit_git() {
 	git commit -m "PGU-0000: set version"
 	git push origin
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 
 	echo send to remote in $C_SOURCE_PROJECT.git ...
 	f_git_pushmirror $C_GIT_REPONAME

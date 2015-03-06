@@ -5,14 +5,19 @@ cd `dirname $0`
 . ./getopts.sh
 
 MODULE=$1
-MODULEPATH=$2
-TAG=$3
+REPOSITORY=$2
+MODULEPATH=$3
+TAG=$4
 
 . ./common.sh
 
 # check params
 if [ "$MODULE" = "" ]; then
 	echo MODULE not set
+	exit 1
+fi
+if [ "$REPOSITORY" = "" ]; then
+	echo REPOSITORY not set
 	exit 1
 fi
 if [ "$TAG" = "" ]; then
@@ -30,19 +35,19 @@ function f_local_vcs_droptag_svn() {
 	local P_SVNPATH=$2
 	local P_SVNAUTH=$3
 
-	F_SVNSTATUS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG 2>&1 | grep -c 'Not a valid URL'`
+	F_SVNSTATUS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG 2>&1 | grep -c 'Not a valid URL'`
 	if [ "$F_SVNSTATUS" != "0" ]; then
 		echo tag $TAG does not exist. Skipped.
 		exit 0
 	fi
 
-	svn delete $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: drop tag"
+	svn delete $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG -m "$C_CONFIG_ADM_TRACKER-0000: drop tag"
 }
 
 function f_local_vcs_droptag_git() {
 	local P_VCS_PATH=$1
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 	local CO_PATH=$C_GIT_REPONAME
 
 	f_git_refreshmirror $CO_PATH
@@ -77,4 +82,4 @@ function f_local_vcs_droptag() {
 
 f_local_vcs_droptag
 
-echo vcsdroptag.sh: finished MODULE=$MODULE, MODULEPATH=$MODULEPATH, TAG=$TAG
+echo vcsdroptag.sh: finished MODULE=$MODULE, REPOSITORY=$REPOSITORY, MODULEPATH=$MODULEPATH, TAG=$TAG

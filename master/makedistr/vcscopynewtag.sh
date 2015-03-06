@@ -5,15 +5,20 @@ cd `dirname $0`
 . ./getopts.sh
 
 MODULE=$1
-MODULEPATH=$2
-TAG1=$3
-TAG2=$4
+REPOSITORY=$2
+MODULEPATH=$3
+TAG1=$4
+TAG2=$5
 
 . ./common.sh
 
 # check params
 if [ "$MODULE" = "" ]; then
 	echo MODULE not set
+	exit 1
+fi
+if [ "$REPOSITORY" = "" ]; then
+	echo REPOSITORY not set
 	exit 1
 fi
 if [ "$TAG1" = "" ]; then
@@ -36,28 +41,28 @@ function f_local_vcs_copynewtag_svn() {
 	local P_SVNAUTH=$3
 
 	# check source status
-	local CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG1 2>&1 | grep "Not a valid"`
+	local CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG1 2>&1 | grep "Not a valid"`
 
 	if [ "$CHECK_NOT_EXISTS" != "" ]; then
-		echo $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG1: svn path does not exist. Exiting
+		echo $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG1: svn path does not exist. Exiting
 		exit 1
 	fi
 
 	# check destination status
-	CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG2 2>&1 | grep "Not a valid"`
+	CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG2 2>&1 | grep "Not a valid"`
 
 	if [ "$CHECK_NOT_EXISTS" = "" ]; then
 		echo skip copy tag - already exists. Exiting
 		exit 0
 	fi
 
-	svn copy $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG1 $P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG2 -m "$C_CONFIG_ADM_TRACKER-0000: copy tag"
+	svn copy $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG1 $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG2 -m "$C_CONFIG_ADM_TRACKER-0000: copy tag"
 }
 
 function f_local_vcs_copynewtag_git() {
 	local P_VCS_PATH=$1
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 	local CO_PATH=$C_GIT_REPONAME
 
 	f_git_refreshmirror $CO_PATH
@@ -98,4 +103,4 @@ function f_local_vcs_copynewtag() {
 
 f_local_vcs_copynewtag
 
-echo vcscopynewtag.sh: finished MODULE=$MODULE, MODULEPATH=$MODULEPATH, TAG1=$TAG1, TAG2=$TAG2
+echo vcscopynewtag.sh: finished MODULE=$MODULE, REPOSITORY=$REPOSITORY, MODULEPATH=$MODULEPATH, TAG1=$TAG1, TAG2=$TAG2

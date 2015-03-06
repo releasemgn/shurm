@@ -5,15 +5,20 @@ cd `dirname $0`
 . ./getopts.sh
 
 MODULE=$1
-MODULEPATH=$2
-BRANCH1=$3
-BRANCH2=$4
+REPOSITORY=$2
+MODULEPATH=$3
+BRANCH1=$4
+BRANCH2=$5
 
 . ./common.sh
 
 # check params
 if [ "$MODULE" = "" ]; then
 	echo MODULE not set
+	exit 1
+fi
+if [ "$REPOSITORY" = "" ]; then
+	echo REPOSITORY not set
 	exit 1
 fi
 if [ "$MODULEPATH" = "" ]; then
@@ -44,10 +49,10 @@ function f_local_vcs_renamebranch_svn() {
 	if [ "$BRANCH1X" != "trunk" ]; then
 		BRANCH1X=branches/$BRANCH1
 	fi
-	local CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH1X 2>&1 | grep "Not a valid"`
+	local CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH1X 2>&1 | grep "Not a valid"`
 
 	if [ "$CHECK_NOT_EXISTS" != "" ]; then
-		echo $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH1X: svn path does not exist. Exiting
+		echo $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH1X: svn path does not exist. Exiting
 		exit 1
 	fi
 
@@ -56,20 +61,20 @@ function f_local_vcs_renamebranch_svn() {
 	if [ "$BRANCH2X" != "trunk" ]; then
 		BRANCH2X=branches/$BRANCH2
 	fi
-	CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH2X 2>&1 | grep "Not a valid"`
+	CHECK_NOT_EXISTS=`svn info $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH2X 2>&1 | grep "Not a valid"`
 
 	if [ "$CHECK_NOT_EXISTS" = "" ]; then
 		echo drop new branch - already exists...
-		svn delete $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH2X -m "$C_CONFIG_ADM_TRACKER-0000: drop branch before svnrename"
+		svn delete $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH2X -m "$C_CONFIG_ADM_TRACKER-0000: drop branch before svnrename"
 	fi
 
-	svn rename $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH1X $P_SVNPATH/$P_VCS_PATH/$MODULE/$BRANCH2X -m "$C_CONFIG_ADM_TRACKER-0000: rename branch"
+	svn rename $P_SVNAUTH $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH1X $P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$BRANCH2X -m "$C_CONFIG_ADM_TRACKER-0000: rename branch"
 }
 
 function f_local_vcs_renamebranch_git() {
 	local P_VCS_PATH=$1
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 	local CO_PATH=$C_GIT_REPONAME
 
 	f_git_refreshmirror $CO_PATH
@@ -112,4 +117,4 @@ function f_local_vcs_renamebranch() {
 
 f_local_vcs_renamebranch
 
-echo vcsrenamebranch.sh: finished MODULE=$MODULE, MODULEPATH=$MODULEPATH, BRANCH1=$BRANCH1, BRANCH2=$BRANCH2
+echo vcsrenamebranch.sh: finished MODULE=$MODULE, REPOSITORY=$REPOSITORY, MODULEPATH=$MODULEPATH, BRANCH1=$BRANCH1, BRANCH2=$BRANCH2

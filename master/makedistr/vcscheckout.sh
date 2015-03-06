@@ -6,9 +6,10 @@ cd `dirname $0`
 
 PATCHPATH=$1
 MODULE=$2
-MODULEPATH=$3
-BRANCH=$4
-TAG=$5
+REPOSITORY=$3
+MODULEPATH=$4
+BRANCH=$5
+TAG=$6
 
 . ./common.sh
 
@@ -26,13 +27,13 @@ function f_local_vcs_checkout_svn() {
 
 	local CO_PATH
 	if [ "$TAG" != "" ]; then
-		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/tags/$TAG
+		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$REPOSITORY/tags/$TAG
 	else
 		XBRANCH=$BRANCH
 		if [ "$XBRANCH" != "trunk" ]; then
 			XBRANCH=branches/$BRANCH
 		fi
-		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$MODULE/$XBRANCH
+		CO_PATH=$P_SVNPATH/$P_VCS_PATH/$REPOSITORY/$XBRANCH
 	fi
 
 	local F_REVISION=`svn info --non-interactive $P_SVNAUTH $CO_PATH | grep Revision | tr -d " " | cut -d ":" -f2`
@@ -49,7 +50,7 @@ function f_local_vcs_checkout_svn() {
 function f_local_vcs_checkout_git() {
 	local P_VCS_PATH=$1
 
-	f_git_getreponame $P_VCS_PATH $MODULE
+	f_git_getreponame $P_VCS_PATH $REPOSITORY
 	local CO_PATH=$C_GIT_REPONAME
 
 	f_git_refreshmirror $CO_PATH
