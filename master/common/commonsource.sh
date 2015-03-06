@@ -90,6 +90,10 @@ function f_source_readproject() {
 	C_SOURCE_VCS=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project repository
 	C_SOURCE_REPOSITORY=$C_SOURCE_XMLLINEATTR
+	if [ "$C_SOURCE_REPOSITORY" = "" ]; then
+		C_SOURCE_REPOSITORY=$C_SOURCE_PROJECT
+	fi
+
 	f_source_getxmllineattr project version
 	C_SOURCE_VERSION=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project group
