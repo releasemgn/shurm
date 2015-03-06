@@ -134,6 +134,7 @@ function f_buildall_addlog() {
 function f_buildall_release_core() {
 	local P_TARGETS="$1"
 	local P_BRANCH="$2"
+	local P_VERSION="$3"
 
 	# analyze build set
 	f_buildall_maketags core "$P_TARGETS" "$P_BRANCH"
@@ -143,7 +144,11 @@ function f_buildall_release_core() {
 	export C_BUILD_OUTDIR=$OUTDIR/core
 
 	for release_project in $S_BUILDALL_PROJECTS; do
-		C_BUILD_APPVERSION=$C_CONFIG_APPVERSION
+		if [ "$P_VERSION" != "" ]; then
+			C_BUILD_APPVERSION=$P_VERSION
+		else
+			C_BUILD_APPVERSION=$C_CONFIG_APPVERSION
+		fi
 		f_release_getprojectinfo core $release_project
 		if [ "$C_RELEASE_PROJECT_VERSION" != "" ]; then
 			C_BUILD_APPVERSION=$C_RELEASE_PROJECT_VERSION
@@ -158,6 +163,7 @@ function f_buildall_release_core() {
 function f_buildall_release_war() {
 	local P_TARGETS="$1"
 	local P_BRANCH="$2"
+	local P_VERSION="$3"
 
 	# analyze build set
 	f_buildall_maketags war "$P_TARGETS" "$P_BRANCH"
@@ -167,7 +173,11 @@ function f_buildall_release_war() {
 	export C_BUILD_OUTDIR=$OUTDIR/war
 
 	for release_project in $S_BUILDALL_PROJECTS; do
-		C_BUILD_APPVERSION=$C_CONFIG_APPVERSION
+		if [ "$P_VERSION" != "" ]; then
+			C_BUILD_APPVERSION=$P_VERSION
+		else
+			C_BUILD_APPVERSION=$C_CONFIG_APPVERSION
+		fi
 		f_release_getprojectinfo war $release_project
 		if [ "$C_RELEASE_PROJECT_VERSION" != "" ]; then
 			C_BUILD_APPVERSION=$C_RELEASE_PROJECT_VERSION
@@ -186,6 +196,7 @@ function f_buildall_release() {
 	f_release_getprojects core
 	local F_RELEASE_CORE_TARGETS=$C_RELEASE_TARGETS
 	local F_RELEASE_CORE_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
+	local F_RELEASE_CORE_VERSION=$C_RELEASE_PROJECTSET_VERSION
 	if [ "$F_RELEASE_CORE_BRANCH" = "" ]; then
 		F_RELEASE_CORE_BRANCH=$C_CONFIG_BRANCHNAME
 	fi
@@ -193,6 +204,7 @@ function f_buildall_release() {
 	f_release_getprojects war
 	local F_RELEASE_WAR_TARGETS=$C_RELEASE_TARGETS
 	local F_RELEASE_WAR_BRANCH=$C_RELEASE_PROJECTSET_BRANCH
+	local F_RELEASE_WAR_VERSION=$C_RELEASE_PROJECTSET_VERSION
 	if [ "$F_RELEASE_WAR_BRANCH" = "" ]; then
 		F_RELEASE_WAR_BRANCH=$C_CONFIG_BRANCHNAME
 	fi
@@ -203,13 +215,13 @@ function f_buildall_release() {
 	# set tags and build
 	if [ "$MODULE" = "core" ] || [ "$MODULE" = "" ]; then
 		if [ "$F_RELEASE_CORE_TARGETS" != "" ]; then
-			f_buildall_release_core "$F_RELEASE_CORE_TARGETS" "$F_RELEASE_CORE_BRANCH"
+			f_buildall_release_core "$F_RELEASE_CORE_TARGETS" "$F_RELEASE_CORE_BRANCH" "$F_RELEASE_CORE_VERSION"
 		fi
 	fi
 
 	if [ "$MODULE" = "war" ] || [ "$MODULE" = "" ]; then
 		if [ "$F_RELEASE_WAR_TARGETS" != "" ]; then
-			f_buildall_release_war "$F_RELEASE_WAR_TARGETS" "$F_RELEASE_WAR_BRANCH"
+			f_buildall_release_war "$F_RELEASE_WAR_TARGETS" "$F_RELEASE_WAR_BRANCH" "$F_RELEASE_WAR_VERSION"
 		fi
 	fi
 
