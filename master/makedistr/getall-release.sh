@@ -121,7 +121,7 @@ function f_local_getall_release() {
 	if [ "$MODULE" = "core" ] || [ "$MODULE" = "" ]; then
 		f_release_getprojects core
 		local F_RELEASE_CORE_TARGETS=$C_RELEASE_TARGETS
-		local F_RELEASE_CORE_VERSION=$C_RELEASE_PROJECT_VERSION
+		local F_RELEASE_CORE_VERSION=$C_RELEASE_PROJECTSET_VERSION
 
 		if [ "$F_RELEASE_CORE_TARGETS" != "" ]; then
 			echo GET RELEASE CORE TARGETS=$F_RELEASE_CORE_TARGETS, processid=$$...
@@ -138,7 +138,7 @@ function f_local_getall_release() {
 	if [ "$MODULE" = "war" ] || [ "$MODULE" = "" ]; then
 		f_release_getprojects war
 		local F_RELEASE_WAR_TARGETS=$C_RELEASE_TARGETS
-		local F_RELEASE_WAR_VERSION=$C_RELEASE_PROJECT_VERSION
+		local F_RELEASE_WAR_VERSION=$C_RELEASE_PROJECTSET_VERSION
 
 		if [ "$F_RELEASE_WAR_TARGETS" != "" ]; then
 
