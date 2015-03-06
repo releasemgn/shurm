@@ -14,6 +14,7 @@ C_RELEASE_CONFCOMPPATH=
 C_RELEASE_CONFCOMP_PARTIAL=
 
 C_RELEASE_PROJECTSET_BRANCH=
+C_RELEASE_PROJECTSET_VERSION=
 C_RELEASE_PROJECT_TAG=
 C_RELEASE_PROJECT_BRANCH=
 C_RELEASE_PROJECT_VERSION=
@@ -81,7 +82,7 @@ function f_release_getprojects() {
 
 	# use specific build branch
 	C_RELEASE_PROJECTSET_BRANCH=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildbranch" $C_RELEASE_FNAME`
-	C_RELEASE_PROJECT_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildversion" $C_RELEASE_FNAME`
+	C_RELEASE_PROJECTSET_VERSION=`xmlstarlet sel -t -m "release/build/buildset[@type='$P_PROJECTSET']" -v "@buildversion" $C_RELEASE_FNAME`
 }
 
 function f_release_getprojectitems() {
