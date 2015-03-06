@@ -20,7 +20,7 @@ function f_git_getreponame() {
 		C_GIT_REPONAME="$F_MODULEPATH.$P_MODULENAME.git"
 	fi
 
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$C_GIT_REPONAME.git
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$C_GIT_REPONAME
 	if [ ! -d "$F_MIRRORPATH" ]; then
 		echo $F_MIRRORPATH should be created using $C_CONFIG_GITMIRRORPATH/mirror.sh. Exiting
 		exit 1
