@@ -16,6 +16,7 @@ C_SOURCE_VCS=
 C_SOURCE_VERSION=
 C_SOURCE_GROUP=
 C_SOURCE_PATH=
+C_SOURCE_REPONAME=
 C_SOURCE_JIRA=
 C_SOURCE_BRANCH=
 C_SOURCE_JAVAVERSION=
@@ -60,6 +61,7 @@ function f_source_readproject() {
 
 	C_SOURCE_PROJECT=$P_SOURCE_PROJECT
 	C_SOURCE_VCS=
+	C_SOURCE_REPOSITORY=
 	C_SOURCE_VERSION=
 	C_SOURCE_GROUP=
 	C_SOURCE_PATH=
@@ -86,6 +88,8 @@ function f_source_readproject() {
 	# read item attrs
 	f_source_getxmllineattr project vcs
 	C_SOURCE_VCS=$C_SOURCE_XMLLINEATTR
+	f_source_getxmllineattr project repository
+	C_SOURCE_REPOSITORY=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project version
 	C_SOURCE_VERSION=$C_SOURCE_XMLLINEATTR
 	f_source_getxmllineattr project group
