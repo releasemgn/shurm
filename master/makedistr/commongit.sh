@@ -17,10 +17,10 @@ function f_git_getreponame() {
 		C_GIT_REPONAME=$P_MODULENAME.git
 	else
 		local F_MODULEPATH=`echo $P_MODULEPATH | tr -d "/"`
-		C_GIT_REPONAME="$F_MODULEPATH:$P_MODULENAME.git"
+		C_GIT_REPONAME="$F_MODULEPATH.$P_MODULENAME.git"
 	fi
 
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_MODULENAME.git
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$C_GIT_REPONAME.git
 	if [ ! -d "$F_MIRRORPATH" ]; then
 		echo $F_MIRRORPATH should be created using $C_CONFIG_GITMIRRORPATH/mirror.sh. Exiting
 		exit 1
@@ -31,8 +31,7 @@ function f_git_refreshmirror() {
 	local P_GITREPONAME=$1
 
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git fetch origin
@@ -50,8 +49,7 @@ function f_git_createlocal_frombranch() {
 	local P_LOCAL_PATH=$2
 	local P_BRANCH=$3
 
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	if [ ! -d "$F_MIRRORPATH" ]; then
 		echo f_git_createlocal: mirror directory $F_MIRRORPATH does not exist. Exiting
 		exit 1
@@ -71,8 +69,7 @@ function f_git_createlocal_fromtag() {
 	local P_LOCAL_PATH=$2
 	local P_TAG=$3
 
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	if [ ! -d "$F_MIRRORPATH" ]; then
 		echo f_git_createlocal: mirror directory $F_MIRRORPATH does not exist. Exiting
 		exit 1
@@ -94,8 +91,7 @@ function f_git_export_frompath() {
 	local P_FILE=$4
 
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 
 	if [ ! -d "$F_MIRRORPATH" ]; then
 		echo "f_git_export_frompath: mirror directory $F_MIRRORPATH does not exist. Exiting"
@@ -186,8 +182,7 @@ function f_git_setmirrortag() {
 	local P_TAGDATE=$5
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	# get revision by date
@@ -215,8 +210,7 @@ function f_git_dropmirrortag() {
 	local P_TAG=$2
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git tag -d tag-$P_TAG
@@ -234,8 +228,7 @@ function f_git_dropmirrorbranch() {
 	local P_BRANCH=$2
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git branch -D branch-$P_BRANCH
@@ -255,8 +248,7 @@ function f_git_getmirrortagstatus() {
 	C_GIT_REPOVERSION=
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	local F_STATUS=`git tag -l tag-$P_TAG`
@@ -279,8 +271,7 @@ function f_git_getmirrorbranchstatus() {
 	C_GIT_REPOVERSION=
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	local F_STATUS=`git branch --list branch-$P_BRANCH`
@@ -303,8 +294,7 @@ function f_git_copymirrortag_fromtag() {
 	local P_MESSAGE=$4
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	# drop if exists
@@ -325,8 +315,7 @@ function f_git_copymirrorbranch_fromtag() {
 	local P_MESSAGE=$4
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git branch branch-$P_BRANCH_TO refs/tags/tag-$P_TAG_FROM
@@ -346,8 +335,7 @@ function f_git_copymirrorbranch_frombranch() {
 	local P_MESSAGE=$4
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git branch branch-$P_BRANCH_TO refs/heads/branch-$P_BRANCH_FROM
@@ -367,8 +355,7 @@ function f_git_copymirrortag_frombranch() {
 	local P_MESSAGE=$4
 	
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	# drop if exists
@@ -400,8 +387,7 @@ function f_git_pushmirror() {
 	local P_GITREPONAME=$1
 
 	local F_SAVEPATH=`pwd`
-	local F_BASEREPO=${P_GITREPONAME#*:}
-	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$F_BASEREPO
+	local F_MIRRORPATH=$C_CONFIG_GITMIRRORPATH/$P_GITREPONAME
 	cd $F_MIRRORPATH
 
 	git push origin
