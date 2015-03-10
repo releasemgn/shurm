@@ -52,6 +52,7 @@ function f_execute_copycorefiles() {
 	echo copy files to remote DB...
 	scp datapump-config.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
+	scp specific.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp export_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 
 	if [ "$C_ENV_CONFIG_TABLESET" != "" ]; then
