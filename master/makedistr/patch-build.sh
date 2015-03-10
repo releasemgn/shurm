@@ -92,6 +92,11 @@ function f_build_maven() {
 
 	echo build $P_PATCHPATH, profile=$MODULE_MAVEN_PROFILES, options=$C_CONFIG_MAVEN_ADDITIONAL_OPTIONS, cmd=$MODULE_MAVEN_CMD using maven to nexus path $P_NEXUS_PATH...
 
+	# add custom path items
+	if [ "$C_CUSTOM_EXTRAPATH" != "" ]; then
+		export PATH="$C_CUSTOM_EXTRAPATH:$PATH"
+	fi
+		
 	# set java environment
 	local BUILD_JAVA_VERSION=$C_CONFIG_JAVA_VERSION
 	if [ "$C_SOURCE_JAVAVERSION" != "" ]; then
