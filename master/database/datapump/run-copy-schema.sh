@@ -26,6 +26,7 @@ function f_execute_copycorefiles() {
 	echo copy files to remote DB...
 	scp datapump-config.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
+	scp specific.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp import_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 777 *.sh"
