@@ -58,11 +58,15 @@ function f_buildall_maketags() {
 	echo BUILD RELEASE $P_PROJECTSET TARGETS=$S_BUILDALL_PROJECTS, processid=$$...
 
 	# create tags
-	f_execute_getversionmode_defaulttag
-	S_BUILDALL_USETAG=$C_TAG
-
 	if [ "$GETOPT_TAG" != "" ]; then
 		S_BUILDALL_USETAG=$GETOPT_TAG
+	else
+		if [ "$GETOPT_RELEASE" != "" ]; tthen
+			S_BUILDALL_USETAG="prod-$GETOPT_RELEASE-candidate"
+		else
+			f_execute_getversionmode_defaulttag
+			S_BUILDALL_USETAG=$C_TAG
+		fi
 	fi
 
 	# scan requested for tags
