@@ -162,7 +162,7 @@ function f_specific_exec_sqlcmd() {
 	fi
 
 	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	f_exec_limited $P_LIMIT "echo \"$P_CMD\" | sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME" $P_OUTFILE
+	f_exec_limited $P_LIMIT "echo \"$P_CMD\" | sqlplus -S $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME" $P_OUTFILE
 
 	if [ "$P_OUTFILE" != "" ]; then
 		f_specific_check_output $P_OUTFILE
