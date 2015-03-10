@@ -483,8 +483,7 @@ function f_exec_sql() {
 	local P_SCRIPTFILE=$4
 	local P_OUTDIR=$5
 	local P_SKIPERROR=$6
-	local P_SPECIAL_CMD=$7
-	local P_SPECIAL_PASSWORD="$8"
+	local P_SPECIAL_PASSWORD="$7"
 
 	local F_SCRIPTNAME=`basename $P_SCRIPTFILE`
 
@@ -494,11 +493,7 @@ function f_exec_sql() {
 		S_DB_USE_SCHEMA_PASSWORD="$P_SPECIAL_PASSWORD"
 	fi
 
-	if [ "$P_SPECIAL_CMD" != "" ]; then
-		f_specific_exec_sqlcmd $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$P_SPECIAL_CMD" 600 $P_OUTDIR/$F_SCRIPTNAME.out
-	else
-		f_specific_exec_sqlfile $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$P_SCRIPTFILE" 600 $P_OUTDIR/$F_SCRIPTNAME.out
-	fi
+	f_specific_exec_sqlfile $P_DB_TNS_NAME $P_SCHEMA "$S_DB_USE_SCHEMA_PASSWORD" "$P_SCRIPTFILE" 600 $P_OUTDIR/$F_SCRIPTNAME.out
 
 	if [ "$S_SPECIFIC_VALUE" != "" ]; then
 		echo "$P_DB_TNS_NAME: $F_SCRIPTNAME is applied to $P_SCHEMA with ERRORs \"$S_SPECIFIC_VALUE\""
@@ -525,7 +520,7 @@ function f_exec_syssql() {
 	local P_SKIPERROR=$5
 	local P_SPECIALPASSWORD="$6"
 
-	f_exec_sql $P_DBMSTYPE $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "as sysdba" "$P_SPECIALPASSWORD"
+	f_exec_sql $P_DBMSTYPE $P_DB_TNS_NAME sys $P_SCRIPTFILE $P_OUTDIR $P_SKIPERROR "$P_SPECIALPASSWORD"
 	return $?
 }
 
