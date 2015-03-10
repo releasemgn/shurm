@@ -61,7 +61,7 @@ function f_buildall_maketags() {
 	if [ "$GETOPT_TAG" != "" ]; then
 		S_BUILDALL_USETAG=$GETOPT_TAG
 	else
-		if [ "$GETOPT_RELEASE" != "" ]; tthen
+		if [ "$GETOPT_RELEASE" != "" ]; then
 			S_BUILDALL_USETAG="prod-$GETOPT_RELEASE-candidate"
 		else
 			f_execute_getversionmode_defaulttag
