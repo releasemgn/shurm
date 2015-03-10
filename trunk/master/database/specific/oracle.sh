@@ -189,7 +189,12 @@ function f_specific_exec_sqlfile() {
 	fi
 
 	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
-	f_exec_limited $P_LIMIT "sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME" $P_OUTFILE $P_SCRIPTFILE
+	if [ "$P_SCHEMA" = "sys" ]; then
+		f_exec_limited $P_LIMIT "sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME \"as sysdba\"" $P_OUTFILE $P_SCRIPTFILE
+	else
+		f_exec_limited $P_LIMIT "sqlplus $P_SCHEMA/\"$P_DB_USE_SCHEMA_PASSWORD\"@$P_DB_TNS_NAME" $P_OUTFILE $P_SCRIPTFILE
+	fi
+
 	f_specific_check_output $P_OUTFILE
 }
 
