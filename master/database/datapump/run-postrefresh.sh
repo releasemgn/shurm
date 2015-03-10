@@ -113,6 +113,7 @@ function f_execute_runpostrefresh() {
 	scp -r $P_SQLDIR $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT/$F_SQLDIR_REMOTE
 	scp datapump-config.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp common.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
+	scp specific.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	scp import_helper.sh $S_REMOTE_HOSTLOGIN:$S_REMOTE_ROOT
 	f_execute_cmd $S_REMOTE_HOSTLOGIN $S_REMOTE_ROOT "chmod 744 *.sh"
 
