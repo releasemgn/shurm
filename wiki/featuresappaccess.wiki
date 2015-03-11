@@ -98,6 +98,26 @@ Thu May 30 08:14:08 MSK 2013: release-mgn -
 ...	
 }}}
 
+= Showonly mode =
+
+  * operations with environment can be executed in "showonly" mode
+  * this mode prevents from affecting production environment by mistake
+{{{
+default mode is defined by environment file
+        <property name="execute" value="yes"/>
+
+if "execute" is not set, "prod" property set "execute" default to false
+        <property name="prod" value="yes"/>
+
+-execute sets mode to "yes"
+-showonly sets mode to "yes"
+}}}
+  * any operation affecting environment in showonly mode is printed but not executed
+{{{
+app1@p00svcdevepgu01: showonly cd /egov/ora_app1/tomcat/bin; ./server.stop.sh 18683   > /dev/null
+}}}
+  * mode can be applied to database and deploy operations
+
 = Execution logging  =
 
   * every execute operation, which changes actual state of target environment, is automatically logged both on release box, from where action is executed, and on environment host
