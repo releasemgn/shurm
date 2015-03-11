@@ -53,6 +53,7 @@ Defines features implemented in URM.
    * Key-based access to hosts
    * Key management
    * File upload logging
+   * Showonly mode
    * Execution logging
    * Track environment configuration changes
    * IM notifications
