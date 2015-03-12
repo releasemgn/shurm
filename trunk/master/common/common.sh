@@ -215,7 +215,7 @@ function f_getpath_redistserverbackuproot() {
 		exit 1
 	fi
 
-	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME-backup"
+	C_COMMON_DIRPATH="$C_CONFIG_REDISTPATH/$P_SERVER/releases/$P_RELEASENAME/backup"
 }
 
 function f_getpath_redistroot() {
@@ -235,7 +235,7 @@ function f_getpath_redistroot() {
 		C_COMMON_DIRPATH_BACKUP=$C_COMMON_DIRPATH
 	else
 		C_COMMON_DIRPATH="$C_COMMON_DIRPATH/releases/$P_RELEASENAME"
-		C_COMMON_DIRPATH_BACKUP="$C_COMMON_DIRPATH/releases/$P_RELEASENAME-backup"
+		C_COMMON_DIRPATH_BACKUP="$C_COMMON_DIRPATH/backup"
 	fi
 
 	if [ "$P_REDISTTYPE" = "deploy" ]; then
