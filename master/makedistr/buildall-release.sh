@@ -98,7 +98,7 @@ function f_buildall_maketags() {
 
 	if [ "$S_BUILDALL_PROJECTS_HEAD" != "" ]; then
 		echo set default release tag=$S_BUILDALL_USETAG to head in projects=$S_BUILDALL_PROJECTS_HEAD ...
-		export C_TAG=
+		export C_TAG=$S_BUILDALL_USETAG
 		export C_CONFIG_BRANCHNAME=
 		f_execute_all "$S_BUILDALL_PROJECTS_HEAD" UPDATETAGS
 	fi
