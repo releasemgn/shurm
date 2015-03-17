@@ -28,6 +28,14 @@ function f_local_usage() {
 }
 
 function f_execute_checkparams() {
+	if [ "$GETOPT_RELEASE" != "" ]; then
+		if [[ "$GETOPT_RELEASE" =~ ^[0-9]\.[0-9]$ ]]; then
+			APP_VERSION_SQL=major-release-$GETOPT_RELEASE
+		else
+			APP_VERSION_SQL=prod-patch-$GETOPT_RELEASE
+		fi
+	fi
+
 	# check parameters
 	if [ "$APP_VERSION_SQL" = "" ]; then
 		echo getsql.sh: invalid APP_VERSION_SQL parameter
