@@ -111,6 +111,14 @@ while [ "$#" -gt "0" ] && [[ $1 =~ ^-[a-z] ]]; do
 			export GETOPT_SCRIPTFOLDER=$2
 			shift 2
 			;;
+		'-release')
+			if [ "$2" = "" ]; then 
+				echo invalid parameter $1 - requires value. Exiting
+				exit 1
+			fi
+			export GETOPT_RELEASE=$2
+			shift 2
+			;;
 		'-regions')
 			if [ "$2" = "" ]; then 
 				echo invalid parameter $1 - requires value. Exiting
