@@ -84,6 +84,8 @@ function f_add_rrd() {
 	fi
 
 	local F_CHECKTIME
+	local F_XSTATUS="SUCCESS"
+
 	if [ "$F_STATUSTOTAL" <> "1" ]; then
 		# process checkenv
 		local X_CHECKSTART=`head -1 $F_CHECKENVFILE | tr -d "\n"`
@@ -92,6 +94,7 @@ function f_add_rrd() {
 		F_CHECKTIME=$(($(date -d "$X_CHECKSTOP" "+%s") - $(date -d "$X_CHECKSTART" "+%s")))
 	else
 		F_CHECKTIME="1"
+		F_XSTATUS="FAILED"
 	fi
 
 	F_DATAFILE=$P_DATADIR/$P_ENVNAME/total.${F_DCPREFIX}current.txt
