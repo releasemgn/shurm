@@ -43,7 +43,7 @@ function f_create_rrd() {
 		DS:checkenv-time:GAUGE:1000:0:U 	\
 		RRA:AVERAGE:0.5:5:1000 \
 		RRA:MAX:0.5:5:1000 \
-		RRA:MIN:0.5:5:1000 \
+		RRA:MIN:0.5:5:1000
 }
 
 function f_add_rrd() {
