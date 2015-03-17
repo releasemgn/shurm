@@ -73,10 +73,12 @@ function f_add_rrd() {
 		fi
 	fi
 
+	local F_ENVTOTAL="10"
 	if [ -f $F_ENVFILE ]; then
 		local F_ENVSTATUS=`cat $F_ENVFILE | tr -d "\n" | cut -d "=" -f2`
 
 		if [ "$F_ENVSTATUS" != "SUCCESS" ]; then
+			F_ENVTOTAL="1"
 			F_STATUSTOTAL="1"
 		fi
 	fi
@@ -99,7 +101,7 @@ function f_add_rrd() {
 	echo "$P_DATETS - status=$F_XSTATUS" >> $F_DATAFILE
 
 	local X_FILE=$P_RRDFILE
-	local X_VALUES="$F_STATUSTOTAL:$F_CHECKTIME"
+	local X_VALUES="$F_STATUSTOTAL:$F_ENVTOTAL:$F_CHECKTIME"
 	local X_TS=`date -d "$P_DATETS" "+%s"`
 
 	echo "rrdtool update: $P_DATETS=$X_TS:$X_VALUES" >> $X_FILE.log
