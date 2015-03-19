@@ -30,8 +30,8 @@ function f_local_copyfile() {
 function f_local_downloadwar() {
 	# check dst release xml
 	if [[ " $C_RELEASE_COPY_WARLIST " =~ " $P_PROJECT " ]]; then
-		local WAR_FILENAME=$P_PROJECT-web-$C_CONFIG_APPVERSION_SERVICES.war
-		local STATIC_FILENAME=$P_PROJECT-web-$C_CONFIG_APPVERSION_SERVICES-webstatic.tar.gz
+		local WAR_FILENAME=$P_PROJECT-web-$C_CONFIG_APPVERSION.war
+		local STATIC_FILENAME=$P_PROJECT-web-$C_CONFIG_APPVERSION-webstatic.tar.gz
 	
 		f_local_copyfile $WAR_FILENAME
 		f_local_copyfile $STATIC_FILENAME
