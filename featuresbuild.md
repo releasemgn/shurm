@@ -1,0 +1,323 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresbuild](featuresbuild.md)
+
+Explains how to build projects using URM.
+
+
+
+---
+
+
+# Multiple Java environments #
+
+  * URM is able to build projects using different jdk versions and settings
+  * default product jdk is defined in config.sh:
+```
+C_CONFIG_JAVA_VERSION=jdk1.6.0_29
+specific jdk version should be located in folder under /usr/java
+```
+  * to override default jdk version for selected projects belonging to product set, specify version in source.xml:
+```
+<project name="pgu-techportal" vcs="git" version="branch" javaversion="jdk1.7.0_45" ...
+```
+
+# Multiple Maven environments #
+
+  * URM is able to build projects using different maven versions and settings
+  * maven configuration file is defined in config.sh
+```
+to avoid confusing builds, use build modes:
+if [ "$VERSION_MODE" = "branch" ]; then
+	C_CONFIG_MAVEN_CFGFILE=~/.m2/settings.branch.xml
+
+predefined build modes: devtrunk, devbranch, trunk, branch, majorbranch
+```
+  * maven configuration file defines local repository and login to access nexus
+```
+local repository location:
+<localRepository>/release/release-mgn/.m2/repository.branch</localRepository>
+```
+  * to use specific maven version:
+```
+default maven version to build product projects:
+C_CONFIG_MAVEN_VERSION=2.2.1
+specific maven version should be located in /usr/local/apache-maven-<version>
+
+you can customize maven version for specific project using:
+<project name="esb" vcs="svnnew" version="branch" javaversion="jdk1.7.0_45" mavenversion="3.1.1" ...
+```
+  * to define product-aligned maven options
+```
+C_CONFIG_MAVEN_ADDITIONAL_OPTIONS="-e"
+C_CONFIG_MAVEN_PROFILES="all-components,all-modules"
+```
+
+# Multiple Nexus environments #
+
+  * secured login to access nexus repository in maven settings file:
+```
+settings-security.xml defines master key -
+<settingsSecurity>
+	<master>(encrypted master password)</master>
+</settingsSecurity>
+
+create master password using:
+mvn --encrypt-master-password <password>
+```
+  * maven configuration file defines builder user and password:
+```
+    <server>
+      <id>nexus</id>
+      <username>builder</username>
+      <password>(encrypted builder password)</password>
+    </server>
+
+create builder password using:
+mvn --encrypt-password <password>
+```
+  * config.sh defines nexus location:
+```
+C_CONFIG_NEXUS_BASE=http://yournexus.com
+```
+  * config.sh defines repository to upload builds into:
+```
+depends on build mode:
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_NEXUS_REPO=snapshots
+
+Thirdparty repository is defined separately and shared among modes:
+C_CONFIG_NEXUS_PATH_THIRDPARTY=$C_CONFIG_NEXUS_BASE/content/repositories/thirdparty
+```
+  * maven configuration file defines repository group for used build artefacts:
+```
+for instance, regular release builds can be defined using:
+      <repositories>
+        <repository>
+          <id>nexus</id>
+          <name>Repository for JDK builds</name>
+          <url>http://yournexus.com/content/groups/group-builderbranch/</url>
+          <layout>default</layout>
+        </repository>
+
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus</id>
+          <name>Repository for JDK builds</name>
+          <url>http://yournexus.com/content/groups/group-builderbranch/</url>
+          <layout>default</layout>
+        </pluginRepository>
+      </pluginRepositories>
+
+```
+  * recommended nexus repository setup:
+    * separate repository for each of build modes for all products
+    * separate repository group for each of build modes for all products
+    * the only thirdcparty repository for all products
+    * separate login for dev and release builds
+    * prevent from adding snapshot artefacts to branch and devbranch repositories
+    * prevent from adding release artefacts to trunk and devtrunk
+
+# Build product codebase #
+
+  * choose build mode and go to corresponding wrapper directory
+```
+cd $MY_PRODUCT_HOME/master/makedistr/<build mode>
+```
+  * to build on branch head:
+```
+build all product projects:
+./buildall-core.sh
+
+build selected product projects:
+./buildall-core.sh <project list>
+
+<project list> - space-delimited list of projects defined in core category in source.xml
+
+e.g.:
+./buildall-core.sh myproject1 myproject2
+
+default branch used is defined in config.sh for given build mode:
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_BRANCHNAME=trunk
+
+if property is not set than default branch is <project name>-prod
+
+specific project from source.xml can override this setting:
+<project name="solr-dataimport-handler" vcs="svn" version="branch" branch="prod-fed"...
+
+also you can override default branch name using command line option:
+./buildall-core.sh -branch my-branch myproject1 myproject2
+
+note, that git branches must have additional prefix "branch-"
+i.e. if git branch has final name "branch-myname" then you should call:
+./buildall-core.sh -branch myname
+```
+  * build on branch head creates tag (recreates if exists) and performs download and build using this tag
+```
+default tag name is defined in config.sh
+if [ "$VERSION_MODE" = "devtrunk" ]; then
+	C_CONFIG_APPVERSION_TAG=prod-major
+
+you can override defaults with option:
+./buildall-core.sh -tag my-tag myproject1 myproject2
+this will result in setting tag "my-tag" on default branch head and further build
+
+note, that git tags must have additional prefix "tag-"
+i.e. if git tag has final name "tag-myname" then you should call:
+./buildall-core.sh -tag myname
+```
+  * build from given tag
+```
+use buildall-core-tags.sh script to build from existing tag:
+
+build all product codebase (all product projects should have this tag)
+./buildall-core-tags.sh <tag>
+
+build selected projects
+./buildall-core-tags.sh <tag> myproject1 myproject2
+```
+  * production and preproduction codebase
+```
+projects can be in production and preproduction state.
+production projects are included in release builds.
+preproduction projects can be build only with snapshot builds.
+
+source.xml defines this:
+<project name="esperanto" vcs="svn" version="branch" - production codebase
+<project name="gateway" vcs="svn" version="trunk" - preproduction
+```
+
+# Build logs #
+
+  * build produces logs which are store in subdirectory in wrapper directory corresponding to build mode
+```
+release builds create directory equal to release label, e.g.:
+$MY_PRODUCT_HOME/master/makedistr/branch/3.0.37.1-prod
+
+tag builds create directory equal to tag name with "tag-" prefix, e.g.:
+$MY_PRODUCT_HOME/master/makedistr/branch/tag-prod-3.0.44-candidate
+```
+  * build log directory contains top-level log history where each build execution is saved in separate log
+```
+e.g.:
+buildall-2014-12-15.18-09-19.out
+buildall-2014-12-16.12-46-52.out
+buildall-2014-12-16.15-22-48.out
+...
+```
+  * detailed logs produced by maven are placed to category subdirectory:
+```
+e.g. 
+$MY_PRODUCT_HOME/master/makedistr/branch/3.0.45/core/myproject-build.log
+where myproject - name of project in scope
+
+next build will add top-level log but will override maven-level logs
+```
+
+# Release builds #
+
+  * build targets defined in specific release
+```
+release is defined by release.xml located in release folder.
+release folders root directory is defined in config.sh:
+C_CONFIG_DISTR_PATH=~/distr/$C_CONFIG_PRODUCT
+
+how to create release.xml - see. Release planning and updates in Distributive management.
+```
+  * release build is performed using buildall-release.sh script:
+```
+to build all release projects:
+./buildall-release.sh
+
+to build core projects (another build category "war" is too specific and is not for public usage)
+./buildall-release.sh core
+
+to build selected release projects:
+./buildall-release.sh core myproject1 myproject2
+
+note, that if product project is missing from release.xml then release build ignores it
+
+if project is misspelled you will wee error message
+```
+  * default release is defined using config.sh in C\_CONFIG\_RELEASENUMBER variable:
+```
+sample logic for regular planned releases:
+if [ "$VERSION_MODE" = "branch" ]; then
+	C_CONFIG_RELEASENUMBER=$C_CONFIG_VERSIONBRANCH.$C_CONFIG_NEXT_VERSION_BUILD
+
+where C_CONFIG_NEXT_VERSION_BUILD is defined dynamically
+if [ -f "$C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt" ]; then
+	C_CONFIG_LAST_VERSION_BUILD=`cat $C_CONFIG_PRODUCT_DEPLOYMENT_HOME/etc/last-prod-tag.txt`
+	C_CONFIG_NEXT_VERSION_BUILD=`expr $C_CONFIG_LAST_VERSION_BUILD + 1`
+
+last-prod-tag.txt - file to store current release minor number in PROD.
+e.g. current branch is 2.4 and last-prod-tag.txt contains 35
+it means last planned release deployed to prod is 2.4.35, next default release is 2.4.36.
+
+specific build mode can have major release - e.g.
+if [ "$VERSION_MODE" = "dev" ]; then
+	C_CONFIG_RELEASENUMBER=$C_CONFIG_NEXT_MAJORRELEASE
+```
+  * you can override defaults by specifying release label to build:
+```
+to build all release targets:
+./buildall-release.sh -release 2.3.6-trial
+
+to build selected release targets:
+./buildall-release.sh -release 2.3.6-trial core myproject1 myproject2
+```
+  * release build can use precreated tag:
+```
+consider you have defined release.xml in 2.3.5.6 release
+providing you have manually created tag emergency-2.3.5.6, you can call:
+./buildall-core-tags.sh -release 2.3.6-trial emergency-2.3.5.6
+
+it will build only release targets using pre-existing tag.
+```
+  * build can be combined with downloading to distribution
+```
+"-dist" option will force to update release distributive
+./buildall-release.sh -dist -release 2.3.6-trial
+
+this will not delete previous release items but overwrites by new built items as per build scope
+
+actually it calls binary updates using getall-release.sh with the same parameters
+see Prepare binary updates in Distributive Management
+```
+
+# Release tags and branches #
+
+  * tag option is processed is the same manner as for non-release builds
+```
+./buildall-release.sh produces - default tag defined in config.sh
+./buildall-release.sh -tag mytag - creates given tag
+
+changing tag name is recommended practice for emergency builds
+e.g. by default ./buildall-release.sh creates planned release prod-2.3.4-candidate tag
+
+Consider you need to issue emergency release.
+It means creating release having label 2.3.3.1 and tag prod-2.3.4.1
+So you need to call:
+./buildall-release.sh -release 2.3.3.1 -tag prod-2.3.4.1
+```
+  * specific releases can override tag and branch approach:
+```
+to use pre-existing tag in release build - use buildtag option in release.xml:
+        <buildset type="core">
+                <project name="pgu-portal" buildtag="myfixedtag"/>
+this will force to use tag "myfixedtag", but not setting default tag on head of branch
+
+also you can define it on category level:
+        <buildset type="core" buildtag="myfixedtag">
+                <project name="portal"/>
+
+to use custom branch in release build - use buildbranch option in release.xml:
+        <buildset type="core">
+                <project name="pgu-portal" buildbranch="mycustombranch"/>
+or
+        <buildset type="core" buildbranch="mycustombranch">
+                <project name="portal"/>
+will will force using specific branch, but not default one - to set tag on its head and build
+
+custom branch is useful to build emergency patch releases - created from last prod tag and patched.
+```

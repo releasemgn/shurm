@@ -1,0 +1,113 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresdbaccess](featuresdbaccess.md)
+
+Defines how to access database and execution accounting in database.
+
+
+
+---
+
+
+# Simple database authentification #
+
+  * password policy is considered for the application schemas, not user accounts created in the database
+  * test environments usually don't have strong access control and to simplify administration default password policy is that schema has password equal to schema name
+```
+Environment configuration file should have property db-auth not set or equal to "no"
+	<property name="db-auth" value="no"/>
+
+If required password policy can be changed from command line - using option "-auth" or "-noauth"
+```
+
+  * one more secured but still easy-to-use approach for authorization - the same password for all schemas
+```
+Environment configuration file should have property db-auth set to "yes"
+	<property name="db-auth" value="yes"/>
+
+Then giving specific password option in command line makes the authorization:
+	./sqlapply.sh -dbpassword "password" ...
+```
+
+# Password file #
+
+  * if required each schema in each database can have its own password
+  * to apply scripts in automated mode password can be placed to the password file
+```
+Environment configuration file should have below properties set:
+	<property name="db-auth" value="yes"/>
+	<property name="db-authfile" value="dbpass.txt"/>
+
+Password path to file is absolute.
+Password file contains one line per tnsname/schema pair:
+<tnsname>.<schema>=<password>
+
+When applying scripts, URM resolves final database tnsname and schema name and extracts data from this file.
+Note, that file is ignored if -dbpassword option is used.
+```
+
+# Using database system account #
+
+  * when applying manual scripts using sqlmanual.sh you can define password in command line or rely on hidden password files
+```
+Hidden password file has predefined name and path - $PRODUCT_DEPLOYMENT_HOME/.auth/db.<tnsname>.sys.password
+
+To apply script with specifying password directly:
+	./sqlmanual.sh <releasedir> <releasefile> <syspwd>
+	syspwd - password of "sys" user
+
+To apply script using hidden file:
+	create file $PRODUCT_DEPLOYMENT_HOME/.auth/db.<tnsname>.sys.password, with sys password w/o newline, 
+	protect file and .auth directory appropriately
+```
+
+# Execution audit #
+
+  * URM adds to the beginning of each script command to add record to administrative tables
+    * after successful error-free execution of script URM marks record as executed well
+    * otherwise script remains marked as started but not completed, which means some error in script or apply operation
+    * it makes possible to find when and with what result every script was applied
+  * these records are also used to apply "still not applied" scripts to the database
+  * every database should have these administration tables to stop execution data
+  * find template script in release - see [link](https://code.google.com/p/shurm/source/browse/trunk/master/samples/database/001-sys-admindb.sql), substitute your values and apply to database manually, e.g. using sqlplus utility
+```
+Template script contains following placeholders:
+	<ADMSCHEMA> - should the same as $C_CONFIG_SCHEMAADMIN
+	can be one of application schemas
+
+	<ADMINDB_RELEASES> - table name, equal to $C_CONFIG_SCHEMAADMIN_RELEASES for tracking release statuses
+        <ADMINDB_SCRIPTS> - table name, equal to $C_CONFIG_SCHEMAADMIN_SCRIPTS for tracking script statuses
+	these table names are configurable to enable using single schema for two products.
+
+Template script contains patterned permissions
+	grant select, update, insert, delete on <ADMSCHEMA>.<ADMINDB_RELEASES> to <SCHEMA>;
+	grant select, update, insert, delete on <ADMSCHEMA>.<ADMINDB_SCRIPTS> to <SCHEMA>;
+
+These permissions should be executed for every product schema.
+
+Fields:
+
+RELEASE, REL_P1, REL_P2, REL_P3, REL_P4 - release numbers
+BEGIN_APPLY_TIME - time when release script set is sent for execution
+UPDATETIME - time when specific script was sent for execution
+END_APPLY_TIME - time when all scripts are successully applied (all scripts have A status)
+UPDATEUSERID - operating system user
+SCRIPT_STATUS - script execution status - A=Applied, S=Started
+REL_STATUS - final release status - A=Applied (all scripts have A status), S=Started
+```
+
+# Storing execution log files #
+
+  * if using scope parameters in sqlapply.sh, not all release scripts are applied but selected only
+  * release script set is executed in steps, one for each database affected
+  * each step creates separate log folder to store log files
+```
+LOGDIR=$C_CONFIG_SOURCE_SQL_LOGDIR/<release>-<env>-<dc>-<start timestamp>/<dbserver>
+
+Before and after applying scripts to database state of script execution statuses 
+extracted from administration tables and saved to files:
+	$LOGDIR/status.before.<tnsname>.<start timestamp>.txt
+	$LOGDIR/status.after.<tnsname>.<start timestamp>.txt
+
+Before applying scripts every script file is copied to log dir
+When applying specific script, it wrapped up by additional commands and saved as .sql.run file
+Execution output (.sql.run.out) and spool (.sql.spool) files are automaticlly created
+```

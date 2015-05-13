@@ -1,0 +1,215 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featureszerodowntime](featureszerodowntime.md)
+
+Allows to deploy releases without loss of service.
+Zero downtime deployment is sometimes not possible without regard to deploy procedure.
+
+
+
+---
+
+
+# Using deploygroup #
+
+  * allows to assign name to set of nodes of one or several servers
+  * any operation with nodes of given deploy group does not affect other nodes
+  * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
+  * does not prevent from application inconsistency - when updated nodes are called from not updated ones
+```
+Every node in environment specification file can have attribute "deploygroup", e.g.:
+		<server name="tpweb" type="generic.server" startorder="05"
+			starttime="900"
+			port="3010"
+			rootpath="/oracle"
+			binpath="ora_app1/jboss-eap-5.1/jboss-as/bin"
+			deploypath="ora_app1/jboss-eap-5.1/jboss-as/server/tp/deploy"
+			>
+			<node hostlogin="jboss@p00smevtpweb01.00.egov.local" deploygroup="first"/>
+			<node hostlogin="jboss@p00smevtpweb02.00.egov.local" deploygroup="second"/>
+			<node hostlogin="jboss@p00smevtpweb03.00.egov.local" deploygroup="second"/>
+
+startenv.sh, stopenv.sh, rollout.sh, rollback.sh scripts can have option "-deploygroup group", 
+where group can be either of listed in attributes.
+
+foe example, 
+	./stopenv.sh -deploygroup second tpweb
+
+will stop two nodes included in the "second" deploygroup, but will not stop node 1, 
+which is in the "first" deploy group
+```
+
+# Configuration switching deployment #
+
+  * ensures consistent application update in distributed fully clustered environment
+  * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
+  * uses configuration switching server which allows to change cluster node configuration without loss of service
+  * one possible implementation of configuration switch server is nginx, which allows to reload configuration file on pair with graceful node shutdown where commands are completed
+```
+To implement this zero-downtime approach you need configuration switching server and 
+all nodes aplit between 2 groups named "first" and "second".
+
+Disregarding implementation, configuration switching server should be able 
+to gracefully switch configurations defined by 3 configuration files using fixed command line string
+
+Configurations are - full, using "first" group only and using using "second" group only.
+
+For instance, consider below full configuration:
+	server1 has nodes 1,2,3
+	server2 has nodes 1,2
+	external input goes to server1 using nginx balancing
+	server1 calls server2 using the same nginx balancing
+nginx full configuration is:
+	server1: server1.node1, server1.node2, server1.node3
+	server2: server2.node1, server2.node2
+
+It means possible connections are:
+	external -> nginx -> server1.node1
+	external -> nginx -> server1.node2
+	server1.node1 -> nginx server2.node1
+	server1.node1 -> nginx server2.node2
+	server2.node1 -> nginx server2.node1
+	server2.node1 -> nginx server2.node2
+	server3.node1 -> nginx server2.node1
+	server3.node1 -> nginx server2.node2
+
+To have configuration switching, we can define:
+deploy groups:
+	first: server1.node1, server1.node2, server2.node1
+	second: server1.node3, server2.node2
+nginx "first" configuration:
+	server1: server1.node1,server1.node2
+	server2: server2.node1
+nginx "second" configuration:
+	server1: server1.node3
+	server2: server2.node2
+
+Note, that after switching to first configuration, but w/o stopping nodes 
+server1.node3 will call server2.node1 - 
+which leads to compatibility issues if server1 can initiate operation 
+internally, not by request from external.
+
+Sample configuration switching information (in datacenter):
+		<deployment>
+			<zerodowntime
+				switch-hostlogin="root@192.168.100.96"
+				switch-command="/sbin/service nginx2 reload"
+				switch-confpath="/usr/local/nginx/conf"
+				configuration-runfile="nginx.conf"
+				configuration-runfirst="nginx.first.conf"
+				configuration-runsecond="nginx.second.conf"
+				configuration-runall="nginx.all.conf"
+			>
+			</zerodowntime>
+		</deployment>
+
+Active configuration nginx.conf is link to one of configurations:
+	configuration-runfirst
+	configuration-runsecond
+	configuration-runall
+
+URM to make configuration active, changes link to desired configuration file and executes specified command.
+
+Full sequence of default system deploy using deployredist.sh is:
+1. turn on "configuration-runsecond" configuration
+2. stop, rollout release, start nodes having deploygroup=first
+3. stop, rollout release, start nodes not having deploygroup set (if any)
+4. turn on "configuration-runfirst" configuration
+5. stop, rollout release, start nodes having deploygroup=second
+6. turn on "configuration-runall" configuration
+
+Active group configuration should prevent from calling inactive group nodes.
+In the same time inactive group nodes should be able to perform startup sequence.
+
+To use zero downtime add "-nodowntime" option:
+	./deployredist.sh -nodowntime <release>
+
+Without "-nodowntime" option deployment uses default sequential start/rollout/stop logic.
+```
+
+# Hot deploy #
+
+  * if application server like JBoss or WebLogic supports uploading applications without restart, then you can use hot deploy URM feature
+  * hotdeploy components can be both binaries and configuration files
+  * specific server can have both colddeploy (requiring restart) and hotdeploy components
+  * does not prevent from database inconsistency - when database is updated while application is not, or vice versa
+  * does not prevent from application inconsistency - when there are both colddeploy and hotdeploy items
+```
+Hotdeploy operation uses below directories on environment host:
+- ordinary staging area directory - $C_CONFIG_REDISTPATH
+- deployed hotdeploy state directory, containing latest versions of all binaries 
+	uploaded to the server (for rollback purposes)
+	note, that hotdeploy state directory cannot be the same as any colddeploy component location
+- hotdeploy upload directory, which contains binaries to be uploaded in current operation and 
+	used in upload command
+
+Order or deployment:
+- redist.sh copies hotdeploy component files to staging area, like colddeploy
+- deployredist.sh deploys colddeploy components - as if no hotdeploy components
+- deployredist.sh deploys hotdeploy components - without stopping servers
+
+Hotdeploy components are instructed for hot deploy by:
+		<server name="bpm" type="generic.server"
+			...
+			>
+			...
+			<deploy component="bpm-hot" deploytype="hotdeploy" deploypath="bpmhot"/>
+
+One environment or server may use hot deploy, while another one can request cold deploy for the same component.
+
+Server having hotdeploy components, should have hotdeploypath attribute, 
+containing relative path to upload directory:
+		<server name="bpm" type="generic.server"
+			...
+			hotdeploypath="hotupload"
+			>
+
+Standard deploy path attribute play role of hotdeploy state directory.
+
+redist.sh with "-hot/cold" option limits copied files from distributive to respectively cold or 
+	hot component binaries
+rollout.sh, rollback.sh with "-hot/cold" option limits rollout to cold or hot deploy components (cold by default)
+deployredist.sh without "-hot/cold" option will deploy first cold components, then hot components
+deployredist.sh with "-hot/cold" will limit start/rollout/stop operations 
+	to corresponding items and related servers
+
+All binaries and configuration archives are placed to "hotdeploypath" directory:
+- before execution upload directory is cleared (by rollout.sh)
+- files are copied from staging area to upload directory
+- after all rollout.sh executes below sequence:
+	cd $BINPATH; ./server.upload.sh <hotdeploy path> <releaseverdir>, where
+		hotdeploypath - <rootpath>/<hotdeploypath>,
+		releaseverdir - release directory name
+
+There are 2 hotdeploy modes - node load and cluster load:
+- under node load rollout sequence performed on each node
+- cluster node assumes using admin server (e.g. in WebLogic cluster), which will redistribute items over nodes
+	in cluster mode binaries are copied only to admin server and uploaded there
+	cluster mode admin server is defined in server information:
+		<server name="bpm" type="generic.server"
+			...
+			hotdeployserver="mnpadm@192.168.157.227"
+			>
+	$BINPATH is the same as on server
+```
+
+
+---
+
+See also:
+http://marakana.com/bookshelf/jboss_admin_tutorial/deploying.html
+
+**Hot vs. Cold Deployment**:
+
+  * Hot deployment is cool, but there is a risk of:
+    * Class-Loader exceptions
+    * Unrecognized configuration settings
+    * Lost session/application scoped data
+
+  * Cold deployment is slow but stable
+    * Stop JBoss AS
+    * Optionally delete data/, log/, tmp/, work/
+    * Redeploy your application(s)
+    * Start JBoss AS
+
+  * Hot deployment is generally considered safe for:
+    * Java Server Pages (.jsp) files. They get recompiled automatically by the servlet engine following a change.
+    * Class files that do not change their public interfaces, especially when there is no RMI involved. This requires full redeployment, so it is still somewhat risky.

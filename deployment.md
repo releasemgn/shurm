@@ -1,0 +1,92 @@
+[home](home.md) -> [documentation](documentation.md) -> [deployment](deployment.md)
+
+Defines how to apply distributives to environments in consistent manner.
+
+
+
+---
+
+
+# Definitions #
+
+  * **system** - one or more products working together to provide solution in certain business area
+  * **environment** - set of hosts, databases and processes which implement part of product functionality
+  * **server** - process type in given environment, defines set of application items running in process of given server
+  * **server node** - specific instance of server implementing server functionality
+  * **server node process** - operating system process running in context of given server node
+  * **server cluster** - set of server nodes implementing server functionality aimed to increase reliability or total throughput of the system
+
+# Overview #
+
+  * **deployment** module supports binary and configuration deployment, see [Database](database.md) for database modification details
+  * **deployment** module performs template processing when rolling out configuration files, see [Configuration Guidelines](configurationguidelines.md) for template processing details
+  * **deployment** module supports cold and hot deployments
+    * cold deployment consists of rolling out binaries and configuration files while server is stopped and loading new versions on startup
+    * cold deployment in clustered configuration can be performed without loss of service
+    * hot deployment can be supported by application server software allowing redeploying applications without stopping application server
+
+# Scripts #
+
+## Script Options ##
+
+**Flags**:
+  * option: **"-all|-app"** - execute for all servers or not
+  * option: **"-backup|-nobackup"** - perform backup or not
+  * option: **"-binary|-nobinary"** - add/do not add binaries to scope
+  * option: **"-conf|-noconf|-partialconf"** - add/do not add/add incomplete configuration to scope
+  * option: **"-downtime|-nodowntime"** - use/ignore deployment with no downtime
+  * option: **"-execute|-showonly"** - execute operations/show operations to be executed
+  * option: **"-force|-noforce"** - delete obsolete live configuration items
+  * option: **"-hot|-cold"** - deploy hot/cold items only
+  * option: **"-ignoreversion"** - skip redist items which have the same md5 hash, but have different version
+  * option: **"-keepalive|-nokeepalive"** - automatically save live configuration after rollout or rollback
+  * option: **"-nomsg"** - skip adding notification to chat
+  * option: **"-obsolete|-noobsolete"** - use/ignore obsolete items in distributive and vice versa
+  * option: **"-raw"** - configure any files
+  * option: **"-root"** - use root user istead of default application user
+  * option: **"-showall|-showmain"** - set logging level
+  * option: **"-skiperrors|-strict"** - stop operation sequence on error or continue
+
+**Parameters**:
+  * option: **"-args args"** - pass args to command server interface scripts
+  * option: **"-dc dc"** - use given datacenter
+  * option: **"-deploygroup deploygroup"** - affect only given node group
+  * option: **"-hostuser username"** - use given user to access host
+  * option: **"-key keypath"** - use given key to access hosts
+  * option: **"-newkey keypath"** - use given key to place on host
+  * option: **"-tag tag"** - use given configuration tag
+  * option: **"-unit unit"** - redist only items which belong to given unit
+
+## Environment Control Scripts ##
+
+  * checkenv.sh
+  * restartenv.sh
+  * startenv.sh
+  * stopenv.sh
+  * waitenv.sh
+  * waitweb.sh
+
+## Environment Deployment Scripts ##
+
+  * deployall.sh
+  * deployredist.sh
+  * dropredist.sh
+  * getredistinfo.sh
+  * redist.sh
+  * rollback.sh
+  * rollout.sh
+  * verifydeploy.sh
+
+## Environment Maintenance Scripts ##
+
+  * confcheck.sh
+  * configureall.sh
+  * hosts.sh
+  * key.sh
+  * login.sh
+  * runcmd.sh
+  * scp.sh
+  * sendchatmsg.sh
+  * svnrestoreconfigs.sh
+  * svnsaveconfigs.sh
+  * upgradeenv.sh

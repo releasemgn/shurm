@@ -1,0 +1,119 @@
+[home](home.md) -> [documentation](documentation.md) -> [makedistr](makedistr.md) -> [configurationguidelines](configurationguidelines.md)
+
+This page contains guidelines to developers on how to prepare configuration changes in releases.
+
+
+
+---
+
+
+# Change Procedure #
+
+**developer**:
+  * adds change to Deployment Plan
+  * configuration change should be part of release change set as implementation of functional change or as a dedicated change, referenced by change ticket on Deployment Plan page
+  * requests release engeneer to approve change if added after planning freeze
+
+**release engeneer**:
+  * checks change is valid concerning required attributes and specific product rules
+  * marks change as planned on Deployment Plan
+  * applies to UAT and marks as applied
+  * requests developer to verify in UAT
+
+**developer**:
+  * verifies change is correct and mark it on Deployment Plan page
+  * if change cancelled, marks change as DESCOPED on Deployment Plan page and notifies release engineer
+
+**release engeneer**:
+  * adds change to supported set of configuration files and marks it on Deployment Plan page
+
+# Configuration Changes Overview #
+
+  * configuration changes are related to setting files, key files and files potentially containing enrionment-dependent content, changes to structure of the product and to administration tools
+  * any configuration change should be declared on Deployment Plan page
+  * any change in controlled configuration files should be defined using release data commited to $C\_CONFIG\_SOURCE\_RELEASEROOTDIR
+  * configuration changes are downloaded to distributive in config folder
+  * URM configuring supports templates and environment-dependent variables
+
+# Configuration Changes Codebase #
+
+  * to add change you need to commit files to $C\_CONFIG\_SOURCE\_RELEASEROOTDIR/$C\_CONFIG\_RELEASE\_GROUPFOLDER/$C\_CONFIG\_APPVERSION\_RELEASEFOLDER/config/templates
+  * $C\_CONFIG\_SOURCE\_CFG\_ROOTDIR/templates is svn location of full set of product configuration files, which can be used to create tags and setup/restore environment
+  * if changes are tracked automatically in the environment, then current state of configuration files in this environemtn is available at $C\_CONFIG\_SOURCE\_CFG\_LIVEROOTDIR
+  * environment-dependent variables are defined in environment definition file (see [Model](model.md)) and optional secret properties file
+```
+	<property name="configuration-secretpropertyfile" value="/etc/myproduct/secrets.txt"/>
+
+file format:
+<propertyname>=<propertyvalue>
+...
+```
+  * release directory has below structure:
+```
+templates
+templates/<configuration component>
+templates/<configuration component>
+...
+
+where:
+<configuration component> - one of omponents, defined in distr.xml (see model)
+
+Possible component directory contents:
+<configuration component>/<configuration file>
+<configuration component>/<configuration subdirectory>/<configuration file>
+
+Release can contain all component files or only some.
+In the first case Deployment Plan should have mark "partial=true",
+which will lead to deletion of all component files before copying new ones from release distributive.
+```
+
+  * configuration component specification in distr.xml
+```
+Component has attribute type="dir", type="mixed-dir" or type="files"
+Component environment directory is defined in environment specification file
+
+type="dir":
+component - Component environment directory with all content
+
+type="mixed-dir":
+component - selected files in Component environment directory
+files are defined by attribute "files"
+files can be defined by mask, using "*", "[]" expressions
+matching is performed disregarding level of depth
+
+e.g.
+<component name="pguweb.oiosaml.conf" type="mixed-dir" files="oiosaml-*" exclude="*.log *.log.*" layer="server"/>
+
+type="files":
+component - selected files in Component environment directory
+files are defined by attribute "files"
+files can be defined by mask, using "*", "[]" expressions
+matching is performed only among immediate childs in Component environment directory
+
+<component name="tpweb.bin.conf" type="files" files="run.conf" layer="server"/>
+```
+
+# Environment-Dependent Properties #
+
+  * defined by environment specification file:
+```
+Environment-dependent property can be defined on environment,
+datacenter or server level. More detailed overrides more generic.
+More generic can be referenced using prefix "env." or "dc." or "server.".
+
+Property can reference secret property file variable using prefix "secret.".
+Secret property file is defined in environment specification file.
+
+To reference environment-dependent property in configuration file one need to use @[prefix]var@ sequence.
+
+Earlier-defined parameter can be referenced in any later defined within its scope.
+```
+
+# Major and Minor Releases #
+
+  * if major release introduces essential reconfiguring, then probably it makes sense to use full set of configuration in release scope
+  * minor release generally should use incremental approach in reconfiguring the product
+
+# Manual Configuring #
+
+  * certain changes cannot be specified in declarative manner and require manual instructions in Deployment Plan

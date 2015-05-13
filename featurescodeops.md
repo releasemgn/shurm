@@ -1,0 +1,147 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featurescodeops](featurescodeops.md)
+
+Explains how to maintain product codebase using URM.
+
+
+
+---
+
+
+# Bulk codebase operations #
+
+  * all operations executed on product codebase can be single-project or it can affect several or all product projects at once
+```
+e.g. single project operation:
+./codebase-copytags.sh tag1 tag2 core myproject
+
+do the same with several projects:
+./codebase-copytags.sh tag1 tag2 core myproject1 myproject2
+
+do the same with all product projects of specific category (the only usable category here is core):
+./codebase-copytags.sh tag1 tag2 core
+
+do the same with all projects of given product:
+./codebase-copytags.sh tag1 tag2
+
+do the same with all projects of specific release:
+./codebase-copytags.sh -release 1.2.3 prod-1.2.3-candidate prod-1.2.3
+this will apply command to all projects included in release.xml located in 1.2.3 distributive folder
+```
+
+# Tags and branches management #
+
+  * URM allows to perform typical branch and tag operations using unified commands and project names disregarding referencing exact type of vcs and location
+  * tag and branch operations are performed disregarding of its build mode - from master/makedistr directory
+  * tag and branch operations are dealing with projects, tags and branches, conformed to URM requirements:
+```
+git tag should have name - tag-<anyid>
+git branch should have name - branch-<anyid>
+
+svn tag should be in location $PROJECTPATH/$PROJECTNAME/tags/<anyid>
+svn branch should be in location $PROJECTPATH/$PROJECTNAME/branches/<anyid>
+if branch is "trunk", then path is $PROJECTPATH/$PROJECTNAME/trunk
+```
+  * following tag and branch operations are available:
+```
+copy branch1 (should exist) to branch2 (will be dropped if exists - CAUTION!)
+./codebase-copybranch.sh branch1 branch2 ...
+
+copy tag1 (should exist) to tag2 (cancel operation if exists)
+./codebase-copynewtags.sh tag1 tag2 ...
+
+copy tag1 (should exist) to tag2 (will be dropped if exists - CAUTION!)
+./codebase-copytags.sh tag1 tag2 ...
+
+create branch mybranch (previous will be dropped - CAUTION!) from mytag (should exist)
+./codebase-copytagtobranch.sh mytag mybranch ...
+
+drop candidate tags having name "version-candidate":
+./codebase-dropoldcandidatetags.sh version ...
+
+drop any tags:
+./codebase-tags.sh mytag ...
+
+rename branch1 branch (should exist) to branch2 branch (previous will be dropped - CAUTION!):
+./codebase-renamebranch.sh branch1 branch2 ...
+
+rename tag1 tag (should exist) to tag tag (previous will be dropped - CAUTION!):
+./codebase-renametags.sh tag1 tag2 ...
+```
+
+# Bulk codebase updates #
+
+  * URM simplifies operations with products having multiple codebase projects
+  * to export all the product codebase:
+```
+by default export will be performed from production branch
+production branch is defined in source.xml or <project>-prod if missing:
+./codebase-export.sh targetdir ...
+
+to export from specific tag:
+./codebase-export.sh -tag mytag targetdir ...
+
+to export head of specific branch:
+./codebase-export.sh -branch mybranch targetdir ...
+
+targetdir directory should exist
+```
+  * to perform coordinated update of build version using maven setversion:
+```
+script will do the following steps for every project in scope:
+1. checkout head of given branch
+2. execute mvn versions:set -DnewVersion=$VERSION
+3. execute commit 
+
+CAUTION! - it is bulk update of codebase - be careful.
+
+set version in production branch:
+./codebase-setversion.sh version ...
+
+set version in specific branch:
+./codebase-setversion.sh -branch mybranch version ...
+```
+  * to perform any bulk codebase update using logic out of URM scope:
+```
+checkout codebase using:
+./codebase-checkout.sh targetdir ...
+or
+./codebase-checkout.sh -branch mybranch targetdir ...
+
+targetdir should exist before execution
+after checkout targetdir will be populated with projects from head of specified branch
+
+then you can do any operations usign any scripts and commands to change codebase in targetdir
+
+after all you need to commit changes back to vcs repositories:
+./codebase-commit.sh targetdir ...
+
+CAUTION! - it is bulk update of codebase - be careful.
+```
+
+# Custom operations #
+
+  * if product team have typical bulk codebase processing then it can be stored in script and iterated by projects with URM:
+```
+custom script should be stored in $MY_PRODUCT_HOME/custom folder
+execute custom.sh, using any standard options from getopts.sh:
+./custom.sh myscript.sh ...
+
+it will call $MY_PRODUCT_HOME/custom/myscript.sh once for every project in scope
+
+script should have f_custom_execute function which will be called with parameters:
+- category (core or prebuilt)
+- project name from source.xml
+
+script will have access to all standard library functions of common
+```
+
+# Find changeset tickets #
+
+  * if codebase commits satisfy ticket reference rule ("ticket: comment"), then URM can be used to find tickets referenced in commit branch since given tag
+```
+on default production brach:
+./diffbranchsince.sh mytag outdir
+
+on given brach:
+./diffbranchsince.sh -branch mybranch mytag outdir
+```

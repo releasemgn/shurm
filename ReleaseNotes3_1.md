@@ -1,0 +1,558 @@
+[home](home.md) -> [releases](releases.md) -> [ReleaseNotes3\_1](ReleaseNotes3_1.md)
+
+Release 3.1 notes.
+
+
+
+---
+
+
+# Change List #
+
+| ID | **Change** | **Documentation updated** |
+|:---|:-----------|:--------------------------|
+| 1 | Redundancy Check | yes |
+| 2 | Key Management | yes |
+| 3 | Deploy Item Versioning | yes |
+| 4 | Command Servers | yes |
+| 5 | Upgrading Environment | yes |
+| 6 | Copy Files and Directories to Environment | yes |
+| 7 | Configuration Categories | yes |
+| 8 | Codebase Maintenance Helpers | yes |
+| 9 | Handling Release Types | yes |
+| 10 | Using Database Release from Distribution Box | yes |
+| 11 | Configuring Database Scripts | yes |
+| 12 | Using Oracle Datapump to Maintain Databases | yes |
+| 13 | Minors | yes |
+
+# Deployment Changes #
+
+## Redundancy Check ##
+
+  * added state directory to staging area to store current set of version files and hot deploy binaries
+  * state directory automatically populated with .ver files containing path and md5 hash value of deployment item
+  * state directory keeps last versions of files uploaded to server using hot deploy method
+  * state directory allows to skip redundant deployment:
+```
+./redist.sh by default will ignore items having the same filename and md5 hash value
+./redist.sh -ignoreversion skips update of file which differs only in version
+./redist.sh -force will ignore state directory data and will transfer full release contents
+
+./dropredist.sh by default will drop only release data
+./dropredist.sh -all will also drop state directory
+```
+
+## Key Management ##
+
+  * added script keys.sh to update keys in .ssh/authorized\_keys in environment
+```
+./key.sh [-key accesskeyfile] [-newkey storekeyfile] command [servers]
+
+accesskeyfile - path to private key file to login into host
+- by default it is local ~/.ssh/id_dsa
+- if unknown to host, then password will be prompted
+
+storekeyfile - path to public key file to store in authorized_keys
+- by default it is local ~/.ssh/id_dsa.pub
+
+command - "set", "add" or "delete"
+- set will delete all keys from authorized_keys and will add storekeyfile
+- add will delete key of the same name if any and will add storekeyfile
+- delete will delete key of the same name  as storekeyfile
+```
+  * operation is iterated on uninue nodes of listed servers, by default on all the environment
+  * option -key can be used in any deployment command to override default access key
+
+## Deploy Item Versioning ##
+
+  * add attribute versiontype to distributive item, replace old "options" attribute
+  * versiontype defines how to deploy to environment
+  * distributive item itself can correspond to any versioning type
+  * available options are:
+```
+"default" or "prefix" (also is used when missing) - 2.3.4-mybinary.war
+<distitem name="arm-sheduler-module" type="binary" extension=".ear"/>
+
+"none" - mybinary.war, cuts any version present in distribution
+<distitem name="solr" type="binary" extension=".war" deployversion="none"/>
+
+"middash" - mybinary-2.3.4.war, default nexus versioning
+<distitem name="ojdbc6" type="binary" extension=".jar" deployversion="middash"/>
+
+"mindpound" - mybinary##2.3.4.war, apache tomcat 7 versioning
+<distitem name="plugin" type="war" context="sia-web" deployname="plugin" deployversion="midpound"/>
+```
+
+## Command Servers ##
+
+  * add new server type "generic.command" to allow to run parameterized command which stops after performing its activities
+```
+<server name="pig" type="generic.command" deploytype="default"
+```
+  * command server is affected by start/stop only if executed by direct referencing it in startenv.sh, stopenv.sh, restartenv.sh
+  * deployredist.sh will not stop or start command server, but will rollout distributive items there
+  * command server is controlled like a generic.server via start/stop/status scripts
+  * command server can be started with different argumments using new option:
+```
+./startenv.sh -args "myargs" pig
+
+This will result in calling start script in below way
+server.start.sh pig myargs
+```
+  * command server start script should run server in async mode, and checkenv.sh and stopenv.sh can be applicable there
+
+## Upgrading Environment ##
+
+  * add new script upgradeenv.sh - simplify apply maintenance changes like timezone patches to environment hosts
+  * rely on interface patch scripts, e.g. upgrade-002-TZ.2014.APP.EL6.sh:
+```
+P_HOSTLOGIN=$1
+
+# get root hostlogin
+P_HOSTROOT=root@${P_HOSTLOGIN#*@}
+
+if [ "$P_HOSTLOGIN" != "$P_HOSTROOT" ]; then
+	echo should be run using root only
+	exit 2
+fi
+
+# copy tz data
+ssh $P_HOSTROOT "mkdir -p ~/tz; rm -rf ~/tz/*"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-java-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzupdater-1_4_8-2014h.zip $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+# execute
+ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; \
+rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
+
+ssh $P_HOSTROOT "cd ~/tz; unzip tzupdater-1_4_8-2014h.zip; \
+cd tzupdater-1.4.8-2014h; for jdir in \`ls /usr/java | grep jdk\`; \
+do echo \$jdir; /usr/java/\$jdir/bin/java -jar tzupdater.jar -u; done; exit 0"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+exit 0
+```
+  * interface script
+    * is located in directory $C\_CONFIG\_UPGRADEPATH
+    * may contain anything - yum install or rpm provided or custom updates
+    * can be called directly without using shurm to patch specific host from administration host
+  * upgradeenv.sh executes interface script for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
+  * accounting allows to skip duplicated upgrades and know about patches applied to host:
+```
+[root@u01pguapp01 ~]# cat upgrade.data
+id=002-TZ.2014.APP.EL6:ok
+```
+  * examples:
+```
+upgrade all env hosts
+./upgradeenv.sh 002-TZ.2014.APP.EL6
+
+upgrade env hosts of given servers under root user
+./upgradeenv.sh -root 002-TZ.2014.APP.EL6 pguapp commapp
+
+force upgrade given env hosts even if uprade was already performed
+./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
+```
+
+## Copy Files and Directories to Environment ##
+
+  * add new script scp.sh for environment maintenance tasks
+  * scp.sh allows to copy specific local files to all environment hosts corresponding to given server list
+  * examples
+```
+./scp.sh -root /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar /usr/java
+./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
+```
+
+# Build and Codebase Maintenance Changes #
+
+## Configuration Categories ##
+
+  * configuration components can be grouped in custom category in svn
+  * one can define different access rules to categories
+```
+e.g. one can define "prod" category and "dev" category
+svn:releases/myproduct/configuration/templates/prod
+svn:releases/myproduct/configuration/templates/dev
+Developer can have access only to commit to dev configuration
+In the same time release engineer can use prod to track prod configuration
+
+component references category using subdir attribute:
+<component name="osb.conf" subdir="prod" type="files" 
+    files="smev-xquery.xml smev-xquery.properties" layer="server"/>
+```
+  * svnrestoreconfig.sh and svnsaveconfig.shg will use proper paths to find configuration component files
+
+## Codebase Maintenance Helpers ##
+
+  * all scripts are performing group operations on codebase disregarding VCS used - one project can use svn, while another can be using git
+  * add new script codebase-export.sh to export product projects to given location:
+```
+examples:
+./codebase-export.sh dst/path/root
+./codebase-export.sh dst/path/root core IDECS pgu-portal
+./codebase-export.sh -tag prod-3.0.17 dst/path/root
+./codebase-export.sh -branch demo-3.0 dst/path/root
+```
+  * add new script codebase-checkout.sh to checkout product projects to given location:
+```
+examples:
+./codebase-checkout.sh dst/path/root
+./codebase-checkout.sh dst/path/root core IDECS pgu-portal
+./codebase-checkout.sh -branch demo-3.0 dst/path/root
+```
+  * add new script codebase-commit.sh to commit to VCS changes done in product projects locally:
+```
+examples:
+./codebase-commit.sh dst/path/root
+./codebase-commit.sh dst/path/root core IDECS pgu-portal
+```
+  * add new script codebase-copytagtobranch.sh to create specific branch from given tag for all listed product projects:
+```
+examples:
+./codebase-copytagtobranch.sh <tag> <branch> core IDECS pgu-portal
+
+note, that for git every branch or tag padded by URM to the left with "branch-" and "tag-" respectively
+In URM parameters there is no need to add branch- or tag- prefix.
+```
+
+## Handling Release Types ##
+
+  * option -release is processed differently depending on release type:
+```
+- if release name is X.Y then it is treated as major release
+major release has source folder major-release-X.Y in releases svn
+
+- if release name is like "NNN-demo-ZZZ" then it is regarded as demo release
+demo release has source folder demo-ZZZ-NNN, where ZZZ - demo id and NNN - baseline version
+
+- otherwise release RRR is ordinary patch release
+patch release has source folder prod-patch-RRR
+```
+
+# Database Modifications #
+
+## Using Database Release from Distribution Box ##
+
+  * originally only local distributives were supported for database operations, now distributive can be used from original location
+  * if deployment box differs from distributive box then database scripts are first copied then being applied to database
+```
+envionment file defines location of distributives:
+<property name="distr-use-local" value="false"/>
+<property name="distr-remotehost" value="release-reader@myhost"/>
+```
+
+## Configuring Database Scripts ##
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
+
+## Using Oracle Datapump to Maintain Databases ##
+
+  * use etc/datapump directory to store dump operation definition files
+  * use flexible dump set
+```
+standard dump set used in urm import/export operations:
+- meta.dmp - contains only metadata for all referenced schemes
+- role.dmp - contains set of roles of source database instance
+- schema.dmp - contains only data for given schema
+note: no metadata, no index data, no statistics
+
+One can change this setup by using property C_ENV_CONFIG_IMPORT_DUMPGROUPS:
+C_ENV_CONFIG_IMPORT_DUMPGROUPS="<dump file>:<std items>; ...", where 
+<dump file> - specific dump file, e.g. mydump.dbf
+<std items> - comma-delimited standard items (meta, role or schema name), e.g.:
+mydump.dbf: meta, myschema1, myschema2
+```
+  * use data subset definition file to define exported/imported data
+```
+export/import definition file references it using:
+C_ENV_CONFIG_TABLESET=myfilename.txt
+where myfilename.txt - text file in etc/datapump
+
+below usage points to default name - datalight-tables.txt
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+file content is set of lines
+each line means:
+- comment, if started with #
+- specific table, if contains MYSCHEMA/TABLE/MYTABLE, where
+    MYSCHEMA - specific database schema (upper case)
+    MYTABLE - specific table name in given schema (upper case)
+- all schema tables, if contains MYSCHEMA/TABLE/*
+```
+  * to perform export it relies on preliminary setup:
+```
+1. Before running sql or exporting data urm calls orasetenv.sh (see below). 
+Create orasetenv.sh using path defined in dump operation file.
+It can be empty if context is defined somewhere else.
+Database context should be available after calling it using remotedly with ssh.
+
+2. sqlplus / "as sysdba" is used to export/import data
+Check whether command line like below is working fine:
+ssh oracle@dbhost ". <path to orasetenv.sh>; sqlplus / \"as sysdba\""
+
+3. system.admindb_uatdata table is created to store list of tables
+You can drop it after operation or leave.
+
+4. create all paths referenced in dump operation definition file
+Add proper permissions.
+
+5. reserve sufficient disk space for dump operations
+```
+  * export/import operations are using specific directory registered in database using either of
+```
+1. specify precreated directory 
+- specify C_ENV_CONFIG_DATAPUMP_DIR=MYDIR
+- create datapump link pointed to registered database directory
+
+2. register directory on the fly:
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+- create ordinary datapump directory
+- this directory will be registered before running import/export
+```
+  * you can control schema set:
+```
+- use full product schema set 
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+
+- use explicitly defined set using space-delimited list
+C_ENV_CONFIG_FULLSCHEMALIST="schema1 schema2 schema3" 
+```
+
+**export data**:
+  * added script export.sh to master/database to create full/limited dumps
+  * export.sh script runs on admin box, export data from database host and copies dump files to specified datapump storage host (or local, if missing)
+  * sample export definition file:
+```
+C_ENV_CONFIG_ENV=major
+C_ENV_CONFIG_DB=mydb
+
+C_ENV_CONFIG_FULLSCHEMALIST=$C_CONFIG_DEFAULT_FULLSCHEMALIST
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="mydb=/"
+C_ENV_CONFIG_LOADDIR="mydb=data/datapump"
+C_ENV_CONFIG_STAGINGDIR=data/dumpfiles
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/export
+C_ENV_CONFIG_DATADIR=/distr/myproduct/data
+C_ENV_CONFIG_DATADIR_BACKUP=/distr/myproduct/data-backup-test
+C_ENV_CONFIG_DATADIR_HOSTLOGIN=release@mydatahost
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+```
+  * export location:
+```
+Dump operation is performed remotedly on C_ENV_CONFIG_REMOTE_HOSTLOGIN
+Exported dump is first created by Oracle in C_ENV_CONFIG_LOADDIR
+then dump file is moved to C_ENV_CONFIG_STAGINGDIR
+then dump file is copied to local host to log directory
+
+If C_ENV_CONFIG_DATADIR_HOSTLOGIN is set then dump is copied to this host
+Otherwise dump is moved locally to C_ENV_CONFIG_DATADIR
+```
+  * export command options:
+```
+export command variants:
+./export.sh export-configuration-file
+exports meta, role and all listed schemes
+
+./export.sh export-configuration-file meta
+exports meta.dmp and role.dmp
+
+./export.sh export-configuration-file data
+exports all data dumps
+
+./export.sh export-configuration-file schema
+exports given schema data dump
+```
+
+**import data**:
+  * added script import.sh to master/database to load full/limited dumps
+  * import.sh script runs on admin box, copies data from local host to database host, loads into database and applies post-refresh adjustments to adopt database data to specific environment
+  * sample import definition file:
+```
+C_CONFIG_SVNAUTH="--username=svnuser --password=svnuser"
+
+C_ENV_CONFIG_ENV=express
+C_ENV_CONFIG_DC=dc.reg
+C_ENV_CONFIG_DB=regdb
+
+C_ENV_CONFIG_FULLSCHEMALIST="pgu juddi nsi pgudrafts protocol terrabyte admsf forum ssp"
+C_ENV_CONFIG_METAONLYSCHEMALIST="pgudrafts forum"
+C_ENV_CONFIG_SCHMAPPING=$C_CONFIG_DEFAULT_SCHMAPPING
+C_ENV_CONFIG_TABLESET=$C_CONFIG_DEFAULT_TABLESET
+
+C_ENV_CONFIG_CONNECTION="regdb=/"
+C_ENV_CONFIG_LOADDIR="regdb=datapump"
+C_ENV_CONFIG_REMOTE_HOSTLOGIN=oracle@myhost
+C_ENV_CONFIG_REMOTE_ROOT=/oracle/redist/import
+C_ENV_CONFIG_DATADIR="regdb=/distr/pgu/data"
+C_ENV_CONFIG_REMOTE_SETORAENV=/oracle/redist/setoraenv.sh
+C_ENV_CONFIG_POSTREFRESH="template-prod2all-main template-prod2all-gosuslugi"
+C_ENV_CONFIG_RECREATETABLESPACES=yes
+C_ENV_CONFIG_DATAPUMP_DIR=ORACLE_DYNAMICDATADIR
+C_ENV_CONFIG_USETRANSFORM=no
+C_ENV_CONFIG_ADDTRANSFORM=
+```
+  * you can change imported schema names using C\_ENV\_CONFIG\_SCHMAPPING property
+```
+C_ENV_CONFIG_SCHMAPPING="schema1=newname1 schema2=newname2"
+```
+  * C\_ENV\_CONFIG\_METAONLYSCHEMALIST defines set of schemas which have no data according to tableset file
+```
+before importing source directory is validated to contain requires dumps
+- C_ENV_CONFIG_FULLSCHEMALIST defines full set of imported dumps
+- those defined in C_ENV_CONFIG_METAONLYSCHEMALIST have only metadata and can be missing
+```
+  * import approach
+```
+import is performed in 3 steps - meta, data, post-refresh
+
+generic meta import sequence is:
+1. put database in exclusive move
+2. kill all schema connections
+3. drop schemas and their objects
+4. recreate tablespaces (if C_ENV_CONFIG_RECREATETABLESPACES is set to yes)
+5. load meta and role dumps
+6. recreate all indexes and constrains
+7. make database available for connections
+
+generic data import sequence is:
+1. disable constraints referencing loaded data
+2. truncate data if any
+3. load data for all dumps except C_ENV_CONFIG_METAONLYSCHEMALIST
+4. enable constrains and rebuild indexes
+
+generic post-refresh sequence is:
+1. iterate C_ENV_CONFIG_POSTREFRESH items, next steps - for every item
+2. download item scripts from svn at C_CONFIG_SOURCE_SQL_GLOBALPENDING/refresh/item
+3. configure item scripts using C_ENV_CONFIG_ENV/C_ENV_CONFIG_DC/C_ENV_CONFIG_DB
+4. apply configured scripts to target database
+```
+  * import command options:
+```
+import command variants:
+./import.sh import-configuration-file all
+imports meta, role and all listed schemes
+
+./import.sh import-configuration-file meta
+imports meta.dmp and role.dmp
+
+./import.sh import-configuration-file data
+imports all data dumps
+
+./import.sh import-configuration-file myschema
+imports given schema data dump
+```
+
+# Minors #
+
+  * added ability to use specific branch (buildbranch) and version (buildversion) on both projectset or project in release.xml
+  * added library functions to get variable value defined via another variable, to use in custom configuring scripts (preconfigure.sh), e.g.:
+```
+f_env_getserverpropertyfinalvalue $P_PRECONFIGURE_DC $P_PRECONFIGURE_SERVER "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getdcpropertyfinalvalue $P_PRECONFIGURE_DC "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getenvpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+
+f_env_getsecretpropertyfinalvalue "var"
+F_MYVAR=$C_ENV_XMLVALUE
+```
+  * added option to override port 22 to access release box
+```
+<property name="distr-remotehost" value="release-reader@host:11111"/>
+```
+  * use key file defined in environment to access distribution box
+  * add attribute mavenversion to override maven version used to build specific codebase project in source.xml
+```
+<project name="myproj" vcs="svnnew" version="branch" 
+javaversion="jdk1.7.0_45" mavenversion="3.1.1" group="core" path="/mygroup" jira="MYP">
+```
+  * "-pending" option renamed to "-folder" to denote release folder used to place release files
+```
+example:
+cd master/database
+./getsql.sh -folder myrelease prod-patch-3.0.44
+
+database files will be downloaded from
+$C_CONFIG_SOURCE_SQL_GLOBALPENDING/prod-patch-3.0.44
+
+and copied to
+$C_CONFIG_DISTR_PATH/myrelease/SQL
+```
+  * download only sql svn subdirectory when preparing script part of release using getsql.sh
+  * use webdomain attribute in nlbserver to use in webservice testing from checkenv.sh script
+```
+<server name="nlb" type="service" servicename="nginx"
+...
+	webdomain="myproduct.mydomain.com"
+	>
+	<node hostlogin="root@myhost"/>
+	<configure component="nlb.conf" deploypath="etc/myproduct.uat"/>
+</server>
+
+consider webservice is defined for component:
+<component name="commapp" unit="core">
+	<distitem name="notificationservice"/>
+	<webservice url="notificationservice/ws/NotificationConfigService"/>
+	<webservice url="notificationservice/ws/NotificationEngineService"/>
+...
+
+Then checkenv.sh tests services using urls like:
+http://myproduct.mydomain.com/notificationservice/ws/NotificationConfigService?wsdl
+```
+  * hide several logging messages, use -showall to display
+  * deleted option -ignoreerrors, use -skiperrors instead
+  * add option to use custom user to access environment
+```
+./login.sh -hostuser guest pguapp
+./runcmd.sh -hostuser guest "echo $MYVAR" app1 app2 app3
+```
+  * change configuration tracking folders
+```
+new names are:
+DC/SERVER/CONFCOMP-HOST-LOGIN
+
+to delete old folders, run ./svnsaveconfigs.sh -force
+```
+  * use C\_CONFIG\_VERSION\_NEXT\_FULL from config.sh to find exact version to build
+  * define two standard development build modes - "devbranch" and "devtrunk" instead of old "dev" build mode
+  * enable using prebuilt items from any specified repository, not from thirdparty only
+  * enable using maven version which differs from product-default:
+```
+<project name="presto" vcs="git" version="branch" javaversion="jdk1.7.0_45" 
+	mavenversion="3.1.1" group="core" path="/smev/presto" jira="SMEV">
+	<distitem name="presto-cassandra" type="nexus" extension=".jar" path="com.facebook.presto"/>
+</project>
+```
+  * rename uploadthirdparty.sh to thirdpartyupload.sh
+
+# Bugfixes #
+
+  * export from given tag

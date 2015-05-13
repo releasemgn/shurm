@@ -1,0 +1,256 @@
+Functional Capabilities of URM - Prepare Database Distributive
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresdbdist](featuresdbdist.md)
+
+Features enabling preparation of database changes in distributives
+
+
+
+---
+
+
+# Source folders #
+
+  * URM folder set for database changes simplifies commits and review, especially when team is great and distributed
+  * source code folders and file naming define order of script execution
+  * there are environment-dependent folders, but limited enough to be sure in prod-like database
+  * see [SQL Guidelines](sqlguidelines.md) to find guidelines for developers
+```
+Release folder in svn can contain sql subfolder, where all database modifications are stored
+When data and script files are enormously big, it is recommended to place them directly into distributive
+Certain database modifications can be defined in deployment plan only.
+
+Default codepage - NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+
+Files in sql are stored in subfolders:
+- aligned - see "Aligned-scripts" below 
+- coreddl - Data Definition Language - scripts to change data structure or database logic
+            can have tightly linked DML operators
+- coredml - Data Modification Language - scripts to update data using SQL or PL-SQL
+- coreuatonly - scripts for non-prod environments (<property name="prod" value="no"/>)
+- coreprodonly - scripts for prod environments (<property name="prod" value="yes"/>)
+- dataload - see "Prepare bulk load file set" below
+- manual - see "Declare manual database modifications" below
+
+File names:
+- <srcindex>-<schema>-<name>.sql - most common filenames
+- <name>.sql - any manual script - see "Declare manual database modifications" below
+- <srcindex>-<schema>-<name>.ctl, <srcindex>-<nameext> - see "Prepare bulk load file set" below
+
+where:
+<srcindex> - index should be 3-digit number - 001-999
+	unique index within subfolder for sql files
+	dataload data files should have index the same as control file (see "Prepare bulk load file set" below)
+	sql file in dataload folder, if any, should have the same name and index as ctl, but different extension
+
+<schema> - one of product schemes, also see "Aligned-scripts" below 
+<name>, <nameext> - any ordinary symbols (a-zA-Z0-9_-.)
+```
+
+# Creating distributive #
+
+  * download from svn to distributive simplifies folder set
+  * download script verifies folders and filenames created in svn to avoid misprints and performs simple checks
+  * svn file indexes are converted to distributive indexes
+```
+To download any distributive:
+- can be performed from $PRODUCT_DEPLOYMENT_HOME/master/database
+	./getsql.sh [-m] [-s] [-nodist] <release-folder> [<major-release-folder>]
+	release directory - $C_CONFIG_SOURCE_RELEASEROOTDIR/<major-release-folder>/<release-folder>
+	<release-folder> - release folder in svn
+	<major-release-folder> - grouping folder in svn,
+	by default <major-release-folder> is set to $C_CONFIG_RELEASE_GROUPFOLDER
+	"-m" option moves erroneous scripts in svn to $/errors/<script path>
+	by default any error will prevent from copying files to distributive, "-s" option ignores errors
+
+Download of regular release is executed from $/makedistr/<buildmode>/database
+	./getsql.sh (without specifying release)
+	<release-folder> and <major-release-folder> depend on <buildmode> in product parameters file
+
+Distributive folders:
+<release-folder>/SQL/ - release folder containing all database modification files downloaded from svn
+	<dstindex>-<schema>-<name>.sql - scripts from codeddl, coredml
+	aligned/ - see "Aligned-scripts" below 
+	dataload/ - see "Prepare bulk load file set" below
+	manual/ - see "Declare manual database modifications" below
+	prodonly/<dstindex>-<schema>-<name>.sql - coreprodonly scripts
+	uatonly/<dstindex>-<schema>-<name>.sql - coreuatonly scripts
+
+When copying files to distributive source indexes are transformed to distributive indexes
+	coreddl - 0<alignedid><srcindex>
+	coredml - 1<alignedid><srcindex>
+	coreprodonly, coreuatonly - 2<<alignedid><srcindex>
+	usually <alignedid>=0, see "Aligned-scripts" below 
+```
+
+# Declare manual database modifications #
+
+  * script from manual subfolder in svn release folder is not applied to database automatically
+  * script can be applied by DBA manually if specified in deployment plan
+  * any details on time and specific operations should be described in deployment plan
+  * script should be executed using sys user if user is not specified explicitly
+```
+Ordinary scripts are applied using account defined in file name.
+If administrative permissions are required then script should be released as manual.
+
+If script cannot be prepared in advance and needs changes before apply to a given database,
+then place original script to manual release folder and describe required modifications in deployment plan.
+
+If any script is running more that 10 minutes, URM forces cancel of script execution.
+If developer knows about huge long-running modifications in his script, 
+script should be placed to manual release folder and deployment plan should contain estamated time of execution.
+Usually it means that DBA and operation team will have specific precaution operations 
+to handle downtime of the system.
+
+Manual folder is downloaded to distributive without changes.
+```
+
+# Prepare bulk load file set #
+
+  * to add or update millions of rows it is impractical to use transactional operations in SQL and PL-SQL and better consider using bulk load Oracle utility - sqlldr
+  * bulk load operation in many cases requires preliminary or post-processing scripting using SQL/PL-SQL
+```
+Bulk load file set in svn release folder and in distributive are placed to dataload subfolder
+	control file - <srcindex>-<schema>-<name>.ctl
+	any data files <srcindex>-<datafilename>, referenced by control file, should have the same index
+	if you need post-processing script - add sql file to dataload folder having the same index and basename
+	Preparation data processing scripts have to be commited to coredml/coreddl
+
+Data files:
+	use extensions .dat and .txt for data files
+	.txt files are processed by URM to remove "\r" symbol to make Unix-like newlines
+	if control file does not specify codepage, then by default URM 
+		will set NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+
+Download to distributive:
+	if data files are too big (gigabytes) then it is useful to ask release engineer 
+	to place files directly to the release folder in release directory without commit to svn.
+
+	data files are not changed with download to save correct references in control file
+	ctl and sql files will have distributive indexes 8<alignedid><srcindex> and 
+		9<alignedid><srcindex> respectively
+	<alignedid> - usually 0, see "Aligned-scripts" below 
+```
+
+# Aligned-scripts #
+
+## Datacenters ##
+
+  * when all datacenters have the same schema set, but you want to control which scripts should go to which datacenter, you can use aligned scripts approach
+  * aligned scripts can also be used for introducing more generic scope sets
+```
+To make feature more simplier to understand, it is better to describe datacenter-aligned scripts.
+Consider you have in PROD 7 datacenters where schema set is the same and only data are different.
+In the same time in UAT you can choose to have representaion of all datacenters combined together.
+
+Define aligned list as list of datacenters list in product parameters file
+	C_CONFIG_ALIGNEDLIST="dc.k1=1 dc.k2=2 dc.k3=3 dc.k4=4 dc.k5=5 dc.k6=6 dc.k7=7"
+
+Specific database server can limit aligned list items to be applied:
+		<server name="pgudb" type="database" deploytype="none"
+			...
+			aligned="dc.k1 dc.k2 dc.k3 dc.k4 dc.k5 dc.k6 dc.k7"
+
+If aligned property is not defined, URM treats its value equal to datacenter of given database server.
+
+Release folder in svn and distributive can reference aligned scripts and data load files:
+	<release folder>/sql/aligned/<alignedname>/<folder>/<script>
+	<folder> - all unaligned folder, described above, except aligned
+	e.g., <release folder>/sql/aligned/dc.k1/coreddl/001-pgu-execute-in-k1-only.sql
+	this script will be applied only to dc.k1 datacenter
+
+Scripts can be aligned to specific regionn, e.g., 001-armp_56-execute-in-56-only.sql
+Given script is related to scheme armp_RR, region RR=56 and will be applied only to corresponding database.
+```
+
+## Regional scripts ##
+
+  * system model baseline is start-like with central (federal) datacenter and set of regional datacenters
+  * datacenter can serve needs of several regions
+  * each region can have its own set of schemas in database to store its own data or share certain schema in datacenter with hosted regions
+    * therefore one logical schema can be represented by sevral physical regional schemes
+    * certain product change which is related to functionality which is the same for all regions, hence needs to be replicated amond schemas
+  * another approach is regional customization
+    * handling regional data is almost always custom, as well as data are owned by specific region
+    * it is possible to have regional customization when region has its own custom code
+    * another approach to regional customization is to have product option which can be installed in one or more specific regions
+  * to prevent from having duplicated database modification scripts in codebase, URM provides regional scripts feature
+```
+Scripts which are regional have alignedid=9.
+Regionid is two-digit number 01-99.
+Federal region is 00.
+
+To use regional schemas, you need define product configuration file, environment specification file, 
+use proper file naming, commit to specific source folder and use file content header.
+
+Database can have regional schemas - e.g. xwiki_56, xwiki_89.
+- regional database schemas are defined by mask with regionid placeholder - RR
+- generally given database has both shared schemas and regional (non-numbered) schemas
+- regional schemas are defined in product parameter file
+	C_CONFIG_SCHEMAALLLIST="apex_040000 siradm armp_RR sir_srdRR mvspider_RR jbpmRR xwikiRR sir_stat_RR"
+
+Enrionment specification file can define set of regions hosted in given database server:
+		<server name="sirdb" type="database" deploytype="none"
+			tnsname="u07sir"
+			tnstype="all"
+			regions="01 05 06 07 08 09 15 20 23 26 30 34 61"
+
+Using custom schema set for database server:
+		<server name="sirdb" type="database" deploytype="none"
+			tnsname="u01sir"
+			tnstype="custom"
+			schemalist="sirdm armp_RR"
+			regions="01 02" 
+	means database server has schemas - sirdm, armp_01, armp_02
+
+Script content of regional scripts can have placeholder @region@.
+Before execution any occurence of @region@ placeholder is replaced with region number.
+
+Regional scripts can be in any folder:
+- <release folder>/sql/coredml/001-armp_RR-myscript.sql 
+	script referencing armp_RR schema, execute in any datacenter for every region
+	before execution @region@ placeholder is processed
+
+- <release folder>/sql/codedml/001-armp_86-myscript.sql
+	script referencing armp_RR schema, execute in 86 region only
+	before execution @region@ placeholder is processed - replace with 86 value
+
+- <release folder>/sql/aligned/dc.k1/codedml/001-armp_RR-myscript.sql
+	script referencing armp_RR schema, execute in dc.k1 datacenter only for every its region
+	before execution @region@ placeholder is processed
+
+There are scripts to be applied to regions defined by script content.
+Script should have below line in the header, which defines set of regions:
+-- REGIONS 59 9 25 31 32 33 35 39 44 46 62 66 68 83 36 12 61 67 57 76
+
+This type of regional script should be in regional aligned folder:
+- <release folder>/sql/aligned/regional/coredml/001-armp_RR-myscript.sql 
+	with above REGIONS comment script will be applied to specied regions only
+	before execution @region@ placeholder is processed
+
+- <release folder>/sql/aligned/regional/coredml/001-sirdm-myscript.sql 
+	this script is related to shared schema, but will be executed several times - one for each region
+	before execution @region@ placeholder is processed
+	
+Indexes of regional scripts are formed as follows:
+	distributive index = <source index>9RR
+	execution index = <source index>9<regionid>
+```
+
+# Pending folders #
+
+  * option "-folder" allows to operate with non-release folders using release approach to download distributives and apply to database
+```
+location of these non-release folders in svn is defined by variable in config.sh:
+C_CONFIG_SOURCE_SQL_GLOBALPENDING=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/database
+```
+  * example:
+```
+cd master/database
+./getsql.sh -folder myrelease prod-patch-3.0.44
+
+database files will be downloaded from
+$C_CONFIG_SOURCE_SQL_GLOBALPENDING/prod-patch-3.0.44
+
+and copied to
+$C_CONFIG_DISTR_PATH/myrelease/SQL
+```

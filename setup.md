@@ -1,0 +1,159 @@
+[home](home.md) -> [setup](setup.md)
+
+
+
+---
+
+
+# Create Your Product URM #
+
+  * prerequisites (see framework diagram at https://code.google.com/p/shurm)
+```
+Allocate at least one Linux box for release activities.
+It is better to create separate hosts for:
+- Release Build Machine (build box)
+- UAT/Test Administration Host (deploy box)
+- Release Storage (distribution box)
+Still you can have the only host for all purposes (release box).
+
+Also you can move environment monitoring from deploy box to dedicated host (monitoring box)
+You can have several build boxes, several deploy boxes and several monitoring boxes for the same product.
+Otherwise, you can share these boxes to manage set of products and their environments.
+```
+  * framework setup
+```
+Accounts and access:
+- create release-mgn account on build, deploy and distribution boxes
+- create release-mon account on monitoring box
+- create release-reader account on distribution box
+- provide access to svn or git source code to build box
+- provide access to UAT/Test hosts to deploy box
+- provide access to distribution box to build and deploy boxes
+
+Ensure build can be performed on build box:
+- check maven and nexus are available to build box
+- check proper jdk versions are installed
+- install xmlstarlet 1.2.1 (or later) package
+- install svn repository to store Your Product URM and database/configuration release items
+
+Ensure environment management can be performed on deployment box:
+- create release-mgn/release-mon ssh keypair and place public key to UAT/Test hosts
+- install xmlstarlet 1.2.1 (or later) package
+```
+  * create Your Product URM module (see also [releases](releases.md))
+```
+1. choose Your Product URM home, e.g. /release-mgn/urm/myp, add to profile
+(perform on one box, later redistribute to others):
+	export MYP_DEPLOYMENT_HOME=/release-mgn/urm/myp
+2. create directory structure
+	$MYP_DEPLOYMENT_HOME
+	$MYP_DEPLOYMENT_HOME/etc
+	$MYP_DEPLOYMENT_HOME/etc/env
+	$MYP_DEPLOYMENT_HOME/master
+3. download latest release, untar release archive to temporary directory, 
+which consists of upgrade.sh script and master directory:
+	mkdir $UNTAR_RELEASE_DIRECTORY
+	cd $UNTAR_RELEASE_DIRECTORY
+	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
+	tar xf master.tar
+4. cd to temporary directory and execute initial install, copy svnget.sh script:
+	cd $UNTAR_RELEASE_DIRECTORY
+	./upgrade.sh $MYP_DEPLOYMENT_HOME
+	cp master/svnget.sh ~/
+5. copy config.sh from samples and set product identification properties:
+	cd $MYP_DEPLOYMENT_HOME
+	cp master/samples/etc/config.sh etc
+6. add Your Product URM to your svn repository and restore from svn
+	svn import $MYP_DEPLOYMENT_HOME <my-svn-store-path>
+	rm -rf $MYP_DEPLOYMENT_HOME
+	svn co <my-svn-store-path> $MYP_DEPLOYMENT_HOME
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
+7. distribute Your Product URM to all build, deploy and monitoring boxes
+	svn co <my-svn-store-path> $MYP_DEPLOYMENT_HOME
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
+```
+
+# Configure Your Product URM #
+
+  * define your product
+```
+Basic product configuration parameters need to be defined in etc/config.sh (see sample):
+- product identification data
+- certain product configuration data like list of database schemas
+- filesystem paths like git mirror repositories or build log directory
+- major release information
+
+List source code repositories in etc/source.xml (see samples/etc/source.xml)
+- repository should have specific structure (see build docs)
+- product repository set defines build and tagging units
+- one repository produces set of distribution binaries and/or intermediate build objects
+- order of repositories in source.xml defines how to build all the product from the scratch
+- define items that are built beyond of URM framework and can be downloaded from specific storage locations
+
+List possible distributive items and their structure in etc/distr.xml (see samples/etc/distr.xml):
+- define binary files and archives and naming policy
+- combine several binary distributive items to binary components
+- define configuration components as sets of specific confiuguration files
+
+Define your environments (see samples/etc/env):
+- product can have unlimited number of environments having different configurations
+- every file stored in $MYP_DEPLOYMENT_HOME/etc/env defines additional environment
+```
+  * construct environment script wrappers
+```
+URM design simplifies using URM and prevents from executing scripts with improper parameters:
+- URM provides wrappers approach for distinguish build modes and environments
+- wrappers are scripts placed in additional directory and calling genuine code scripts.
+- wrapper directory defines context of execution, so you don''t need to set basic parameters
+- single-dc environments slightly differ in structure from multi-dc environments
+
+Build modes and their wrappers are supplied with URM release.
+Wrappers and their directories for environments are created in Your Product URM location:
+- just after (re)defining environment(s), you need to update wrappers by calling configure.sh:
+	cd $MYP_DEPLOYMENT_HOME/master
+	./configure.sh
+```
+  * save Your Product URM in your svn repository and redistribute:
+```
+1. Execute svnsave.sh to save (re)configuration results in your svn
+	cd $MYP_DEPLOYMENT_HOME/master
+	./svnsave.sh
+2. Redistribute Your Product URM to all build, deploy and monitoring boxes:
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
+```
+
+# Upgrade URM Version #
+
+  * download URM release using any box deployed with Your Product URM (see also [releases](releases.md))
+```
+1. download latest release, untar release archive to temporary directory, 
+which consists of upgrade.sh script and master directory:
+	mkdir $UNTAR_RELEASE_DIRECTORY
+	cd $UNTAR_RELEASE_DIRECTORY
+	wget http://shurm.googlecode.com/svn/releases/1.15/master.tar
+	tar xf master.tar
+2. cd to temporary directory and execute upgrade:
+	cd $UNTAR_RELEASE_DIRECTORY
+	./upgrade.sh $MYP_DEPLOYMENT_HOME
+```
+  * reconfigure and redistribute Your Product URM
+```
+1. Execute reconfigure script - to adopt to possible wrapper changes
+	cd $MYP_DEPLOYMENT_HOME/master
+	./configure.sh
+2. Execute svnsave.sh to save reconfiguration results in your svn
+	cd $MYP_DEPLOYMENT_HOME/master
+	./svnsave.sh
+3. Redistribute Your Product URM to all build, deploy and monitoring boxes:
+	~/svnget.sh $MYP_DEPLOYMENT_HOME
+```
+
+# Next Steps #
+
+  * Start control of your environments - integrate processes and URM using start/stop/status commands, clarify dependencies
+  * Start environment deployment - define layout and naming conventions, deployment approach
+  * Start database operations - create administration schema, modify tnsnames.ora, define database access approach
+  * Start monitoring of your environments - create rrd database, schedule monitoring activities
+  * Start managing your builds - setup product release repository, schedule regular builds
+  * Start regular deployment of releases - define intended state and lifecycle of every environment and setup appropriate regular builds and deployments
+  * Start control of configuration files - cover product settings with configuration components, implement them as environment-independent templates, store in svn, establish practices of release-aligned configuration modifications

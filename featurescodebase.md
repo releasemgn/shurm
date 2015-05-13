@@ -1,0 +1,183 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featurescodebase](featurescodebase.md)
+
+Explains how to maintain product codebase using URM.
+
+
+
+---
+
+
+# Define product codebase #
+
+  * product generally consists of buildable codebase, prebuild binaries, configuration files, database metadata and non-operational data
+  * configuration files and database can be treated as special types of codebase
+  * buildable codebase is defined in source.xml as a set of projects of "core" category
+  * prebuilt binaries are defined in source.xml grouped in projects of "prebuilt" category
+  * configuration items are defined in distr.xml
+  * database part of product is defined by production instance
+
+# Define product buildable codebase #
+
+  * before build you need to declare buildable codebase in source.xml as a set of projects
+```
+<source>
+<projectset type="core">
+  <project name="pgu-portal" vcs="svn" version="branch" jira="PGUDEV">
+    <distitem name="gu-web" type="staticwar" path="com/nvision/pgu/portal"/>
+    <distitem name="pgu-dependencies" type="nexus" extension="-libs.tar.gz" path="com/nvision/pgu/portal"/>
+  </project>
+  <project name="sp" vcs="git" version="branch" path="fedpgu" jira="PGUDEV"/>
+```
+  * in URM each project is built as a whole, so you need to plan your codebase structure
+  * every project has its own set of tags and branches containing whole project scope
+  * project can have below attributes:
+```
+"name" defines reference name and VCS name as well
+
+"vcs" can be git or svn or svnnew
+svn/svnnew allow repository migration
+
+"version" can be "branch" or "trunk"
+branch means prod status
+trunk means non-production codebase - full release build will skip building this project
+
+"path" - in git repository means group, in svn repository means parent path
+
+"branch" defines default production branch
+
+"javaversion" - defines jdk version to use to build this project
+
+"mavenversion" - defines maven version to use to build this project
+```
+
+# Define product configuration #
+
+  * configuration components are defined in distr.xml as groups of files or directories
+```
+<configuration>
+  <component name="tlssrv.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="tlssrv.new.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="nlb.conf" subdir="prod" unit="core" type="dir" layer="server"/>
+  <component name="dev.nlb.conf" subdir="dev" unit="core" type="dir" layer="server"/>
+  <component name="jms.conf" subdir="prod" unit="core" type="files" files="hornetq-configuration.xml 
+hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
+  <component name="xuat.jms.conf" subdir="dev" unit="core" type="files" files="hornetq-configuration.xml 
+hornetq-jms.xml hornetq-users.xml logging.properties" layer="server"/>
+```
+  * configuration components currently in PROD are located in svn in repository defined by variable in config.sh:
+```
+C_CONFIG_SOURCE_CFG_ROOTDIR=$C_CONFIG_SVNOLD_PATH/releases/$C_CONFIG_PRODUCT/configuration
+```
+  * configuration component files can contain variables, with values defined in environment specification file
+  * configuration component can have attributes:
+```
+"subdir" - configuration category, to split development and production configuration
+"type" - can be dir, files
+- dir - configuration component correspond to complete directory content in environment
+- files - configuration component is set of files/dirs, listed in "files" attribute
+"exclude" - if component is defined as directory or by mask, it can exclude some files
+"layer" - should be "server"
+```
+  * for deployment details of configuration files and how to release configuration files see Application deployment
+
+# Define product database #
+
+  * product environment can have complex database configuration in terms of instances
+  * concept of URM takes into account that it is practically impossible to track database using engineered DDL scripts
+  * more specifically, URM approach is to make use of continious reverse engineering - with regular PROD snapshots, generating metadata and dumping product data with manual DDL and DML updates in releases
+  * in terms of product as codebase, product database is by design represented by set of schemas, their data and metadata
+  * set of product schemes is defined in config.sh:
+```
+C_CONFIG_SCHEMAADMIN=pgu
+C_CONFIG_SCHEMAREGLIST="juddi nsi pgudrafts protocol terrabyte"
+C_CONFIG_SCHEMAFEDLIST="pgu pguapi $C_CONFIG_SCHEMAREGLIST"
+C_CONFIG_SCHEMAALLLIST="$C_CONFIG_SCHEMAFEDLIST"
+
+administration schema is used to account scripts applied to database
+C_CONFIG_SCHEMAREGLIST, C_CONFIG_SCHEMAFEDLIST - helpers to manage topology of datacenters
+C_CONFIG_SCHEMAALLLIST - all product schemas
+```
+  * see Prepare and Apply Database Changes for further details
+
+# Define prebuilt items #
+
+  * definition of product can include prebuilt items - binaries that are already built beyond of scope of given product, defined in source.xml:
+```
+<projectset type="prebuilt">
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+...
+
+  <project name="carcass" version="branch" group="core">
+    <distitem name="frgu-integration-ws" type="nexus" extension=".war" path="ru/atc/frgu-integration"/>
+...
+```
+  * prebuilt items are either thirdparty or results of another product build
+  * normally another product build items are used in its own environment, but sometimes referenced product is platform product - not having its own business purpose and its binaries are just reused inn several final products - so you build binary in one product and reuse it as prebuilt in this product
+```
+this case you most probably have this binary item present in nexus
+to reference prebuilt:
+
+  <project name="carcass" version="branch" group="core">
+    <distitem name="frgu-integration-ws" type="nexus" extension=".war" path="ru/atc/frgu-integration"/>
+...
+
+it is recommended to name prebuilt project by corresponding product name
+```
+  * second case is when you have exactly thirdparty binary - e.g., downloaded from internet
+```
+this case you can store binary in specific "thirdparty" nexus repository
+then create project entry having the same name as nexus repository:
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+...
+
+alternatively you can store in svn repository:
+  <project name="thirdparty" version="branch" group="core">
+    <distitem name="log4j-1.2.16" type="svn" path="releases/fedpgu/thirdparty/log4j-1.2.16.jar"/>
+```
+  * last case - given product depends on libraries stored in nexus as a result of another product build
+```
+this dependency is managed via ordinary maven settings pom.xml and proper product build order
+```
+
+# Using git repositories #
+
+  * to build codebase stored in git hubs URM utilizes approach of mirror repository, with automatic push and pull on each URM operation
+  * mirror git repositories are located in directory defined in config.sh:
+```
+C_CONFIG_GITMIRRORPATH=~/build/git
+```
+  * sample code to create git mirror:
+```
+#!/bin/sh
+
+P_GROUP=$1
+P_PROJECT=$2
+
+if [ "$P_GROUP" = "" ]; then
+        echo P_GROUP is not set. Exiting
+        exit 1
+fi
+if [ "$P_PROJECT" = "" ]; then
+        echo P_PROJECT is not set. Exiting
+        exit 1
+fi
+
+F_GIT_SOURCE=http://builder@mygit.com/$P_GROUP/$P_PROJECT.git
+F_GIT_MIRROR=/build/git/$P_PROJECT.git
+
+echo create mirror from git central repository $F_GIT_SOURCE to local $F_GIT_MIRROR
+rm -rf $F_GIT_MIRROR
+git clone --mirror $F_GIT_SOURCE $F_GIT_MIRROR
+
+echo mirror.sh: successfully done
+```
+  * to persist auth attributes - execute below commands:
+```
+git config --global credential.helper "cache --timeout=100000000"
+git config --global user.email myname@mycompany.com
+git config --global user.name builder
+
+after that mirror will ask password once and stores it in current account
+```

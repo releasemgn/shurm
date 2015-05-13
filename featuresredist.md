@@ -1,0 +1,418 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresredist](featuresredist.md)
+
+Defines process of relocation of files to environment.
+
+
+
+---
+
+
+# Local and remote distributives #
+
+  * generally there are distribution host, deployment host and environment host which participate in operation
+  * distributives are given from filesystem path defined in environment specification path, remote or local
+```
+Environment specification file defines one of two possible distributive locations:
+
+1. Local on deployment host:
+	<property name="distr-use-local" value="true"/>
+	<property name="distr-path" value="/distr/pgu"/>
+
+- copy is performed by scp from local directory to environment host
+- configuration files are copied as archive
+
+2. Remote, from separate distributive box:
+	<property name="distr-use-local" value="false"/>
+	<property name="distr-remotehost" value="release-mgn@192.168.100.29"/>
+
+- copy release definition file
+- copy distributive files from distributive box to deployment box and then to environment host
+```
+
+# Staging area #
+
+  * to handle network copy risks and to reduce downtime required, deployment is performed in two steps:
+  * intially distributive is copied to environment hosts, to staging area folders, without affecting running processes
+  * when all files are relocated to staging area, actual deployment can be executed, with affecting runtime area
+```
+Product parameter file defines location of staging area for all hosts on all environments:
+	C_CONFIG_REDISTPATH=/oracle/d/redist
+
+Command ./redist.sh relocates files from distributive to staging area subdirectory:
+	$C_CONFIG_REDISTPATH/<server>/<release>
+
+- $C_CONFIG_REDISTPATH should be created on initial setup of environment
+- staging area directory stores all releases for all servers hosted there
+- copy is performed using server user, that's why $C_CONFIG_REDISTPATH better should be chmod 777
+- to cleanup stanging area, use command ./dropredist.sh
+
+Stanging area release folder content:
+- deploy[/<location>]/<binary file>
+- config[/<location>]/<config component>.tar
+- hotdeploy[/<location>]/<binary file>
+- hotdeploy/config/[/<location>]/<config component>.tar
+
+rollout.sh command performs relocation from staging area to environment runtime location.
+In hotdeploy mode rollout executes hotdeploy command.
+```
+
+# Renaming files in environment #
+
+  * distributive and environment files can have different names
+  * reason is having different basename or adding versioning
+```
+release directory name format is <releasever>[-<distname>], where
+	<releasever> - version corresponding to tag set on source code files
+	<distname> - can be used to support several distributives for the same version 
+	(e.g. cumulative and incremental)
+
+distr.xml defines how name of deployed file
+```
+  * basename renaming is handled with optional "deployname" attribute
+```
+- example - deploy name is the same as distributive name:
+<distitem name="gateway-web" type="binary" extension=".war"/>
+
+- example - deploy name differes from item name but the same as dist name:
+<distitem name="cmsservice-war" type="binary" 
+extension=".war" distname="cmsservice" deployname="cmsservice"/>
+
+- example - item is renamed on deployment
+<distitem name="pds-tomcat" type="binary" 
+extension=".war" deployname="pds" deployversion="midpound"/>
+```
+  * version part is handled with optional "deployversion" attribute, can be embedded in file name in different manner - it depends on application server, where file name affects behaviour
+```
+Deployment item file name has version part like one of:
+- <deployname><extension> - no version part
+- <releasever>-<deployname><extension> - prefix (default)
+- <deployname>-<releasever><extension> - dash middle
+- <deployname>##<releasever><extension> - pound middle (tomcat 7)
+where <releasever> - release directory version
+
+Distributive item is extracted disregarding version location.
+Usually file has name according to build settings.
+Build can be done as part of release or file can be downloaded as prebuilt.
+
+Distributive item can have "major version", e.g. pds-3.0.war
+In the same time release can have more specific label, e.g. 3.0.18.2-demo
+If deployversion is default (prefix) pds-3.0.war will be renamed to 3.0.18.2-pds.war
+```
+
+# Partial deployments, using "-unit" option #
+
+  * in some cases, one may need to have partial deployment
+  * one way to to deploy by giving server list in command line
+  * another way is to use "-unit" option, which filters distributive selecting only items, related to specific unit
+```
+To deploy only specified servers, execute commands:
+	./redist.sh <release> <server1> <server2> ... <serverN>
+	./deployredist.sh <release> <server1> <server2> ... <serverN>
+
+Note:
+- command ./redist.sh if servers are specified, does not change other server staging area, except static servers
+- dist item of type "war" (see. distr.xml) causes automatic redist to static server, 
+defined in environment specification file:
+		<server name="formweb" type="generic.web"
+			proxy-server="formweb.nginx"
+			...
+		here ./redist.sh <release> formweb automatically copies static archives to formweb.nginx
+
+- ./deployredist.sh command use only servers defined in parameters or all servers with non-empty staging area:
+		i.e. ./deployredist.sh <release> formweb will not change formweb.nginx
+
+Option "-unit <unitname>" limits scope of ./redist.sh command
+Only components being part of specified unit are copied to destination servers, 
+see distributive specification file:
+		<component name="formweb.conf" 			
+			unit="core" type="files" files="run.pguweb.conf" layer="server"/>
+
+		<component name="pguweb.regcommon" unit="core">
+			<distitem name="cms-public-web"/>
+			<distitem name="gu-web"/>
+			<distitem name="pgu-paygate-web"/>
+			<distitem name="pgu-temp-web"/>
+			<distitem name="pgu-forms-executor"/>
+		</component>
+
+       		<!-- regional webs -->
+		<component name="pguweb.reg.01" unit="K7">
+			<distitem name="pgu-reg101-web"/>
+
+       		here ./redist.sh -unit K7 will not copy formweb.conf and pguweb.regcommon
+
+- ./deployredist.sh command rolls out all staging area, disregarding of "-unit" option
+```
+
+# Safe copy over network #
+
+  * files copied over network may become corrupted due to network failure
+  * to ensure safe releases after copying to staging area file is automatically verified
+```
+Before copy and after copy md5sum is calculated vs file.
+If values are different, redist.sh scripts informs about problem and cancels its work.
+Just run redist.sh again or resolve network issue
+```
+
+# Multiple server locations #
+
+  * simple deployment is using single location on host filesystem to roll out release files
+  * practically most servers require several directories where distributive files should be placed to
+```
+Every server in environment specification file has root path.
+		<server name="osb" type="generic.server" deploytype="default"
+			rootpath="/oracle"
+- root path prevents from affecting anything else in operating system
+- do not use "/" directory for root path
+
+Component can have deploy path different from default.
+Every defined path for the server is named "deployment location".
+- location is relative to root path.
+- server can have default deployment location:
+		<server name="owsm" type="generic.server" deploytype="default"
+			deploypath="ora_app1/as10g/owsm/lib/custom"
+
+- every component can use default location of specify its own:
+		<server name="osb" type="generic.server" deploytype="default"
+			deploypath="build/osb.deploy"
+			...
+			<deploy component="osb"/>
+			<deploy component="osb.xquery" deploypath="osb/Oracle_OSB/config/xpath-functions" />
+
+- all component files, as specified in distributive specification file, are rolled out to its deployment location
+- several components of the same hot/cold type can use the same location
+- configuration component or archive can have subfolders as its content, that will be created in location directory
+
+Sometimes locations do not have common root path, except "/"
+- then it is recommended to create soft link:
+	ln -s <real directory path> <server root path>/<virtual location>, where
+		<real directory path> - path usexd by server process 
+		<server root path> - server root path
+		<virtual location> - synthetic location for URM
+```
+
+# Archive deployment #
+
+  * archives which need to be copied to runtime without extracting files, are regarded by URM as binaries
+  * if you need to automatically extract archive, then you need to define distributive item as archive
+```
+Distributive specification file distr.xml can reference archive as one of
+"archive.direct", "archive.child", "archive.subdir", e.g., 
+<distitem name="pgu-dependencies" distname="pgu-dependencies" type="archive.direct" extension="-libs.tar.gz"/>
+
+Distributive item is then included to the component as usual:
+		<component name="pguweb.dependencies" unit="core">
+			<distitem name="pgu-dependencies"/>
+		</component>
+
+In environment specification file component can be allocated to specific deployment location:
+		<server name="fedweb" type="generic.web"
+			...
+			<deploy component="pguweb.dependencies" deploypath="jboss/server/default/lib"/>
+
+Archive type defines how deployment location is treated:
+- archive.direct means that deployment location contains archive content and nothing else
+- archive.child means that archive contains single directory equal to archive basename, 
+which should be subdirectory in deployment location
+- archive.subdir means that deployment location should have subdirectory equal to archive basename and
+this subdirectory will contain archive contents
+```
+
+# Static files deployment #
+
+  * war-files for web-applications can be separated in distributive from static data - one war file and one related static file
+  * useful design is when static files are returned to browser immediately from filesystem, without querying application server
+  * static file can be rolled out using archive approach but another way is to use special distributive item type
+```
+War-file with static is defined in distr.xml:
+		<distitem name="gu-web" type="war" context="pgu"/>
+
+Then this item is included to component as usual:
+	<component name="pguweb.fedcore" unit="core">
+		<distitem name="pgu-esperanto-web"/>
+		...
+
+Environment specification file references war item also like ordinary binary item:
+	<server name="fedweb" type="generic.web"
+		...
+		proxy-server="fedweb.nginx"
+		>
+		<deploy component="pguweb.fedcore"/>
+		...
+- but if server has proxy-server attribute defined then proxy-server will be target for the static:
+	<server name="fedweb.nginx" type="service" servicename="nginx"
+		starttime="30"
+		port="3010"
+		rootpath="/oracle/ora_app2"
+		deploypath="nginx/html"
+		webdomain="feddemo1.gosuslugi.ru"
+		>
+		<node hostlogin="root@172.20.15.40"/>
+		<node hostlogin="root@172.20.15.65"/>
+		<configure component="pguweb.nginx.conf" deploypath="nginx/etc/nginx"/>
+		<configure component="commonweb.nginx.htmlroot" deploypath="nginx/html"/>
+		<configure component="commonweb.nginx.static-errors" deploypath="nginx/html/static_errors"/>
+	</server>
+- proxy-server will be target for deployment but its definition does not contain deployments
+- root path and default deployment location from proxy-server are used to roll out static
+- static archive type expected - "archive.subdir"
+
+redist.sh command when deploying to web application server automatically copies static archives to proxy-server:
+- subsequent rollout using deployredist.sh will deploy static archives
+- if deployredist.sh is executed giving only web app server as a parameter, proxy-server will not be updated
+- it is assumed that proxy-server has the same numebr of nodes as web application server
+```
+
+# Backup and rollback #
+
+  * standard approach to recover from bad release is rollback to previous distribution
+  * URM support automated rollback
+```
+Rollbacks files are created in staging area if using option "-backup" in redist.sh.
+Option can be set as default by defining property in environment specification file:
+	<property name="backup" value="yes"/>
+
+redist.sh gets rollback files from runtime area of the same host and copied to:
+	$C_CONFIG_REDISTPATH/<server>/<release>-backup
+
+Rollback operation automatically deletes previous version if any:
+- files deleted are <any version>-<basename><extension>, <basename>-<any version><extension>, <basename><extension>
+- if file was not found in the environment, URM issues warning but continues execution
+- if there are several files with the same basename, it is regarded as error and operation is canceled
+
+Files are restored from rollback directory in staging area:
+- configuration component rollback files can differ from release ones if files are defined using mask
+- to support rollback of hotdeploy files rollout.sh logic copies files to deploypath where files are not used 
+by process but persisted
+
+Release rollback is partially manual because of unpredictable reasons:
+- rollback.sh command restores in runtime area files saved by redist.sh in rollback directory of staging area
+- "rollback.sh -cold" rolls out cold-components, "rollback.sh -hot" - hotdeploy-components
+- you may need to run start/stop servers to finish rollback
+- possible "clear" rollback after unsuccessful release X.Y.Z can be achieved by:
+	./stopenv.sh
+	./rollback.sh -cold X.Y.Z
+	./startenv.sh
+	./rollback.sh -hot X.Y.Z
+```
+
+# Hot deployment #
+
+  * if application server supports redeployment without restart then hot deployment URM feature can be used
+```
+To make use of hot deployment, set deploytype to "hotdeploy".
+
+Attribute can be set on server-level:
+<server name="osb" type="generic.server" deploytype="hotdeploy"
+
+Also if server-level value is another one, you can use component-level attribute:
+<server name="osb" type="generic.server" deploytype="default"
+...
+	<deploy component="osb" deploytype="hotdeploy"/>
+```
+  * application server having hot deploy items can also have ordinary (cold) deployment which require server restart(cold) deploy
+  * both configuration and binary items can be cold or hot deployment
+  * hot deployment can be executed using administration server if application server supports clustered hot deploy or hot deploy can be performed node by node
+```
+To reference clustered hotdeploy, use additional attributes:
+<server name="osb" type="generic.server" deploytype="default"
+...
+	rootpath="/oracle/ora_app4/osb"
+	binpath="bin"
+	deploypath="build/deploy"
+	hotdeployserver="oracle@myhost"
+	hotdeploypath="build/hotdeploy"
+...
+	<deploy component="osb" deploytype="hotdeploy"/>
+	<deploy component="osb.xquery" deploypath="oracle/mw/osb/config/xpath-functions" />
+
+deploypath - is used for cold deploy of osb.xquery component
+hotdeployserver - is server where rootpath/binpath contains server.upload.sh script
+
+hotdeploypath - path to copy binaries for upload
+
+in the beginning of upload operation hotdeploypath directory is cleared
+after successful upload binaries are also copies to state directory (see above)
+```
+
+**custom hotdeploy**
+  * choose between generic and custom application server deploy scripts for hotdeploy
+    * generic upload script usually attached to application server distribution (and contains no application-specific details)
+    * after installation generic upload script have to be copied to bin directory as server.upload.sh
+    * server-level property "hotdeploydata" - holds any additional parameters passed to server.upload.sh hotdeploy script
+  * another way is to use custom product-aligned script
+    * server-level property "deployscript" - can be used to change hotdeploy script name from server.upload.sh to user-defined
+    * server-level property "hotdeployserver" - new predefined value "local" to use local host as a server for hotdeploy
+    * redist directory should exist on local server
+    * upload script should be in $PRODUCT\_DEPLOYMENT\_HOME/custom script folder of URM installation
+    * value of "hotdeploydata" property is added as parameter to custom script like server.upload.sh
+    * using URM custom directory to store custom scripts:
+```
+<server name="mapred" type="generic.command" deploytype="hotdeploy"
+	hotdeploydata="u00extdb"
+	hotdeployserver="local"
+	hotdeploypath="customhotdeploy-uat-mapred"
+	deployscript="hotdeploy-bar.sh"
+- upload directory is on release box in redist/hotdeploypath
+- state directory in on release box in redist/state
+- deployscript is in on release box MYPRODUCT_DEPLOYMENT_HOME/custom
+
+upload command is:
+MYPRODUCT_DEPLOYMENT_HOME/custom/hotdeploy-bar.sh \
+	RUNTIMEUPLOADDIR \
+	RELEASE \
+	ENV \
+	DC \
+	PROGRAMNAME \
+	NODE \
+	HOTDEPLOYDATA
+```
+    * using custom script on upload box:
+```
+<server name="mapred" type="generic.command" deploytype="hotdeploy"
+	rootpath="/oracle/ora_app4/osb"
+	binpath="bin"
+	hotdeploydata="u00extdb"
+	hotdeployserver="oracle@mydbhost"
+	deployscript="hotdeploy-bar.sh"
+- upload directory is on hotdeployserver box in rootpath/hotdeploypath
+- state directory in on hotdeployserver box in redist/state
+- deployscript is on on hotdeployserver box in rootpath/binpath
+
+upload command is:
+rootpath/binpath/hotdeploy-bar.sh \
+	RUNTIMEUPLOADDIR \
+	RELEASE \
+	ENV \
+	DC \
+	PROGRAMNAME \
+	NODE \
+	HOTDEPLOYDATA
+```
+
+# Redundancy check #
+
+  * server redist directory now has state subdirectory, containing ".ver" files, holding information about redist path of deployed item and its md5sum data, and hot deploy binaries
+  * deployment places md5 information to redist and state locations
+  * state directory keeps last versions of files uploaded to server using hot deploy method
+  * every ordinary redist operation skips deployment items which produce the same ".ver" content (i.e. deploy path, file name, version and md5sum)
+```
+./redist.sh by default will ignore items having the same filename and md5 hash value
+./redist.sh -ignoreversion will ignore file version in redundancy check
+./redist.sh -force turns off redundancy check at all
+
+./dropredist.sh by default will drop only release data
+./dropredist.sh -all will also drop state directory
+```
+  * if distribute item contains item.md5 file, its content is used for md5 CRC data, without spending time for calculation
+
+# Direct copy files and directories to environment #
+
+  * use deployment script scp.sh to copy specific local files to all environment hosts corresponding to given server list
+  * examples
+```
+./scp.sh -root /distr/common/base/jdk1.7.0_67/jdk-7u67-linux-x64.tar /usr/java
+./scp.sh "/distr/common/base/unixuser-tomcat/.[a-z]\*" "~/" pguapp commapp
+
+note that ~ or * symbols need to be enclosed by quotes or escaped
+```

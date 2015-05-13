@@ -1,0 +1,303 @@
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresappaccess](featuresappaccess.md)
+
+Defines how to access environment hosts and automated audit of application deployment and environment control operations.
+
+
+
+---
+
+
+# Operating system accounts #
+
+  * in process of environment maintenance we need to deal with several types of accounts - root, application user and supplemental accounts (e.g. public reader)
+  * URM makes use of these accounts more systematic by adding keyfiles and using specific options to access hosts:
+```
+to login to server using application user
+./login.sh stockprocessor 2
+this will access second node of server stockprocessor defined in environment
+if node 2 is defined as myuser@myhost1 you will login under myuser to myhost1 host
+
+to login to server using root, while application user can be not a root:
+./login.sh -root stockprocessor 2
+
+to login to server under any specific user, execute:
+./login.sh -hostuser myuser stockprocessor 2
+```
+
+# Operating system commands #
+
+  * you can execute any command in the environment:
+```
+execute command on every server
+./runcmd.sh "command"
+
+execute command on selected servers
+./runcmd.sh "command" myserver1 myserver2
+
+execute command on selected server nodes
+./runcmd.sh "command" myserver1 1 2 3
+
+execute command using root - once on every unique host
+./runcmd.sh -root "command"
+
+execute command using given user - once on every unique host
+./runcmd.sh -hostuser myuser "command"
+```
+
+# Key-based access to hosts #
+
+  * Release files are copied to environment hosts using scp
+  * In progress of deployment URM executes host commands via ssh
+  * URM uses ssh-keypair to authorize operations on environment hosts
+```
+One-time environment setup:
+- generate public and private keys using e.g. OpenSSH - ssh-keygen -t dsa
+- store private key either in standard location - ~/.ssh, or in specific key directory
+- specify specific key path location in environment specification file, e.g.:
+	<property name="keyname" value="/etc/secured/pgu/prodlogin.ppk"/>
+- note that in the last case ssh and scp commands will have -i option
+
+Add public key to every environment host to the file:
+	~<appuser>/.ssh/authorized_keys
+```
+
+# Key management #
+
+  * script keys.sh serves to update keys in .ssh/authorized\_keys in environment
+```
+./key.sh [-key accesskeyfile] [-newkey storekeyfile] command [servers]
+
+accesskeyfile - path to private key file to login into host
+- by default it is local ~/.ssh/id_dsa
+- if unknown to host, then password will be prompted
+
+storekeyfile - path to public key file to store in authorized_keys
+- by default it is local ~/.ssh/id_dsa.pub
+
+command - "set", "add" or "delete"
+- set will delete all keys from authorized_keys and will add storekeyfile
+- add will delete key of the same name if any and will add storekeyfile
+- delete will delete key of the same name  as storekeyfile
+```
+  * operation is iterated on uninue nodes of listed servers, by default on all the environment
+  * option -key can be used in any deployment command to override default access key
+
+# File upload logging #
+
+  * every upload operation is automatically logged both on release box, from where action is executed, and on environment host
+```
+On release box log file is deploy.log in run directory.
+Path to environment log file:
+	~<appuser>/upload.log
+
+Sample file records:
+...
+Thu May 30 08:14:02 MSK 2013: release-mgn - uploaded 
+	/oracle/d/redist/pguapp/2.7.9.3-prod/deploy/jboss/server/default/lib/spellcheck_ru.zip
+Thu May 30 08:14:08 MSK 2013: release-mgn - 
+	uploaded /oracle/d/redist/pguapp/2.7.9.3-prod/deploy/solr/dist/2.7.9.3-apache-solr-dataimporthandler.jar
+...	
+```
+
+# Showonly mode #
+
+  * operations with environment can be executed in "showonly" mode
+  * this mode prevents from affecting production environment by mistake
+```
+by default operating mode is actual execution
+this behavior can be changed in environment file
+
+default mode is defined by environment file
+        <property name="execute" value="yes"/>
+
+if "execute" is not set, "prod" property set "execute" default to false
+        <property name="prod" value="yes"/>
+
+-execute sets mode to "yes"
+-showonly sets mode to "yes"
+```
+  * any operation affecting environment in showonly mode is printed but not executed
+```
+app1@p00svcdevepgu01: showonly cd /egov/ora_app1/tomcat/bin; ./server.stop.sh 18683   > /dev/null
+```
+  * mode can be applied to database and deploy operations
+
+# Execution logging #
+
+  * every execute operation, which changes actual state of target environment, is automatically logged both on release box, from where action is executed, and on environment host
+  * actual state is changed when files are changes within deploydir folders, defined in environment specification file, or due to hot deploy or start/stop operations
+```
+On release box log file is deploy.log in run directory.
+Path to environment log file:
+	~<appuser>/execute.log
+
+Sample file records:
+Thu May 30 14:52:53 MSK 2013 (SSH_CLIENT=192.168.100.29 34907 22): 
+cd /oracle/ora_app3/jboss/bin; ./server.stop.sh 1148  > /dev/null
+- log contants exection time, release box and executed command
+
+In showonly mode executed command not added to envirponment host file, but logged to release box file, e.g.:
+
+Thu May 30 14:10:56 MSK 2013: execute ./stopenv.sh -dc dc.fed pguapp
+stopenv.sh: stop environment dc=dc.fed (show only)...
+execute datacenter=dc.fed...
+execute stop group=app servers=(pguapp)...
+wait process group=(pguapp=22459)...
+============================================ execute server=pguapp, type=generic.server...
+stop main server...
+============================================ stop generic app=pguapp node=1, host=jboss@172.20.15.173...
+jboss@172.20.15.173: showonly cd /oracle/ora_app3/jboss/bin; ./server.stop.sh 6475  > /dev/null
+group=app successfully stopped.
+stopenv.sh: SUCCESSFULLY DONE.
+```
+
+# Track environment configuration changes #
+
+  * sometimes configuration changes are performed by direct manual editing of configuration files in the environment
+  * URM allows to track configuration history both for controlled releases and manual modifications
+```
+After manual configuration execute command:
+	./svnsaveconfig.sh
+
+Changes are stored to svn - to $C_CONFIG_SOURCE_CFG_LIVEROOTDIR/<env>/<dc>/<server>/<component>@<node>/
+Access to svn is given by parameter C_CONFIG_SVNOLD_AUTH which usually set in config.sh
+
+Comfiguration layout is defined in environment specification file:
+		<server name="pguapp" type="generic.server"
+			...
+			<configure component="commonapp.p6spy.conf" deploypath="jboss/server/default/conf"/>
+			<configure component="pguapp.cryptopro.ca" deploypath="jboss_keys/ECPrOVrP.TEST"/>
+			<configure component="pguapp.app.conf" deploypath="jboss/server/default/conf/pgu"/>
+
+To save current configuration set execute svnsaveconfig.sh, e.g.:
+[release-mgn@c00devsvn01 /release-mgn/pgu/deployment/uat/dc.fed]$./svnsaveconfig.sh pguapp 1
+svnsaveconfigs.sh: save runtime configuration...
+execute datacenter=dc.fed...
+============================================ execute server=pguapp...
+execute server=pguapp node=1...
+extract configuraton component=commonapp.p6spy.conf...
+jboss@172.20.15.173: copy configuration from /oracle/ora_app3/jboss/server/default/conf ...
+jboss@172.20.15.173: no changes at 
+http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/commonapp.p6spy.conf@172.20.15.173
+extract configuraton component=pguapp.cryptopro.ca...
+jboss@172.20.15.173: copy configuration from /oracle/ora_app3/jboss_keys/ECPrOVrP.TEST ...
+jboss@172.20.15.173: svn updated at 
+http://192.168.100.29/svn/releases/pgu/configuration/live/uat/dc.fed/pguapp/pguapp.cryptopro.ca@172.20.15.173
+
+Release-aligned configuration changes are automatically stored in live svn if environment has property:
+	<property name="configuration-keepalive" value="yes"/>
+
+Configuration deployment is available in environment if environment has property:
+	<property name="configuration-deploy" value="yes"/>
+
+When releases are deployed svn updates will have comments referencing release numbers.
+It makes svn history o configuration marked with release numbers.
+You will know when and why configuration change occured.
+```
+
+# IM notifications #
+
+  * if Skype integration server was started on release box, you can use automatic notification to the chat information about start, stop and deploy operations using Skype
+  * chat room file should have name starting with "skype."
+```
+define chat room file in env.xml:
+<property name="configuration-chatroomfile" value="chatfiles/skype.release.pgu.uat.txt"/>
+
+Notification is performed to the chat room file having name, derived from Skype chat ID.
+File name can be seen in Skype server log.
+Notification is performed from user, defined in Skype server.
+(send me email to get details on how to setup such a server)
+
+Notification can be used for your custom purposes, by execution of sendchatmsg.sh script.
+
+E.g.:
+[7:59:46] release-mgn: [refreshuat.sh] start app refresh process, stop environment ...
+[9:51:42] release-mgn: [refreshuat.sh] environment started.
+[9:57:30] release-mgn: [refreshuat.sh] app refresh process successfully finished.
+
+To prevent from automatic notifying, script should have option "-nomsg":
+	./stopenv.sh -nomsg pguapp
+```
+
+  * If Jabber integration server was started on release box, you can use automatic notification to the chat information about start, stop and deploy operations using Jabber
+  * chat room file should have name starting with "jabber."
+```
+Define chat room file in env.xml:
+<property name="configuration-chatroomfile" value="chatfiles/jabber.release.pgu.uat.txt"/>
+
+Then room will be populated by lines like:
+[12:50 pm]<release-mgn> [deployredist.sh] deploy 2.9.6 to server list:
+ pguapp regweb.nginx regweb... (dc=dc.reg)
+[12:50 pm]<release-mgn> [deployredist.sh] deploy done. (dc=dc.reg)
+```
+
+# Operating system upgrades #
+
+  * use upgradeenv.sh in deployment to simplify operating system maintenance applying changes like timezone patches to environment hosts
+  * upgrade scripts rely on interface patch scripts, e.g. upgrade-002-TZ.2014.APP.EL6.sh:
+```
+P_HOSTLOGIN=$1
+
+# get root hostlogin
+P_HOSTROOT=root@${P_HOSTLOGIN#*@}
+
+if [ "$P_HOSTLOGIN" != "$P_HOSTROOT" ]; then
+	echo should be run using root only
+	exit 2
+fi
+
+# copy tz data
+ssh $P_HOSTROOT "mkdir -p ~/tz; rm -rf ~/tz/*"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzdata-java-2014h-1.el6.noarch.rpm $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+scp /distr/common/base/timezone/tzupdater-1_4_8-2014h.zip $P_HOSTROOT:~/tz/
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+# execute
+ssh $P_HOSTROOT "cd ~/tz; rpm -Uhv tzdata-2014h-1.el6.noarch.rpm; \
+rpm -Uhv tzdata-java-2014h-1.el6.noarch.rpm"
+
+ssh $P_HOSTROOT "cd ~/tz; unzip tzupdater-1_4_8-2014h.zip; \
+cd tzupdater-1.4.8-2014h; for jdir in \`ls /usr/java | grep jdk\`; \
+do echo \$jdir; /usr/java/\$jdir/bin/java -jar tzupdater.jar -u; done; exit 0"
+if [ "$?" != "0" ]; then
+	exit 1
+fi
+
+exit 0
+```
+  * interface script
+    * is located in directory $C\_CONFIG\_UPGRADEPATH
+    * may contain anything - yum install or rpm provided or custom updates
+    * can be called directly without using shurm to patch specific host from administration host
+  * upgradeenv.sh executes interface script for all unique hosts referenced by environment servers and makes logging on calling and upgrade side and accounting on upgrade side
+  * accounting allows to skip duplicated upgrades and know about patches applied to host:
+```
+[root@u01pguapp01 ~]# cat upgrade.data
+id=002-TZ.2014.APP.EL6:ok
+```
+  * examples:
+```
+upgrade all env hosts
+./upgradeenv.sh 002-TZ.2014.APP.EL6
+
+upgrade env hosts of given servers under root user
+./upgradeenv.sh -root 002-TZ.2014.APP.EL6 pguapp commapp
+
+force upgrade given env hosts even if uprade was already performed
+./upgradeenv.sh -force 002-TZ.2014.APP.EL6 pguapp commapp
+```

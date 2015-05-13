@@ -1,0 +1,185 @@
+[home](home.md) -> [documentation](documentation.md) -> [makedistr](makedistr.md) -> [sqlguidelines](sqlguidelines.md)
+
+This page contains guidelines to developers on how to prepare database changes in releases.
+
+
+
+---
+
+
+# Change Procedure #
+
+**developer:**
+  * adds change to change set or initiates release (see release modes)
+  * commits changes to release codebase
+  * adds instructions to deployment plan if change is manual
+  * prepares data files if huge data are going to be loaded into the database
+
+**release engineer or DBA:**
+  * reviews change details and prepares distributive
+  * applies change to database using automatic or manual procedure
+
+**developer & QA:**
+  * verifies change and reports change as tested
+
+**DBA:**
+  * applies change to production database
+
+# Database Changes Overview #
+
+  * database changes differ from binaries in that code changes for binary files are applied to VCS and binary files are delivered as a state snapshot to environment, while database changes are generally incremental, except for changing database code like stored procedures
+  * when replicating database changes in distributed environment or among environments, it is important to avoid storing duplicate files in VCS, because of repetitive nature of release preparation stage (which requires a sort of templating for sql scripts)
+  * when database change is applied to database it is important that its initial state is the same as will be in production database (which requires manual rollbacks or database refresh process)
+  * database change can be SQL script, PL-SQL script or sqlldr control and data files
+
+# Database Changes Codebase #
+
+  * database changes have to be commited to:
+```
+$C_CONFIG_SOURCE_RELEASEROOTDIR/$C_CONFIG_RELEASE_GROUPFOLDER/$C_CONFIG_APPVERSION_RELEASEFOLDER/sql
+
+All params are defined in config.sh.
+Default practices:
+$C_CONFIG_RELEASE_GROUPFOLDER:
+"R_${C_CONFIG_VERSION_BRANCH_MAJOR}_${C_CONFIG_VERSION_BRANCH_NEXTMINOR}"
+
+$C_CONFIG_APPVERSION_RELEASEFOLDER:
+"major-release-$C_CONFIG_NEXT_MAJORRELEASE"
+for all modes, except minor planned release and script release
+
+In minor release 
+$C_CONFIG_APPVERSION_RELEASEFOLDER:
+"prod-patch-$C_CONFIG_NEXT_MAJORRELEASE.$C_CONFIG_NEXT_VERSION_BUILD"
+$C_CONFIG_NEXT_VERSION_BUILD is defined by default as 
+number in etc/last-prod-tag.txt + 1
+
+Script release has no predefined constant and 
+its recommended name is 4-number - X.Y.Z.T with release folder - prod-patch-X.Y.Z.T
+```
+
+# Release Modes #
+
+  * release can be planned or emergency
+  * emergency can be to bring new feature in time or to fix production bug
+  * if emergency release contains only database changes, it can be named "script release"
+  * in many cases applications are tolerant to database changes, at least if these changes do not contain DDL code, and hence no application restart is required after applying such a script release
+  * there are common rules in doing database changes related to release types:
+    * major release (X.Y) means changing core architecture, principal flows and all the system should be went down to apply both application and database changes
+    * script release (X.Y.Z.T) means that no application will be restarted by default, so you need to be sure how your changes will take into effect; if you need application restart - better do not name this release as "script release" and request proper release cycle and testing
+    * other minor planned (X.Y.Z) and emergency (X.Y.Z.T) releases have typical restart only for updated components; these updates most probably are related to commited database changes, other logic should be articulated in deployment plan
+
+# How to Prepare Database Change #
+
+## Release Directory Structure ##
+
+  * codebase splits changes into groups to establish database change policy and allow DBA to review changes:
+```
+primary script folders:
+coreddl - SQL or PL-SQL files with DDL SQL (can include related DML SQL)
+coredml - SQL or PL-SQL files with DML SQL
+coreuatonly - DML SQL scripts to be applied only to non-prod environments
+coreprodonly - DML SQL scripts to be applied only to prod environments
+dataload - control and data files for sqlldr utility
+
+additional folders to enable replicated regional scripts:
+aligned/<alignedid>/<primary script folder>
+aligned/regional/<primary script folder>
+```
+
+## Release File Names ##
+
+  * file name is subject to URM policy as it is used to derive database schema, order of execution and reference index
+```
+file name in release folder, except for data files and manual files, should have name NNN-schema-name.sql
+- prefix "NNN-" is "source index", where NNN is 3-digit number from 001 to 999
+- schema is the name of schema under which the script will be executed
+- name - any string
+
+Data files should have name NNN-dataname, where NNN - is source index of related ctl file
+Manual files have no rules, except Linux file system ones.
+```
+  * when source file is placed in distributive in more flat structure, its prefix is replaced with another prefix to make indexes unique for all files, this prefix in distributive is named "distributive index"
+  * before distributive file is applied to database, it is copied to runtime directory, where its distributive index can be replaced with execution index
+    * execution index differs from distributive index only for regional scripts, which have distributive index, containing RR
+  * execution index is used for script execution accounting
+  * source index is used for execution of selected scripts
+
+## Adding Files for sqlldr ##
+
+  * to make of of sqlldr functionality you need to place control and data files to dataload folder of release directory
+  * sqlldr file set consists of one control file and one or several data files
+  * control file and referenced data files should have the same index number
+  * see Oracle Documentation on how to prepare control and data files
+```
+Note, that file with txt extension will be processed by removing CR symbols, created in Windows environment
+If you don't need such activity - use any other extension
+```
+  * if data files are too big to pass through VCS, contact release engineer to place sqlldr file set directly into distributive, better create separate script release for such a change
+
+## Script File Content Rules ##
+
+  * sql scripts in release folder is intended for execution using sqlplus utility in separate session
+  * certain minimum script formatting is required to ensure smooth releases:
+```
+Default codepage is set to 1251, set codepage explicitly if required
+Script should have below information in the heading:
+-- Author: Alexey Balandin
+-- Change: PGU-2282
+-- Description: recover top-level org-categories and
+--              link 2nd level org-categories to top-level org-categories
+
+This information lets DBA know how to handle any issues arising in production environment when doing the release.
+```
+
+## Syntax Notes ##
+
+  * below rules are listed to prevent from common mistakes:
+```
+1. End every SQL operator with ';'
+2. PL-SQL block is not SQL operator and should be introduced using:
+[DECLARE
+	declare-specs]
+BEGIN
+	body-operators
+[EXCEPTION
+	exception-specs]
+END;
+/
+
+Do not end SQL operator like:
+<operator>;
+/
+e.g. 
+delete from my_table where rownum=1;
+/
+will delete 2 rows
+
+3. Note, that CREATE TYPE is PL-SQL operation and should be ended like PL-SQL block, 
+but CREATE TABLE - is SQL operation and should be ended appropriately.
+
+4. End DML operators (INSERT/UPDATE/DELETE/MERGE) with commit, do not relay on auto-commits.
+
+5. Any DDL operator automatically ends previous transaction and is not a transaction itself. 
+That makes no sense to end DDL operator with commit;
+```
+
+## Script Execution Accounting ##
+
+  * script execution is automatically accounted in the same database
+  * schema and table names are configured per product - see config.sh
+
+## Environment-Dependent Changes ##
+
+  * script placed into prodonly directory is executed only in environment having property in environment specification file:
+```
+<property name="prod" value="yes"/>
+```
+  * script placed into uatonly directory is executed only in environment having property in environment specification file:
+```
+<property name="prod" value="no"/>
+```
+
+## Manual Operations ##
+
+  * any operations that need special care in execution by DBA, should be placed in manual release folder
+  * when and how execute manual scripts and what additional actions to perform - should be explained in release deployment plan

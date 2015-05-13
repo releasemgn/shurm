@@ -1,0 +1,68 @@
+[home](home.md) -> [documentation](documentation.md) -> [database](database.md)
+
+Defines how to apply changes to database.
+
+
+
+---
+
+
+# Definitions #
+
+  * **database server** - Oracle (probably clustered) database server, available by given tnsname in Oracle configuration file tnsnames.ora
+  * **product schema** - Oracle database schema, containing only procedural or data objects of given product
+  * **product database** - set of product schemes, controlled by specific database server
+  * **sqlplus** - standard Oracle utility to apply PL-SQL/SQL scripts to Oracle database
+  * **sqlldr** - standard Oracle utility to fast load data to Oracle database, able to perform orders of magnitude more than sqlplus
+  * **federal schema** - product schema, existing only in federal datacenter
+  * **regional schema** - product schema, allocated for specific geographic region
+
+# Overview #
+
+  * **database** module allows to control set of scripts for specific release
+  * **database** module supports sqlplus and sqlldr operations
+  * **database** module provides accounting of database operations and conditional execution of scripts
+  * **database** module supports controlled UAT/PROD-only operations
+
+# Scripts #
+
+## Script Options ##
+
+**Flags**:
+  * option: **"-showall"** - add debug logging
+  * option: **"-execute|-showonly"** - actual execution or show command to be executed
+  * option: **"-a|-f|-x"** - apply new (-a), old (-f), all (-x) scripts
+  * option: **"-c|-r|-p"** - change adminstration statuses - change to correct (-c), remove (-r), show current status (-p)
+  * option: **"-s"** - do not stop on error in execution
+  * option: **"-m"** - move erroneous scripts to separate source code folder in svn
+  * option: **"-l"** - do load files in execution of release set
+  * option: **"-nodist"** - do not copy downloaded release scripts to distributive, leave in staging folder
+  * option: **"-auth|-noauth"** - strict/simple authentification
+
+**Parameters**:
+  * option: **"-aligned alignedid"** - apply only given aligned scripts
+  * option: **"-dc dc"** - apply scripts only for specific datacenter
+  * option: **"-db db"** - apply scripts only for specific database server
+  * option: **"-dbpassword password"** - use given password to authentificate
+  * option: **"-folder folder"** - use specific pending folder
+```
+Use source folder $C_CONFIG_SOURCE_SQL_GLOBALPENDING/<pendingid>, not release folder
+Download scripts to $C_CONFIG_DISTR_PATH/pending-<pendingid>
+```
+  * option: **"-regions "regions""** - apply scripts to given set of regions
+
+## Prepare Distributive Scripts ##
+
+  * getsql.sh
+  * getsvninfo.sh
+
+## Apply Distributive Scripts ##
+
+  * manage.sh
+  * sqlapply.sh
+  * sqlmanual.sh
+
+## Database Maintenance Scripts ##
+
+  * export.sh
+  * import.sh

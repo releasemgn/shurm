@@ -1,0 +1,118 @@
+[home](home.md) -> [documentation](documentation.md) -> [makedistr](makedistr.md)
+
+Defines how to produce distributives from codebase, thirdparty items, required specific updates in settings and database.
+
+
+
+See also:
+  * [Deployment](deployment.md)
+
+---
+
+
+# Definitions #
+
+  * **VCS**: Version Control System, supported - svn, git
+  * **VCS repository**: repository in terms of VCS
+  * **codebase repository**: VCS location compliant to URM rules
+  * **work copy**: local copy of repository source code or copy of repository indended to review or source code modifications
+  * **branch**: VCS location where repository codebase is consistent and store specific set of changes
+  * **tag**: VCS element allowing to assign name to specific state in specific branch history
+
+# Overview #
+
+  * **makedist** module implements URM baseline release policy of builds
+  * **makedist** module is accessed in $MYP\_DEPLOYMENT\_HOME/master/makedistr
+  * **makedist** module supports svn and git VCS
+  * **makedist** module depends on:
+    * primary product parameters in config.sh
+    * repository and build items in source.xml
+    * definition of distributive in distr.xml
+
+# Scripts #
+
+## Script Options ##
+
+**Flags:**
+  * option: **"-all"** - do not use PROD distributive
+  * option: **"-dist"** - after getall copy downloaded items to distributive
+  * option: **"-get"** - after build execute getall
+  * option: **"-showall|-showmain"** - set logging level
+  * option: **"-showonly"** - do not execute operation
+  * option: **"-updatenexus"** - force to upload to nexus if item exists
+  * option: **"-nocheck"** - skip source validation
+
+**Parameters:**
+  * option: **"-release name"** - process given release
+  * option: **"-branch name"** - process given branch
+  * option: **"-tag name"** - use given tag
+  * option: **"-date statedate"** - find branch state by date
+
+## Build and Create Distributive ##
+
+  * buildall-core-tags.sh
+  * buildall-release.sh
+  * buildall-tags.sh
+  * checkset.sh
+  * getall.sh
+  * getall-release.sh
+
+## Codebase Maintenance ##
+
+  * codebase-checkout.sh
+  * codebase-commit.sh
+  * codebase-copybranch.sh
+  * codebase-copynewtags.sh
+  * codebase-copytags.sh
+  * codebase-copytagtobranch.sh
+  * codebase-dropcandidatetags.sh
+  * codebase-dropoldcandidatetags.sh
+  * codebase-droptags.sh
+  * codebase-export.sh
+  * codebase-renamebranch.sh
+  * codebase-renametags.sh
+  * codebase-setversion.sh
+  * codebase-startcandidatetags.sh
+  * codebase-updatetags.sh
+  * custom.sh
+  * settags.sh
+  * thirdpartyupload.sh
+
+## Version Control System Support ##
+
+Scripts to execute common VCS operations using the same interface disregarding VCS type:
+
+| **Script** | **Function** | **svn** | **git** |
+|:-----------|:-------------|:--------|:--------|
+| vcscheckout.sh | create codebase work copy to modify | yes | yes |
+| vcscommit.sh | send modifications to team repository | yes | yes |
+| vcscopybranch.sh | create branch in team repository | yes | yes |
+| vcscopynewtag.sh | create new tag in team repository | yes | yes |
+| vcscopytag.sh | create/replace tag in team repository | yes | yes |
+| vcsdiff.sh | get changes between tags in team repository | yes | no |
+| vcsdroptag.sh | drop tag in team repository | yes | yes |
+| vcsexport.sh | create read-only codebase workcopy | yes | yes |
+| vcsrenamebranch.sh | rename branch in codebase workcopy | yes | yes |
+| vcsrenametag.sh | rename tag in codebase workcopy | yes | yes |
+| vcssettag.sh | set tag to branch head in codebase workcopy | yes | yes |
+
+# Using git #
+
+  * repository name - $PROJECTNAME.git
+  * only one codebase repository can be stored in one VCS repository
+  * build can be done only from:
+    * head of branch named: branch-xxx (refs/heads/branch-xxx, xxx - the same as for svn)
+    * tag named: tag-xxx (refs/tags/tag-xxx, xxx - the same as for svn)
+  * mirror repositories:
+    * git requires using copy of local repository - mirror repository, not work copy only
+    * set of mirror repositories is located in $C\_CONFIG\_GITMIRRORPATH, defined in primary product parameter file
+    * to create mirror copy, execute below script:
+```
+F_GIT_SOURCE=gitolite@YOUR_GIT_HOSTING:$PROJECTNAME.git
+F_GIT_MIRROR=$C_CONFIG_GITMIRRORPATH/$PROJECTNAME.git
+
+rm -rf $F_GIT_MIRROR
+git clone --mirror $F_GIT_SOURCE $F_GIT_MIRROR
+```
+  * each operation is performed with first getting changes from master (team) VCS repository and finally pushing changes to master VCS repository
+  * build user is release-mgn, should have access to read repository and to create tags

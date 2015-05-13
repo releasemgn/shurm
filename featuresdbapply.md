@@ -1,0 +1,128 @@
+Functional Capabilities of URM - Apply Database Changes
+[home](home.md) -> [documentation](documentation.md) -> [features](features.md) -> [featuresdbapply](featuresdbapply.md)
+
+Features to apply scripts from distributive to databases of given environment
+
+
+
+---
+
+
+# Using sqlplus to apply changes #
+
+  * sqlplus is Oracle client utility which has its own language enabling to execute SQL and PL-SQL scripts in required context
+  * URM relies on sqlplus as primary tool to perform database modifications
+  * URM uses tnsnames Oracle configuration file to address Oracle database
+  * URM sets environment before execution of sqlplus
+  * execution of sqlplus is logged and controlled
+```
+sqlplus sets below environment parameters:
+	export NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
+
+	set define off
+	set echo on
+
+Output from execution is sent to .out file
+Spool operator is defined which adds execuited script text to the spool file:
+	spool $P_OUTDIR/$P_SCRIPTNAME.spool append
+
+Before executing any scripts URM checks all schea connections which are going to be used.
+If any connectivity does not work, script execution is not performed at all.
+
+Execution is limited to 10 minutes.sqlplus 
+If any script is executing more than 10 minutes, execution process is forced to be killed
+
+To apply script, go to run context of environment or specific datacenter, to its database subfolder:
+	cd $PRODUCT_DEPLOYMENT_HOME/master/deployment/<environment>/database
+
+Execute sqlpally.sh script with release and additional options:
+	./sqlapply.sh -a <release>
+```
+
+# Select what and where to apply #
+
+  * URM allows to list distributive indexes to apply scripts, or souce code folders
+  * sqlapply.sh has options to apply to specific datacenter or database
+  * As well as URM stores data about script execution, mode options specify how to process scripts already applied
+```
+Apply only scripts 10001-schema1-script.sql and 10001-schema2-script.sql from release 1.0 distributive:
+	./sqlapply.sh -a 1.0 10001 10001
+
+Apply only scripts what was commited to coreddl folder of 1.0 release:
+	./sqlapply.sh -a 1.0 coreddl
+
+
+Apply release 1.0 to specific datacenter only:
+	./sqlapply.sh -dc dc.k1 1.0
+
+Apply release 1.0 to specific database server (defined in environment specification file) only:
+	./sqlapply.sh -db skimdb 1.0
+
+Execute options:
+	"-a" - apply scripts one after another, skip already applied
+	"-f" - useful to re-apply specific script, scripts are expected as already applied, try one more time
+	"-x" - apply scripts without regard to whether scripts are already applied or not
+```
+
+# Apply manual administration scripts using sys account #
+
+  * Some scripts are manual in nature and require execution using system account
+  * URM supports such scripts by allowing to reference them by name, setting proper logging and providing useful access control
+```
+To execute manual script from release 1.0 folder with specified password to skimdb database server:
+	./sqlmanual.sh -db skimdb 1.0 mymanual1.sql <sys password>
+
+To execute manual script from release 1.0 folder using hidden access files in $PRODUCT_DEPLOYMENT_HOME/.auth:
+	./sqlmanual.sh -db skimdb 1.0 mymanual1.sql
+
+Aligned logic can be used for manual scripts.
+```
+
+# Load data using sqlldr #
+
+  * sqlldr is Oracle client utility allowing to load big data to database much faster than with sqlplus
+  * URM allows to have regular sqlload file sets in releases without involving custom manual steps to load data
+  * URM takes care about pre-load and post-load processing
+```
+To use dataload feature, you need to prepare one control file and one ot more data files.
+Data files are referenced from control file of from other data files.
+To define load place file having correct index, schema, basename and extention ".ctl" to dataload subfolder
+
+Place datafiles to dataload folder - with the same index as ctl file.
+Note that extension ".txt" will lead automatical removal of "\r" symbol from data file 
+before download to distributive.
+
+Dataload is executed in order after all other processing.
+If you need pre-load processing, place script in ordinary coredml folder.
+To perform specific post-load processing, place script to dataload folder with the same index as ".ctl"
+```
+
+# Handling errors #
+
+  * generally scripts can produce errors
+  * error can be because of incorrect script logic or from differences between environments - correct execution in one environment does not prevent from errors in another environment
+  * error can be reported by Oracle and have no impact on product behavior and data, hence can be ignored
+  * error can be produced as application exception by script application logic or from called stored procedure
+  * URM provides means to track and handle errors in database modifications
+  * of course, script can bring to erroneous inconsistent database state or make incorrect modification, and this cannot be spotted by automatic execution engine of URM
+```
+Default logic stops executing release scripts to allow examine errors and 
+make proper corrections before continuation.
+Still, if you are sure (e.g. in test environment), you can ignore any errors and proceed to next script.
+	./sqlapply.sh -a -s 1.0
+
+Note, that it could be not the first run of release script set.
+Last execution information is available in log files.
+Also administration schema of database will contain last execution status - applied with/without errors.
+You can see indexes of failed scripts using:
+	./manage.sh -p 1.0
+
+If script rollback was performed, it makes sense to delete records from administration schema
+	./manage.sh -r 1.0 10001
+```
+
+# Configuring database scripts #
+
+  * scripts in coreuatonly can be dependent on environment, now script can reference environment variable using the same approach as in configuration files - @variable@
+  * variables are substituted on execution
+  * variables are extracted from server set corresponding to specific database where release is being applied
